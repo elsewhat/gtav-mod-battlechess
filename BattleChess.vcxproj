@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="BattleChessGameController.cpp" />
+    <ClCompile Include="ClipsetMovement.cpp" />
+    <ClCompile Include="EngineModeController.cpp" />
+    <ClCompile Include="GTAObject.cpp" />
+    <ClCompile Include="GTAUtils.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Ligthing.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network.cpp" />
+    <ClCompile Include="Scenario.cpp" />
+    <ClCompile Include="BattleChess.cpp" />
+    <ClCompile Include="Tinyxml2.cpp" />
+    <ClCompile Include="Utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\inc\main.h" />
+    <ClInclude Include="..\..\inc\enums.h" />
+    <ClInclude Include="..\..\inc\natives.h" />
+    <ClInclude Include="..\..\inc\types.h" />
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="BattleChessGameController.h" />
+    <ClInclude Include="ClipsetMovement.h" />
+    <ClInclude Include="EngineModeController.h" />
+    <ClInclude Include="GTAObject.h" />
+    <ClInclude Include="GTAUtils.h" />
+    <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Lighting.h" />
+    <ClInclude Include="Network.h" />
+    <ClInclude Include="Prop.h" />
+    <ClInclude Include="Scenario.h" />
+    <ClInclude Include="BattleChess.h" />
+    <ClInclude Include="Tinyxml2.h" />
+    <ClInclude Include="Utils.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8D82F34A-1D64-465B-84B1-37F89AD3D20B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ReadySetAction</RootNamespace>
+    <ProjectName>BattleChess</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.asi</TargetExt>
+    <OutDir>bin\$(Configuration)\</OutDir>
+    <IntDir>tmp\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\dev\cpprestsdk\Release\include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;C:\dev\cpprestsdk\Binaries\x64\Release</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_NO_ASYNCRTIMP;_NO_PPLXIMP;NativeSpeedo_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalOptions>..\..\lib\ScriptHookV.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);winhttp.lib;libcpprest140_2_9.lib;Bcrypt.lib;crypt32.lib;</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "C:\dev\ScriptHookV_SDK\samples\gtav-mod-battlechess\bin\Release\*.asi" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy to GTA folder</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
