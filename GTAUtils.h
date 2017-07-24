@@ -28,7 +28,8 @@ class WeaponUtils {
 protected:
 	static const LPCSTR weaponNames[];
 public:
-	static void giveAllWeapons(Player playerPed); 
+	static void giveAllWeapons(Ped ped); 
+	static void giveWeapon(Ped ped, LPCSTR weaponName);
 };
 
 

@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <exception>
 #include <sstream>
 #include "..\..\inc\types.h"
 
@@ -16,6 +17,18 @@ public:
 	static std::string inputString(int maxLength);
 	static DWORD inputDword();
 	static float inputFloat();
+};
+
+class AssertionException : public std::exception
+{
+public:
+	AssertionException(char* msg);
+	virtual const char* what() const throw()
+	{
+		return whatMsg;
+	}
+protected:
+	char* whatMsg;
 };
 
 class Logger {
@@ -29,6 +42,7 @@ public:
 	static void logInfo(std::string msg);
 	static void logDebug(std::string msg);
 	static void logError(std::string msg);
+	static void assert(bool assertion, std::string msg);
 private: 
 	static void log(std::string logLevel, std::string msg);
 	static const std::string currentDateTime();

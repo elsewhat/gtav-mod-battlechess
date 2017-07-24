@@ -9,6 +9,11 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="BattleChessGameController.cpp" />
+    <ClCompile Include="ChessBattle.cpp" />
+    <ClCompile Include="ChessBoard.cpp" />
+    <ClCompile Include="ChessPed.cpp" />
+    <ClCompile Include="ChessPiece.cpp" />
+    <ClCompile Include="ChessSet.cpp" />
     <ClCompile Include="ClipsetMovement.cpp" />
     <ClCompile Include="EngineModeController.cpp" />
     <ClCompile Include="GTAObject.cpp" />
@@ -29,6 +34,11 @@
     <ClInclude Include="..\..\inc\types.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="BattleChessGameController.h" />
+    <ClInclude Include="ChessBattle.h" />
+    <ClInclude Include="ChessBoard.h" />
+    <ClInclude Include="ChessPed.h" />
+    <ClInclude Include="ChessPiece.h" />
+    <ClInclude Include="ChessSet.h" />
     <ClInclude Include="ClipsetMovement.h" />
     <ClInclude Include="EngineModeController.h" />
     <ClInclude Include="GTAObject.h" />

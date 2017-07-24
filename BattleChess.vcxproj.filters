@@ -15,6 +15,11 @@
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="BattleChessGameController.cpp" />
     <ClCompile Include="EngineModeController.cpp" />
+    <ClCompile Include="ChessBoard.cpp" />
+    <ClCompile Include="ChessPiece.cpp" />
+    <ClCompile Include="ChessSet.cpp" />
+    <ClCompile Include="ChessBattle.cpp" />
+    <ClCompile Include="ChessPed.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\inc\enums.h">
@@ -43,6 +48,11 @@
     <ClInclude Include="Tinyxml2.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="BattleChessGameController.h" />
+    <ClInclude Include="ChessBoard.h" />
+    <ClInclude Include="ChessPiece.h" />
+    <ClInclude Include="ChessSet.h" />
+    <ClInclude Include="ChessBattle.h" />
+    <ClInclude Include="ChessPed.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

@@ -144,6 +144,16 @@ void Logger::logError(std::string msg)
 	}
 }
 
+void Logger::assert(bool assertion, std::string msg)
+{
+	if (assertion) {
+		log("ASSERT", msg);
+
+		//Bad and lazy conversion to char*
+		throw AssertionException(strdup(msg.c_str()));
+	}
+}
+
 void Logger::log(std::string logLevel, std::string msg)
 {
 	std::ofstream logfile;
@@ -168,3 +178,7 @@ const std::string Logger::currentDateTime()
 	return buf;
 }
 
+AssertionException::AssertionException(char * msg)
+{
+	whatMsg = msg;
+}

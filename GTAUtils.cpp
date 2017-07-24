@@ -60,11 +60,16 @@ void UIUtils::DRAW_TEXT(char* Text, float X, float Y, float S_X, float S_Y, int 
 	UI::_DRAW_TEXT(X, Y);
 }
 
-void WeaponUtils::giveAllWeapons(Player playerPed)
+void WeaponUtils::giveAllWeapons(Ped ped)
 {
 	for (int i = 0; i < sizeof(WeaponUtils::weaponNames) / sizeof(WeaponUtils::weaponNames[0]); i++) {
-		WEAPON::GIVE_DELAYED_WEAPON_TO_PED(playerPed, GAMEPLAY::GET_HASH_KEY((char *)WeaponUtils::weaponNames[i]), 1000, 0);
+		WEAPON::GIVE_DELAYED_WEAPON_TO_PED(ped, GAMEPLAY::GET_HASH_KEY((char *)WeaponUtils::weaponNames[i]), 1000, 0);
 	}
+}
+
+void WeaponUtils::giveWeapon(Ped ped, LPCSTR weaponName)
+{
+	WEAPON::GIVE_DELAYED_WEAPON_TO_PED(ped, GAMEPLAY::GET_HASH_KEY((char *)weaponName), 1000, 0);
 }
 
 void GTAModUtils::checkCorruptPlayerPed()
