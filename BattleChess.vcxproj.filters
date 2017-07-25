@@ -20,6 +20,8 @@
     <ClCompile Include="ChessSet.cpp" />
     <ClCompile Include="ChessBattle.cpp" />
     <ClCompile Include="ChessPed.cpp" />
+    <ClCompile Include="ChessSide.cpp" />
+    <ClCompile Include="ChessBoardSquare.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\inc\enums.h">
@@ -53,6 +55,8 @@
     <ClInclude Include="ChessSet.h" />
     <ClInclude Include="ChessBattle.h" />
     <ClInclude Include="ChessPed.h" />
+    <ClInclude Include="ChessSide.h" />
+    <ClInclude Include="ChessBoardSquare.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

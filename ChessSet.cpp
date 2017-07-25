@@ -4,7 +4,7 @@ ChessSet::ChessSet()
 {
 }
 
-ChessSet::ChessSet(std::string name, std::array<ChessPiece, 16> pieces)
+ChessSet::ChessSet(std::string name, std::array<ChessPiece*, 16> pieces)
 {
 	mName = name;
 	mPieces = pieces;
@@ -15,7 +15,7 @@ std::string ChessSet::getName()
 	return mName;
 }
 
-std::array<ChessPiece, 16> ChessSet::getPieces()
+std::array<ChessPiece*, 16> ChessSet::getPieces()
 {
 	return mPieces;
 }
@@ -52,19 +52,19 @@ void ChessSetFactory::initialize()
 
 ChessSet ChessSetFactory::getSimpleChessSet(ChessSide::Side side)
 {
-	std::array<ChessPiece, 16>  pieces;
+	std::array<ChessPiece*, 16>  pieces;
 	int index = 0;
 	for (int i = 0; i < 8; i++) {
-		pieces[index++] = ChessPiece(side, ChessPiece::PAWN, ChessPed(), Vector3(), 1.0);;
+		pieces[index++] = new ChessPiece(side, ChessPiece::PAWN, ChessPed(), Vector3(), 1.0);;
 	}
-	pieces[index++] = ChessPiece(side, ChessPiece::ROOK, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = ChessPiece(side, ChessPiece::BISHOP, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = ChessPiece(side, ChessPiece::KNIGHT, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = ChessPiece(side, ChessPiece::QUEEN, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = ChessPiece(side, ChessPiece::KING, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = ChessPiece(side, ChessPiece::KNIGHT, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = ChessPiece(side, ChessPiece::BISHOP, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = ChessPiece(side, ChessPiece::ROOK, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::ROOK, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::BISHOP, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::KNIGHT, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::QUEEN, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::KING, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::KNIGHT, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::BISHOP, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::ROOK, ChessPed(), Vector3(), 1.0);
 
 	ChessSet chessSet = ChessSet("Simple Set", pieces);
 	return chessSet;

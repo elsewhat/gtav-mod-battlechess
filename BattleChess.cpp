@@ -15,6 +15,8 @@
 #include "Tinyxml2.h"
 #include "Network.h"
 
+#include "ChessBoard.h"
+
 #include <string>
 #include <ctime>
 #include <vector>

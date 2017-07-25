@@ -12,13 +12,13 @@ class ChessPiece;
 class ChessSet {
 public:
 	ChessSet();
-	ChessSet(std::string name, std::array<ChessPiece, 16> pieces);
+	ChessSet(std::string name, std::array<ChessPiece*, 16> pieces);
 	std::string getName();
-	std::array<ChessPiece, 16>  getPieces();
+	std::array<ChessPiece*, 16>  getPieces();
 
 protected:
 	std::string mName;
-	std::array<ChessPiece, 16> mPieces;
+	std::array<ChessPiece*, 16> mPieces;
 };
 
 class ChessSetFactory{

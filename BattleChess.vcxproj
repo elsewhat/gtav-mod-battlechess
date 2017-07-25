@@ -11,9 +11,11 @@
     <ClCompile Include="BattleChessGameController.cpp" />
     <ClCompile Include="ChessBattle.cpp" />
     <ClCompile Include="ChessBoard.cpp" />
+    <ClCompile Include="ChessBoardSquare.cpp" />
     <ClCompile Include="ChessPed.cpp" />
     <ClCompile Include="ChessPiece.cpp" />
     <ClCompile Include="ChessSet.cpp" />
+    <ClCompile Include="ChessSide.cpp" />
     <ClCompile Include="ClipsetMovement.cpp" />
     <ClCompile Include="EngineModeController.cpp" />
     <ClCompile Include="GTAObject.cpp" />
@@ -36,9 +38,11 @@
     <ClInclude Include="BattleChessGameController.h" />
     <ClInclude Include="ChessBattle.h" />
     <ClInclude Include="ChessBoard.h" />
+    <ClInclude Include="ChessBoardSquare.h" />
     <ClInclude Include="ChessPed.h" />
     <ClInclude Include="ChessPiece.h" />
     <ClInclude Include="ChessSet.h" />
+    <ClInclude Include="ChessSide.h" />
     <ClInclude Include="ClipsetMovement.h" />
     <ClInclude Include="EngineModeController.h" />
     <ClInclude Include="GTAObject.h" />

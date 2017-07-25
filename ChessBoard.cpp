@@ -4,101 +4,6 @@
 #include "Utils.h"
 
 
-ChessBoardSquare::ChessBoardSquare()
-{
-}
-
-ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, Color color, Vector3 location, float headingWhite, float headingBlack)
-{
-	mSquareFile = file;
-	mSquareRank = rank;
-	mColor = color;
-	mIsPromotion = isPromotion;
-	mLocation = location;
-	mHeadingWhite = headingWhite;
-	mHeadingBlack = headingBlack;
-}
-
-int ChessBoardSquare::getSquareFile() const
-{
-	return mSquareFile;
-}
-
-int ChessBoardSquare::getSquareRank() const
-{
-	return mSquareRank;
-}
-
-ChessBoardSquare::Color ChessBoardSquare::getColor() const
-{
-	return mColor;
-}
-
-bool ChessBoardSquare::isEmpty() const
-{
-	if (mPiece == mPiece) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-ChessPiece* ChessBoardSquare::getPiece() const
-{
-	return mPiece;
-}
-
-void ChessBoardSquare::setPiece(ChessPiece * piece)
-{
-	Logger::assert(mPiece != nullptr, "Already exist a piece for Square");
-	
-	mPiece = piece;
-}
-
-void ChessBoardSquare::removePiece()
-{
-	mPiece = nullptr;
-}
-
-Vector3 ChessBoardSquare::getLocation() const
-{
-	return mLocation;
-}
-
-void ChessBoardSquare::setLocation(Vector3 location)
-{
-	mLocation = location;
-}
-
-boolean ChessBoardSquare::isPromotion() const
-{
-	return mIsPromotion;
-}
-
-float ChessBoardSquare::getHeadingWhite() const
-{
-	return mHeadingWhite;
-}
-
-float ChessBoardSquare::getHeadingBlack() const
-{
-	return mHeadingBlack;
-}
-
-ChessSide::Side ChessSide::oppositeSide(ChessSide::Side side)
-{
-	if (side == WHITE) {
-		return BLACK;
-	}
-	else {
-		return WHITE;
-	}
-}
-
-
-
-
 ChessBoard::ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDeltaY)
 {
 	mBaseLocation = baseLocation;
@@ -107,12 +12,12 @@ ChessBoard::ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDel
 	initializeSquares();
 }
 
-void ChessBoard::setWhiteChessSet(ChessSet whiteSet)
+void ChessBoard::setWhiteChessSet(ChessSet* whiteSet)
 {
 	mWhiteSet = whiteSet;
 }
 
-void ChessBoard::setBlackChessSet(ChessSet blackSet)
+void ChessBoard::setBlackChessSet(ChessSet* blackSet)
 {
 	mBlackSet = blackSet;
 }
@@ -156,7 +61,7 @@ void ChessBoard::initializeSquares()
 			location.y = mBaseLocation.y + mSquareDeltaY * (rank-1);
 			location.z = mBaseLocation.z;
 
-			mSquares[index] = ChessBoardSquare(file, rank, isPromotion, color, location, headingWhite, headingBlack);
+			mSquares[index] = new ChessBoardSquare(file, rank, isPromotion, color, location, headingWhite, headingBlack);
 			index++;
 		}
 	}
