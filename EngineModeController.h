@@ -1,12 +1,12 @@
 #pragma once
 
 #include "..\..\inc\types.h"
+#include "ChessBoard.h"
 #include <vector>
 
 class EngineModeController {
 public:
-	virtual void onEnterMode()=0;
-	virtual void onExitMode()=0 ;
-	virtual bool actionOnTick(DWORD tick)=0;
-	//TODO: Include pointer params to key attributes
+	virtual void onEnterMode(ChessBoard* chessBoard)=0;
+	virtual void onExitMode(ChessBoard* chessBoard)=0 ;
+	virtual bool actionOnTick(DWORD tick, ChessBoard* chessBoard)=0;
 };

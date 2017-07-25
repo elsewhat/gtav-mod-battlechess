@@ -1,6 +1,7 @@
 #include "BattleChessGameController.h"
 
 #include "Keyboard.h"
+#include "ChessBoard.h"
 #include "Utils.h"
 #include "GTAUtils.h"
 #include <vector>
@@ -16,7 +17,7 @@ BattleChessGameController::BattleChessGameController()
 /**
 * Main loop which called from BattleChess
 */
-bool BattleChessGameController::actionOnTick(DWORD tick)
+bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 {
 	GTAModUtils::disableControls();
 
@@ -28,6 +29,9 @@ bool BattleChessGameController::actionOnTick(DWORD tick)
 
 		mainTickLast = GetTickCount();
 
+		if (updateBoardCursorMovement(chessBoard)) {
+			nextWaitTicks = 70;
+		}
 	}
 
 	if (updateCameraMovement()) {
@@ -37,8 +41,8 @@ bool BattleChessGameController::actionOnTick(DWORD tick)
 
 	updateCameraRotation();
 
-	//actions to be used during active scene
-	//draw_spot_lights();
+	//Draw board related artificats (ie. ChessBoardSquares)
+	chessBoard->drawOnTick();
 
 	//check if the player is dead/arrested, in order to swap back to original in order to avoid crash
 	GTAModUtils::checkCorruptPlayerPed();
@@ -46,9 +50,13 @@ bool BattleChessGameController::actionOnTick(DWORD tick)
 	return shouldExitMode;
 }
 
-void BattleChessGameController::onEnterMode()
+void BattleChessGameController::onEnterMode(ChessBoard* chessBoard)
 {
 	Logger::logInfo(" BattleChessGameController::onEnterMode()");
+
+	cursorBoardSquare = chessBoard->getSquareAt(2, 5);
+	cursorBoardSquare->setDoHighlightAsCursor(true);
+
 	scaleForm = GRAPHICS::REQUEST_SCALEFORM_MOVIE("instructional_buttons");
 
 	//CAM::DO_SCREEN_FADE_OUT(1000);
@@ -85,7 +93,7 @@ void BattleChessGameController::onEnterMode()
 	CAM::RENDER_SCRIPT_CAMS(true, 1, 1800, 1, 0);
 }
 
-void BattleChessGameController::onExitMode()
+void BattleChessGameController::onExitMode(ChessBoard* chessBoard)
 {
 	//reset cam
 	CAM::RENDER_SCRIPT_CAMS(false, 1, 1500, 1, 0);
@@ -348,6 +356,170 @@ bool BattleChessGameController::keyPressedForSlowCameraMovement() {
 bool  BattleChessGameController::keyPressedForInvertedCamera() {
 	//D
 	if (IsKeyDown(0x49)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::updateBoardCursorMovement(ChessBoard* chessBoard)
+{
+	if (!cursorBoardSquare) {
+		Logger::logError("BattleChessGameController::updateBoardCursorMovement cursorBoardSquare pointer is NULL");
+		return false;
+	}
+	bool hasMovement;
+	int rank = cursorBoardSquare->getSquareRank();
+	int file = cursorBoardSquare->getSquareFile();
+
+	//just increase in these methods, and "floor" to valid values at end
+	if (keyPressedBoardUp()) {
+		rank++;
+		hasMovement = true;
+	}
+	else if (keyPressedBoardUpLeft()) {
+		rank++;
+		file--;
+		hasMovement = true;
+	}
+	else if (keyPressedBoardUpRight()) {
+		rank++;
+		file++;
+		hasMovement = true;
+	}
+	else if (keyPressedBoardRight()) {
+		file++;
+		hasMovement = true;
+	}
+	else if (keyPressedBoardLeft()) {
+		file--;
+		hasMovement = true;
+	}
+	else if (keyPressedBoardDown()) {
+		rank--;
+		hasMovement = true;
+	}
+	else if (keyPressedBoardDownLeft()) {
+		rank--;
+		file--;
+		hasMovement = true;
+	}
+	else if (keyPressedBoardDownRight()) {
+		rank--;
+		file++;
+		hasMovement = true;
+	}
+	if (hasMovement) {
+		if (rank < 1) {
+			rank = 1;
+		}
+		else if (rank > 8) {
+			rank = 8;
+		}
+		if (file < 1) {
+			file = 1;
+		}
+		else if (file > 8) {
+			file = 8;
+		}
+
+		//remove highlight on onld
+		cursorBoardSquare->setDoHighlightAsCursor(false);
+		//add new
+		cursorBoardSquare = chessBoard->getSquareAt(rank, file);
+		cursorBoardSquare->setDoHighlightAsCursor(true);
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+bool BattleChessGameController::keyPressedBoardUp()
+{
+	if (IsKeyDown(VK_NUMPAD8)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::keyPressedBoardUpLeft()
+{
+	if (IsKeyDown(VK_NUMPAD7)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::keyPressedBoardUpRight()
+{
+	if (IsKeyDown(VK_NUMPAD9)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::keyPressedBoardLeft()
+{
+	if (IsKeyDown(VK_NUMPAD4)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::keyPressedBoardRight()
+{
+	if (IsKeyDown(VK_NUMPAD6)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::keyPressedBoardSelect()
+{
+	if (IsKeyDown(VK_NUMPAD5)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::keyPressedBoardDown()
+{
+	if (IsKeyDown(VK_NUMPAD2)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::keyPressedBoardDownLeft()
+{
+	if (IsKeyDown(VK_NUMPAD1)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool BattleChessGameController::keyPressedBoardDownRight()
+{
+	if (IsKeyDown(VK_NUMPAD3)) {
 		return true;
 	}
 	else {

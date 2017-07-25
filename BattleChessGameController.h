@@ -6,6 +6,7 @@
 #include "EngineModeController.h"
 
 #include <vector>
+#include <memory>
 
 
 class BattleChessGameController : public EngineModeController {
@@ -21,6 +22,9 @@ private:
 	Vector3 camLastPos;
 	Vector3 camNewPos;
 
+	ChessBoardSquare* selectedBoardSquare = NULL;
+	ChessBoardSquare* cursorBoardSquare = NULL;
+
 	void drawInstructions();
 
 	bool updateCameraRotation();
@@ -33,9 +37,22 @@ private:
 	bool keyPressedForFastCameraMovement();
 	bool keyPressedForSlowCameraMovement();
 	bool keyPressedForInvertedCamera();
+
+	bool updateBoardCursorMovement(ChessBoard* chessBoard);
+
+	bool keyPressedBoardUp();
+	bool keyPressedBoardUpLeft();
+	bool keyPressedBoardUpRight();
+	bool keyPressedBoardLeft();
+	bool keyPressedBoardRight();
+	bool keyPressedBoardSelect();
+	bool keyPressedBoardDown();
+	bool keyPressedBoardDownLeft();
+	bool keyPressedBoardDownRight();
+
 public:
 	BattleChessGameController();
-	virtual void onEnterMode() override;
-	virtual void onExitMode() override;
-	virtual bool actionOnTick(DWORD tick) override;
+	virtual void onEnterMode(ChessBoard* chessBoard) override;
+	virtual void onExitMode(ChessBoard* chessBoard) override;
+	virtual bool actionOnTick(DWORD tick, ChessBoard* chessBoard) override;
 };

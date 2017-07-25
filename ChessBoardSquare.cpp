@@ -1,5 +1,8 @@
 #include "ChessBoardSquare.h"
 
+#include "..\..\inc\natives.h"
+#include "..\..\inc\types.h"
+
 #include "Utils.h"
 
 ChessBoardSquare::ChessBoardSquare()
@@ -96,7 +99,61 @@ float ChessBoardSquare::getHeadingBlack() const
 	return mHeadingBlack;
 }
 
+void ChessBoardSquare::drawSpotAbove(int colorR, int colorG, int colorB) const {
 
+}
+
+bool ChessBoardSquare::doHighlightAsSelected() const
+{
+	return mHighlightAsSelected;
+}
+
+bool ChessBoardSquare::doHighlightAsPossible() const
+{
+	return mHighlightAsPossible;
+}
+
+void ChessBoardSquare::setDoHighlightAsPossible(bool highlightAsPossible)
+{
+	mHighlightAsPossible = highlightAsPossible;
+}
+
+void ChessBoardSquare::setDoHighlightAsSelected(bool highlightAsSelected)
+{
+	mHighlightAsSelected = highlightAsSelected;
+}
+
+bool ChessBoardSquare::doHighlightAsCursor() const
+{
+	return mHighlightAsCursor;
+}
+
+void ChessBoardSquare::setDoHighlightAsCursor(bool highlightAsCursor)
+{
+	mHighlightAsCursor = highlightAsCursor;
+}
+
+void ChessBoardSquare::drawOnTick()
+{
+	if (mHighlightAsCursor) {
+		int highlightColorR = 255;
+		int highlightColorG = 255;
+		int highlightColorB = 255;
+		GRAPHICS::DRAW_SPOT_LIGHT(mLocation.x, mLocation.y, mLocation.z + 20.0f, 0, 0, -1.0, highlightColorR, highlightColorG, highlightColorB, 100.0f, 1.0, 0.0f, 4.0f, 1.0f);
+	}
+	else if (mHighlightAsSelected) {
+		int highlightColorR = 192;
+		int highlightColorG = 192;
+		int highlightColorB = 192;
+		GRAPHICS::DRAW_SPOT_LIGHT(mLocation.x, mLocation.y, mLocation.z + 20.0f, 0, 0, -1.0, highlightColorR, highlightColorG, highlightColorB, 100.0f, 1.0, 0.0f, 4.0f, 1.0f);
+	}
+	else if (mHighlightAsPossible){
+		int highlightColorR = 0;
+		int highlightColorG = 128;
+		int highlightColorB = 0;
+		GRAPHICS::DRAW_SPOT_LIGHT(mLocation.x, mLocation.y, mLocation.z + 20.0f, 0, 0, -1.0, highlightColorR, highlightColorG, highlightColorB, 100.0f, 1.0, 0.0f, 4.0f, 1.0f);
+	}
+}
 
 
 

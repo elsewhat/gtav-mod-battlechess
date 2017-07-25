@@ -100,6 +100,13 @@ void ChessBoard::spawnChessPieces()
 	}
 }
 
+void ChessBoard::drawOnTick()
+{
+	for (auto* square : mSquares) {
+		square->drawOnTick();
+	}
+}
+
 /*
 Create square in the following pattern
 Double-digit values are indexs in array
@@ -119,8 +126,8 @@ void ChessBoard::initializeSquares()
 {
 	Logger::logDebug("ChessBoard::initializeSquares");
 	int index = 0;
-	float headingWhite = 1.0;
-	float headingBlack = 0.0;
+	float headingWhite = 0.0;
+	float headingBlack = 180.0;
 
 	for (int rank = 1; rank <= 8; rank++) {
 		bool isPromotion = false;
@@ -155,4 +162,10 @@ ChessBoardSquare* ChessBoard::getSquareAt(int rank, int file)
 	int index = (rank - 1) * 8 + (file - 1);
 	Logger::logDebug("Index:" + std::to_string(index) + " mSquares.size:" + std::to_string(mSquares.size()));
 	return mSquares[index];
+}
+
+std::vector<ChessBoardSquare*> ChessBoard::possibleMoves(ChessSide::Side side, const ChessBoardSquare * squareFrom)
+{
+	//TODO: Implement
+	return std::vector<ChessBoardSquare*>();
 }

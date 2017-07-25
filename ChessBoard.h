@@ -19,12 +19,16 @@ public:
 
 	bool hasSideChessPieceAt(ChessSide::Side side, int rank, int file);
 	ChessPiece* getChessPieceAt(int rank, int file);
+	ChessBoardSquare* getSquareAt(int rank, int file);
+
+	std::vector<ChessBoardSquare*> possibleMoves(ChessSide::Side side, const ChessBoardSquare* squareFrom);
 
 	void setWhiteChessSet(ChessSet* whiteSet);
 	void setBlackChessSet(ChessSet* blackSet);
 
 	void spawnChessPieces();
 
+	void drawOnTick();
 protected:
 	Vector3 mBaseLocation;
 	float mSquareDeltaX;
@@ -34,5 +38,4 @@ protected:
 	ChessSet* mBlackSet;
 
 	void initializeSquares();
-	ChessBoardSquare* getSquareAt(int rank, int file);
 };

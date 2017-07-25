@@ -28,7 +28,18 @@ public:
 	float getHeadingWhite() const;
 	float getHeadingBlack() const;
 
+	void ChessBoardSquare::drawSpotAbove(int colorR, int colorG, int colorB) const;
 
+	bool doHighlightAsSelected() const;
+	void setDoHighlightAsSelected(bool highlightAsSelected);
+
+	bool doHighlightAsPossible() const;
+	void setDoHighlightAsPossible(bool highlightAsPossible);
+
+	bool doHighlightAsCursor() const;
+	void setDoHighlightAsCursor(bool highlightAsCursor);
+
+	void drawOnTick();
 protected:
 	bool hasChessPiece = false;
 	int mSquareFile;
@@ -39,4 +50,7 @@ protected:
 	float mHeadingWhite;
 	float mHeadingBlack;
 	bool mIsPromotion;
+	bool mHighlightAsSelected = false;
+	bool mHighlightAsPossible = false;
+	bool mHighlightAsCursor = false;
 };
