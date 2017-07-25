@@ -1,11 +1,14 @@
 #pragma once
 
 #include "BattleChess.h"
+
+#include "..\..\inc\natives.h"
+#include "..\..\inc\types.h"
+
 #include "keyboard.h"
 #include "utils.h"
 #include "gtautils.h"
 #include "EngineModeController.h"
-
 #include "Scenario.h"
 #include "ClipsetMovement.h"
 #include "Lighting.h"
@@ -14,7 +17,6 @@
 #include "GTAObject.h"
 #include "Tinyxml2.h"
 #include "Network.h"
-
 #include "ChessBoard.h"
 
 #include <string>
@@ -211,8 +213,9 @@ void drawMainMenu() {
 
 	UIUtils::DRAW_TEXT("BETA RELEASE OF BATTLECHESS BY ELSEWHAT - NOT FOR DISTRIBUTION", 0.0, 0.0, 0.3, 0.3, 0, false, false, false, false, 255, 255, 255, 155);
 
+	float heading= ENTITY::GET_ENTITY_HEADING(PLAYER::PLAYER_PED_ID());
 	Vector3 location = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), true);
-	UIUtils::DRAW_TEXT(strdup(("Location (" + std::to_string(location.x) + "," + std::to_string(location.y) + "," + std::to_string(location.z) + ")").c_str()) , 0.0, 0.2, 0.3, 0.3, 0, false, false, false, false, 255, 255, 255, 155);
+	UIUtils::DRAW_TEXT(strdup(("Location (" + std::to_string(location.x) + "," + std::to_string(location.y) + "," + std::to_string(location.z) + ") Heading: "+std::to_string(heading)).c_str()) , 0.0, 0.2, 0.3, 0.3, 0, false, false, false, false, 255, 255, 255, 155);
 
 	UIUtils::DRAW_TEXT("Start game", 0.88, 0.888 - (0.04)*drawIndex, 0.3, 0.3, 0, false, false, false, false, textColorR, textColorG, textColorB, 200);
 	GRAPHICS::DRAW_RECT(0.93, 0.900 - (0.04)*drawIndex, 0.113, 0.034, bgColorR, bgColorG, bgColorB, 100);
@@ -435,7 +438,7 @@ void actionMenuActiveSelected() {
 		 chessBoard->spawnChessPieces();
 		 Logger::logInfo("After chessBoard->spawnChessPieces");
 
-		 engineModeController->onEnterMode();
+		 engineModeController->onEnterMode(chessBoard);
 	}
 }
 
@@ -630,7 +633,7 @@ void mainEngineLoop()
 			WAIT(0);
 		}
 		else {
-			engineModeController->actionOnTick(GetTickCount());
+			engineModeController->actionOnTick(GetTickCount(), chessBoard);
 			WAIT(0);
 		}
 	}
@@ -677,8 +680,8 @@ void BattleChessMain()
 	baseLocation.y = 3215.0;
 	baseLocation.z = 41.0;
 
-	float squareDeltaX = 3.0; 
-	float squareDeltaY = 3.0;
+	float squareDeltaX = 2.1; 
+	float squareDeltaY = 2.1;
 	chessBoard = new ChessBoard(baseLocation, squareDeltaX, squareDeltaY);
 
 	chessBoard->setWhiteChessSet(chessSetFactory.getDefaultWhiteChessSet());
