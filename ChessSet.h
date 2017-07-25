@@ -26,15 +26,15 @@ public:
 	ChessSetFactory();
 	
 	std::vector<std::string> getChessSetNames();
-	ChessSet getChessSetByName(std::string name);
-	ChessSet getDefaultWhiteChessSet();
-	ChessSet getDefaultBlackChessSet();
+	ChessSet* getChessSetByName(std::string name);
+	ChessSet* getDefaultWhiteChessSet();
+	ChessSet* getDefaultBlackChessSet();
 
 protected:
 	std::vector<std::string> mChessSetNames;
 	std::vector<ChessSet> mChessSets;
 
 	void initialize();
-	ChessSet getSimpleChessSet(ChessSide::Side side);
+	ChessSet* getSimpleChessSet(ChessSide::Side side);
 
 };

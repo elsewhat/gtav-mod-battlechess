@@ -36,6 +36,11 @@
 * The actual actions for each tick of the loop is handled the currently active EngineModeController
 */
 
+
+ChessBoard* chessBoard;
+
+ChessSetFactory chessSetFactory;
+
 //Key mapping attributes
 //These are overwrittein in initReadKeyMapping()
 DWORD keyMenu = VK_F7;
@@ -205,6 +210,9 @@ void drawMainMenu() {
 	}
 
 	UIUtils::DRAW_TEXT("BETA RELEASE OF BATTLECHESS BY ELSEWHAT - NOT FOR DISTRIBUTION", 0.0, 0.0, 0.3, 0.3, 0, false, false, false, false, 255, 255, 255, 155);
+
+	Vector3 location = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), true);
+	UIUtils::DRAW_TEXT(strdup(("Location (" + std::to_string(location.x) + "," + std::to_string(location.y) + "," + std::to_string(location.z) + ")").c_str()) , 0.0, 0.2, 0.3, 0.3, 0, false, false, false, false, 255, 255, 255, 155);
 
 	UIUtils::DRAW_TEXT("Start game", 0.88, 0.888 - (0.04)*drawIndex, 0.3, 0.3, 0, false, false, false, false, textColorR, textColorG, textColorB, 200);
 	GRAPHICS::DRAW_RECT(0.93, 0.900 - (0.04)*drawIndex, 0.113, 0.034, bgColorR, bgColorG, bgColorB, 100);
@@ -424,7 +432,9 @@ void actionMenuActiveSelected() {
 		 nextWaitTicks = 200;
 		 Logger::logInfo("BattleChessGameController before creating");
 		 engineModeController = std::make_shared<BattleChessGameController>(BattleChessGameController());
-		 Logger::logInfo("BattleChessGameController after creating");
+		 chessBoard->spawnChessPieces();
+		 Logger::logInfo("After chessBoard->spawnChessPieces");
+
 		 engineModeController->onEnterMode();
 	}
 }
@@ -658,6 +668,21 @@ void BattleChessMain()
 	}
 
 	//initializeSyncedAnimations();
+
+	//Chess board initalization
+	chessSetFactory = ChessSetFactory();
+
+	Vector3 baseLocation;
+	baseLocation.x = 1629.0;
+	baseLocation.y = 3215.0;
+	baseLocation.z = 41.0;
+
+	float squareDeltaX = 3.0; 
+	float squareDeltaY = 3.0;
+	chessBoard = new ChessBoard(baseLocation, squareDeltaX, squareDeltaY);
+
+	chessBoard->setWhiteChessSet(chessSetFactory.getDefaultWhiteChessSet());
+	chessBoard->setBlackChessSet(chessSetFactory.getDefaultBlackChessSet());
 
 	Logger::logInfo("BattleChess initialized");
 

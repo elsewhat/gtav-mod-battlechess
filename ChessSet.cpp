@@ -1,4 +1,5 @@
 #include "ChessSet.h"
+#include "Utils.h"
 
 ChessSet::ChessSet()
 {
@@ -30,17 +31,17 @@ std::vector<std::string> ChessSetFactory::getChessSetNames()
 	return mChessSetNames;
 }
 
-ChessSet ChessSetFactory::getChessSetByName(std::string name)
+ChessSet* ChessSetFactory::getChessSetByName(std::string name)
 {
 	return getSimpleChessSet(ChessSide::WHITE);
 }
 
-ChessSet ChessSetFactory::getDefaultWhiteChessSet()
+ChessSet* ChessSetFactory::getDefaultWhiteChessSet()
 {
 	return getSimpleChessSet(ChessSide::WHITE);
 }
 
-ChessSet ChessSetFactory::getDefaultBlackChessSet()
+ChessSet* ChessSetFactory::getDefaultBlackChessSet()
 {
 	return getSimpleChessSet(ChessSide::BLACK);
 }
@@ -50,8 +51,9 @@ void ChessSetFactory::initialize()
 	//TODO: Load from xml file
 }
 
-ChessSet ChessSetFactory::getSimpleChessSet(ChessSide::Side side)
+ChessSet* ChessSetFactory::getSimpleChessSet(ChessSide::Side side)
 {
+	Logger::logDebug("ChessSetFactory::getSimpleChessSet");
 	std::array<ChessPiece*, 16>  pieces;
 	int index = 0;
 	for (int i = 0; i < 8; i++) {
@@ -66,6 +68,6 @@ ChessSet ChessSetFactory::getSimpleChessSet(ChessSide::Side side)
 	pieces[index++] = new ChessPiece(side, ChessPiece::BISHOP, ChessPed(), Vector3(), 1.0);
 	pieces[index++] = new ChessPiece(side, ChessPiece::ROOK, ChessPed(), Vector3(), 1.0);
 
-	ChessSet chessSet = ChessSet("Simple Set", pieces);
+	ChessSet* chessSet = new ChessSet("Simple Set", pieces);
 	return chessSet;
 }

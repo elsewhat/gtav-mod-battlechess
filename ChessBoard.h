@@ -23,6 +23,8 @@ public:
 	void setWhiteChessSet(ChessSet* whiteSet);
 	void setBlackChessSet(ChessSet* blackSet);
 
+	void spawnChessPieces();
+
 protected:
 	Vector3 mBaseLocation;
 	float mSquareDeltaX;

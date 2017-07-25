@@ -6,20 +6,98 @@
 
 ChessBoard::ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDeltaY)
 {
+	Logger::logDebug("ChessBoard::ChessBoard");
 	mBaseLocation = baseLocation;
 	mSquareDeltaX = squareDeltaX;
 	mSquareDeltaY = squareDeltaY;
 	initializeSquares();
 }
 
+bool ChessBoard::hasSideChessPieceAt(ChessSide::Side side, int rank, int file)
+{
+	Logger::assert(rank >= 1 && rank <= 8 && file >= 1 && file <= 1, "ChessBoard::hasSideChessPieceAt rank or file is not in [1,8]");
+
+	ChessPiece* piece = getChessPieceAt(rank, file);
+	if (piece != nullptr && piece->getSide() == side) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+ChessPiece* ChessBoard::getChessPieceAt(int rank, int file)
+{
+	Logger::assert(rank >= 1 && rank <= 8 && file >= 1 && file <= 8, "ChessBoard::getChessPieceAt rank or file is not in [1,8]");
+
+	ChessBoardSquare* square = getSquareAt(rank, file);
+	return square->getPiece();
+}
+
 void ChessBoard::setWhiteChessSet(ChessSet* whiteSet)
 {
+	Logger::logDebug("ChessBoard::setWhiteChessSet");
 	mWhiteSet = whiteSet;
+
+	std::array<ChessPiece*, 16> pieces = mWhiteSet->getPieces();
+
+	//assign ChessPieces to ChessBoardSqaures
+	//ChessSet is ordered
+	int pieceIndex = 0;
+	for (int rank = 2; rank >= 1; rank--) {
+		for (int file = 1; file <= 8; file++) {
+			ChessBoardSquare* square = getSquareAt(rank, file);
+
+			if (square != nullptr) {
+				Logger::logDebug("ChessBoard::setWhiteChessSet Setting piece with index "+ std::to_string(pieceIndex));
+				square->setPiece(pieces[pieceIndex]);
+				pieceIndex++;
+			}
+		}
+	}
+
 }
 
 void ChessBoard::setBlackChessSet(ChessSet* blackSet)
 {
+	Logger::logDebug("ChessBoard::setBlackChessSet");
 	mBlackSet = blackSet;
+
+	std::array<ChessPiece*, 16> pieces = mBlackSet->getPieces();
+
+	//assign ChessPieces to ChessBoardSqaures
+	//ChessSet is ordered
+	int pieceIndex = 0;
+	for (int rank = 7; rank <= 8; rank++) {
+		for (int file = 1; file <= 8; file++) {
+			ChessBoardSquare* square = getSquareAt(rank, file);
+
+			if (square != nullptr) {
+				Logger::logDebug("ChessBoard::setBlackChessSet Setting piece with index " + std::to_string(pieceIndex));
+				square->setPiece(pieces[pieceIndex]);
+				pieceIndex++;
+			}
+		}
+	}
+}
+
+void ChessBoard::spawnChessPieces()
+{
+	Logger::logInfo("ChessBoard::spawnChessPieces");
+	//for (auto* square : mSquares) {
+	for (int i = 0; i < mSquares.size(); i++) {
+		ChessBoardSquare* square = mSquares[i];
+		if (!square->isEmpty()) {
+			ChessPiece* piece = square->getPiece();
+			
+			Logger::logInfo("Spawning piece Side:" + std::to_string(piece->getSide()) + " Type:"+ std::to_string(piece->getPieceType()));
+			piece->spawnPed();
+		}
+		else {
+			Logger::logInfo("Square is empty Rank" + std::to_string(square->getSquareRank()) + " File:" + std::to_string(square->getSquareFile()));
+		}
+	}
 }
 
 /*
@@ -39,6 +117,7 @@ File value                Rank value
 */
 void ChessBoard::initializeSquares()
 {
+	Logger::logDebug("ChessBoard::initializeSquares");
 	int index = 0;
 	float headingWhite = 1.0;
 	float headingBlack = 0.0;
@@ -66,4 +145,14 @@ void ChessBoard::initializeSquares()
 		}
 	}
 
+}
+
+ChessBoardSquare* ChessBoard::getSquareAt(int rank, int file)
+{
+	Logger::logDebug("Rank:" + std::to_string(rank) + " File:" + std::to_string(file));
+	Logger::assert(rank >= 1 && rank <= 8 && file >= 1 && file <= 8, "ChessBoard::getSquareAt rank or file is not in [1,8]");
+	
+	int index = (rank - 1) * 8 + (file - 1);
+	Logger::logDebug("Index:" + std::to_string(index) + " mSquares.size:" + std::to_string(mSquares.size()));
+	return mSquares[index];
 }

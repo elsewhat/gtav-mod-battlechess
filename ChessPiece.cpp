@@ -34,13 +34,15 @@ Vector3 ChessPiece::getLocation() const
 
 void ChessPiece::setLocation(Vector3 location)
 {
-	if (mChessPed.getPed() > 0) {
+	mLocation = location;
+	
+	/*if (mChessPed.getPed() > 0) {
 		Logger::logDebug("Teleporting piece of type " + std::to_string(mPieceType) + " to new location");
 		GTAModUtils::teleportEntityToLocation(mChessPed.getPed(), location, false);
 	}
 	else {
 		Logger::logError("ChessPiece::setLocation mPed is not >0 but " + std::to_string(mChessPed.getPed()));
-	}
+	}*/
 }
 
 float ChessPiece::getHeading() const
@@ -79,14 +81,14 @@ void ChessPiece::setPieceTaken(bool pieceTaken)
 	mPieceTaken = pieceTaken;
 }
 
-void ChessPiece::spawnPed(Vector3 location, float heading)
+void ChessPiece::spawnPed()
 {
-	mChessPed.spawnPed(location, heading);
+	mChessPed.spawnPed(mLocation, mHeading);
 }
 
-void ChessPiece::revivePed(Vector3 location, float heading)
+void ChessPiece::revivePed()
 {
-	mChessPed.revivePed(location, heading);
+	mChessPed.revivePed(mLocation, mHeading);
 }
 
 void ChessPiece::removePed()

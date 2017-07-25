@@ -146,7 +146,7 @@ void Logger::logError(std::string msg)
 
 void Logger::assert(bool assertion, std::string msg)
 {
-	if (assertion) {
+	if (!assertion) {
 		log("ASSERT", msg);
 
 		//Bad and lazy conversion to char*

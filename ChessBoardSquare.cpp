@@ -4,7 +4,9 @@
 
 ChessBoardSquare::ChessBoardSquare()
 {
+	mPiece = nullptr;
 }
+
 
 ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, Color color, Vector3 location, float headingWhite, float headingBlack)
 {
@@ -34,7 +36,7 @@ ChessBoardSquare::Color ChessBoardSquare::getColor() const
 
 bool ChessBoardSquare::isEmpty() const
 {
-	if (mPiece == nullptr) {
+	if (!hasChessPiece) {
 		return true;
 	}
 	else {
@@ -49,14 +51,24 @@ ChessPiece* ChessBoardSquare::getPiece() const
 
 void ChessBoardSquare::setPiece(ChessPiece* piece)
 {
-	//Logger::assert(mPiece != nullptr, "Already exist a piece for Square");
+	Logger::logDebug("ChessBoardSquare::setPiece");
+	Logger::assert(mPiece != nullptr, "Already exist a piece for Square");
 
 	mPiece = piece;
+	mPiece->setLocation(mLocation);
+	if (mPiece->getSide() == ChessSide::WHITE) {
+		mPiece->setHeading(mHeadingWhite);
+	}
+	else {
+		mPiece->setHeading(mHeadingBlack);
+	}
+	hasChessPiece = true;
 }
 
 void ChessBoardSquare::removePiece()
 {
 	mPiece = nullptr;
+	hasChessPiece = false;
 }
 
 Vector3 ChessBoardSquare::getLocation() const

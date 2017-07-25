@@ -30,6 +30,7 @@ public:
 
 
 protected:
+	bool hasChessPiece = false;
 	int mSquareFile;
 	int mSquareRank;
 	Color mColor;

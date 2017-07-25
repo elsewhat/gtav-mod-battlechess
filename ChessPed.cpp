@@ -26,23 +26,22 @@ Ped ChessPed::getPed() const
 
 void ChessPed::spawnPed(Vector3 location, float heading)
 {
+	Logger::logDebug("ChessPed::spawnPed");
 	STREAMING::REQUEST_MODEL(mPedModelHash);
 	while (!STREAMING::HAS_MODEL_LOADED(mPedModelHash)) {
 		WAIT(0);
 	}
 
-	float startHeading = ENTITY::GET_ENTITY_HEADING(PLAYER::PLAYER_PED_ID());
+	mPed = PED::CREATE_PED(4, mPedModelHash, location.x, location.y, location.z, heading, false, true);
 
-	mPed = PED::CREATE_PED(4, mPedModelHash, location.x, location.y, location.z, startHeading, false, true);
-
-	Logger::logDebug("Setting ped variant");
+	//Logger::logDebug("Setting ped variant");
 
 	//set variant of ped
 	for (int i = 0; i < 12; i++) {
 		PED::SET_PED_COMPONENT_VARIATION(mPed, i, mDrawableVariations[i], mTextureVariation[i], mPaletteVariation[i]);
 	}
 
-	Logger::logDebug("Setting ped props");
+	//Logger::logDebug("Setting ped props");
 	//get props
 	for (int i = 0; i <= 2; i++) {
 		PED::SET_PED_PROP_INDEX(mPed, i, mPropVariation[i], mPropTextureVariation[i], 2);
@@ -50,7 +49,6 @@ void ChessPed::spawnPed(Vector3 location, float heading)
 
 	//clear model from mem
 	STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(mPedModelHash);
-
 }
 
 void ChessPed::revivePed(Vector3 location, float heading)

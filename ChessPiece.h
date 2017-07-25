@@ -32,8 +32,8 @@ public:
 	bool isPieceTaken() const;
 	void setPieceTaken(bool pieceTaken);
 
-	void spawnPed(Vector3 location, float heading);
-	void revivePed(Vector3 location, float heading);
+	void spawnPed();
+	void revivePed();
 	void removePed();
 	
 
