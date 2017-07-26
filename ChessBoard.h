@@ -8,6 +8,7 @@ class ChessBoardSquare;
 #include "ChessPiece.h"
 class ChessSet;
 #include "ChessSet.h"
+class ChessMove;
 #include "ChessMove.h"
 
 #include <vector>

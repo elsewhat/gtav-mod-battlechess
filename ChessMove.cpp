@@ -6,12 +6,14 @@ ChessMove::ChessMove()
 	mSquareTo = NULL;
 }
 
-ChessMove::ChessMove(ChessBoardSquare * squareFrom, ChessBoardSquare * squareTo, bool isCapture, bool isPromotion)
+ChessMove::ChessMove(ChessBoardSquare * squareFrom, ChessBoardSquare * squareTo, bool isCapture, bool isPromotion, bool isEnpassentCapture, bool isEnpassentEnabling)
 {
 	mSquareFrom = squareFrom;
 	mSquareTo = squareTo;
 	mIsCapture = isCapture;
 	mIsPromotion = isPromotion;
+	mIsEnpassentCapture = isEnpassentCapture;
+	mIsEnpassentEnabling = isEnpassentEnabling;
 }
 
 ChessBoardSquare * ChessMove::getSquareFrom()
@@ -32,5 +34,15 @@ bool ChessMove::isPromotion()
 bool ChessMove::isCapture()
 {
 	return mIsCapture;
+}
+
+bool ChessMove::isEnpassentCapture()
+{
+	return mIsEnpassentCapture;
+}
+
+bool ChessMove::isEnpassentEnabling()
+{
+	return mIsEnpassentEnabling;
 }
 
