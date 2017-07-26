@@ -9,7 +9,7 @@
 
 BattleChessGameController::BattleChessGameController()
 {
-	Logger::logInfo(" BattleChessGameController constructor");
+	Logger::logInfo("BattleChessGameController constructor");
 	shouldExitMode = false;
 	cameraSpeedFactor = 0.1;
 	camLastPos = {};
@@ -19,6 +19,7 @@ BattleChessGameController::BattleChessGameController()
 */
 bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 {
+	//Disable keys. Only camera and numpad left
 	GTAModUtils::disableControls();
 
 	/* ACTIONS WHICH MAY REQUIRE A WAIT PERIODE IN TICKS AFTERWAREDS */
@@ -29,16 +30,19 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 
 		mainTickLast = GetTickCount();
 
+		//Update cursor (Numpad) movement
 		if (updateBoardCursorMovement(chessBoard)) {
 			nextWaitTicks = 70;
 		}
+
+		//Also triggers update of selected square and possible moves
+		if (updateBoardSelect(chessBoard)) {
+			nextWaitTicks = 150;
+		}
 	}
 
-	if (updateCameraMovement()) {
-		//we have camera movement. Updated selected recording accordingly
-
-	}
-
+	//Camera control by player
+	updateCameraMovement();
 	updateCameraRotation();
 
 	//Draw board related artificats (ie. ChessBoardSquares)
@@ -53,6 +57,8 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 void BattleChessGameController::onEnterMode(ChessBoard* chessBoard)
 {
 	Logger::logInfo(" BattleChessGameController::onEnterMode()");
+
+	currentSide = chessBoard->sideToMove();
 
 	cursorBoardSquare = chessBoard->getSquareAt(2, 5);
 	cursorBoardSquare->setDoHighlightAsCursor(true);
@@ -437,6 +443,42 @@ bool BattleChessGameController::updateBoardCursorMovement(ChessBoard* chessBoard
 
 }
 
+bool BattleChessGameController::updateBoardSelect(ChessBoard * chessBoard)
+{
+	if (keyPressedBoardSelect() && cursorBoardSquare) {
+		//On first select, generate possible moves
+		if (!selectedBoardSquare) {
+			if (cursorBoardSquare->isEmpty() || cursorBoardSquare->getPiece()->getSide() != currentSide) {
+				Logger::logInfo("User has selected an empty or piece for the other side");
+				return true;
+			}
+			Logger::logInfo("User has selected a piece");
+			selectedBoardSquare = cursorBoardSquare;
+			selectedBoardSquare->setDoHighlightAsSelected(true);
+			resetPossibleMoves();
+			possibleMoves = chessBoard->possibleMoves(currentSide, selectedBoardSquare);
+			highlightPossibleMoves();
+			return true;
+		}
+		else if(cursorBoardSquare->equals(selectedBoardSquare)){
+			Logger::logInfo("User has deselected a piece");
+			selectedBoardSquare->setDoHighlightAsSelected(false);
+			selectedBoardSquare = NULL;
+			resetPossibleMoves();
+			return true;
+		}
+		else if(cursorBoardSquare->doHighlightAsPossible()){//on second select check if move is valid and then execute it
+			Logger::logInfo("User has selected a valid move");
+			return true;
+		}
+		else {
+			Logger::logInfo("User has selected any not possible move. Ignoring");
+			return true;
+		}
+	}
+	return false;
+}
+
 bool BattleChessGameController::keyPressedBoardUp()
 {
 	if (IsKeyDown(VK_NUMPAD8)) {
@@ -524,5 +566,20 @@ bool BattleChessGameController::keyPressedBoardDownRight()
 	}
 	else {
 		return false;
+	}
+}
+
+void BattleChessGameController::resetPossibleMoves()
+{
+	for (auto* possibleMove: possibleMoves) {
+		possibleMove->setDoHighlightAsPossible(false);
+	}
+	possibleMoves.clear();
+}
+
+void BattleChessGameController::highlightPossibleMoves()
+{
+	for (auto* possibleMove : possibleMoves) {
+		possibleMove->setDoHighlightAsPossible(true);
 	}
 }

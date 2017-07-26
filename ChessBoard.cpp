@@ -11,6 +11,18 @@ ChessBoard::ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDel
 	mSquareDeltaX = squareDeltaX;
 	mSquareDeltaY = squareDeltaY;
 	initializeSquares();
+	mSideToMove = ChessSide::WHITE;
+}
+
+ChessSide::Side ChessBoard::sideToMove()
+{
+	return mSideToMove;
+}
+
+void ChessBoard::makeMove(ChessMove * chessMove)
+{
+	//TODO
+	mSideToMove = ChessSide::oppositeSide(mSideToMove);
 }
 
 bool ChessBoard::hasSideChessPieceAt(ChessSide::Side side, int rank, int file)
@@ -50,7 +62,7 @@ void ChessBoard::setWhiteChessSet(ChessSet* whiteSet)
 			ChessBoardSquare* square = getSquareAt(rank, file);
 
 			if (square != nullptr) {
-				Logger::logDebug("ChessBoard::setWhiteChessSet Setting piece with index "+ std::to_string(pieceIndex));
+				//Logger::logDebug("ChessBoard::setWhiteChessSet Setting piece with index "+ std::to_string(pieceIndex));
 				square->setPiece(pieces[pieceIndex]);
 				pieceIndex++;
 			}
@@ -74,7 +86,7 @@ void ChessBoard::setBlackChessSet(ChessSet* blackSet)
 			ChessBoardSquare* square = getSquareAt(rank, file);
 
 			if (square != nullptr) {
-				Logger::logDebug("ChessBoard::setBlackChessSet Setting piece with index " + std::to_string(pieceIndex));
+				//Logger::logDebug("ChessBoard::setBlackChessSet Setting piece with index " + std::to_string(pieceIndex));
 				square->setPiece(pieces[pieceIndex]);
 				pieceIndex++;
 			}
@@ -91,11 +103,11 @@ void ChessBoard::spawnChessPieces()
 		if (!square->isEmpty()) {
 			ChessPiece* piece = square->getPiece();
 			
-			Logger::logInfo("Spawning piece Side:" + std::to_string(piece->getSide()) + " Type:"+ std::to_string(piece->getPieceType()));
+			//Logger::logInfo("Spawning piece Side:" + std::to_string(piece->getSide()) + " Type:"+ std::to_string(piece->getPieceType()));
 			piece->spawnPed();
 		}
 		else {
-			Logger::logInfo("Square is empty Rank" + std::to_string(square->getSquareRank()) + " File:" + std::to_string(square->getSquareFile()));
+			//Logger::logDebug("Square is empty Rank" + std::to_string(square->getSquareRank()) + " File:" + std::to_string(square->getSquareFile()));
 		}
 	}
 }
@@ -129,10 +141,19 @@ void ChessBoard::initializeSquares()
 	float headingWhite = 0.0;
 	float headingBlack = 180.0;
 
+
 	for (int rank = 1; rank <= 8; rank++) {
 		bool isPromotion = false;
+		bool isWhitePawnLine = false;
+		bool isBlackPawnLine = false;
 		if (rank == 1 || rank == 8) {
 			isPromotion = true;
+		}
+		if (rank == 2) {
+			isWhitePawnLine = true;
+		}
+		if (rank == 7) {
+			isBlackPawnLine = true;
 		}
 
 		for (int file = 1; file <= 8; file++) {
@@ -147,7 +168,7 @@ void ChessBoard::initializeSquares()
 			location.y = mBaseLocation.y + mSquareDeltaY * (rank-1);
 			location.z = mBaseLocation.z;
 
-			mSquares[index] = new ChessBoardSquare(file, rank, isPromotion, color, location, headingWhite, headingBlack);
+			mSquares[index] = new ChessBoardSquare(file, rank, isPromotion, isWhitePawnLine, isBlackPawnLine, color, location, headingWhite, headingBlack);
 			index++;
 		}
 	}
@@ -156,16 +177,99 @@ void ChessBoard::initializeSquares()
 
 ChessBoardSquare* ChessBoard::getSquareAt(int rank, int file)
 {
-	Logger::logDebug("Rank:" + std::to_string(rank) + " File:" + std::to_string(file));
 	Logger::assert(rank >= 1 && rank <= 8 && file >= 1 && file <= 8, "ChessBoard::getSquareAt rank or file is not in [1,8]");
 	
 	int index = (rank - 1) * 8 + (file - 1);
-	Logger::logDebug("Index:" + std::to_string(index) + " mSquares.size:" + std::to_string(mSquares.size()));
 	return mSquares[index];
+}
+
+bool ChessBoard::isValidRankAndFile(int rank, int file)
+{
+	if (rank >= 1 && rank <= 8 && file >= 1 && file <= 8) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 std::vector<ChessBoardSquare*> ChessBoard::possibleMoves(ChessSide::Side side, const ChessBoardSquare * squareFrom)
 {
+	std::vector<ChessBoardSquare*> possibleMoves;
+	
+	if (!squareFrom->isEmpty()) {
+		int rankFrom = squareFrom->getSquareRank();
+		int fileFrom = squareFrom->getSquareFile();
+
+		Logger::logInfo("ChessBoard::possibleMoves for  rankFrom" + std::to_string(rankFrom) + " fileFrom" + std::to_string(fileFrom));
+
+		ChessPiece* pieceFrom = squareFrom->getPiece();
+
+		ChessPiece::Type type = pieceFrom->getPieceType();
+
+		if (type == ChessPiece::PAWN) {
+			possibleMoves = generatePawnMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
+		}
+
+		//TODO: Integrate with WesternBoard::generateMovesForPiece 
+		//https://github.com/cutechess/cutechess/blob/master/projects/lib/src/board/westernboard.cpp
+
+	}
+
+	Logger::logInfo("ChessBoard::possibleMoves returns " + std::to_string(possibleMoves.size()) + " moves");
 	//TODO: Implement
-	return std::vector<ChessBoardSquare*>();
+	return possibleMoves;
+}
+
+
+std::vector<ChessBoardSquare*> ChessBoard::generatePawnMoves(std::vector<ChessBoardSquare*> possibleMoves, ChessSide::Side side, const ChessBoardSquare * squareFrom)
+{
+	Logger::logInfo("ChessBoard::generatePawnMoves");
+	//verify with https://github.com/cutechess/cutechess/blob/master/projects/lib/src/board/westernboard.cpp#L1145
+	//however, we do it slightly different
+	int pawnStep = 1;
+	if (side == ChessSide::BLACK) {
+		pawnStep = -1;
+	}
+
+	int rank = squareFrom->getSquareRank();
+	int file = squareFrom->getSquareFile();
+
+	ChessBoardSquare* squareForward = NULL;
+	if (isValidRankAndFile(rank + (pawnStep), file)) {
+		squareForward = getSquareAt(rank + (pawnStep), file);
+		if (squareForward->isEmpty()) {
+			possibleMoves.push_back(squareForward);
+		}
+	}
+
+	//Check capture to the sides sides. Left first, then right
+	for (int sideFile = file - 1; sideFile <= file + 1; sideFile += 2) {
+		if (isValidRankAndFile(rank + (pawnStep), sideFile)) {
+			ChessBoardSquare* squareForwardSide = getSquareAt(rank + (pawnStep), sideFile);
+			
+			if (!squareForwardSide->isEmpty()) {
+				ChessPiece* potentialCapturePiece = squareForwardSide->getPiece();
+				if (potentialCapturePiece->getSide() == ChessSide::oppositeSide(side)) {
+					possibleMoves.push_back(squareForwardSide);
+				}
+			}
+			//enpassent
+			if (squareForwardSide->isEmpty() && squareForwardSide->isEnpassentSquare(side)) {
+				possibleMoves.push_back(squareForwardSide);
+			}
+		}
+	}
+
+	//Double move
+	if (squareFrom->isPawnLine(side)) {
+		if (isValidRankAndFile(rank + (pawnStep * 2), file)) {	
+			ChessBoardSquare * squareDoubleMove = getSquareAt(rank + (pawnStep * 2), file);
+			if (squareForward->isEmpty() && squareDoubleMove->isEmpty()) {
+				possibleMoves.push_back(squareDoubleMove);
+				//when executed, this move should set the enpassent of the first square
+			}
+		}
+	}
+	return possibleMoves;
 }

@@ -11,7 +11,7 @@ public:
 		DARK
 	};
 	ChessBoardSquare();
-	ChessBoardSquare(int file, int rank, bool isPromotion, Color color, Vector3 location, float headingWhite, float headingBlack);
+	ChessBoardSquare(int file, int rank, bool isPromotion, bool isWhitePawnLine, bool isBlackPawnLine, Color color, Vector3 location, float headingWhite, float headingBlack);
 
 	int getSquareFile() const;
 	int getSquareRank() const;
@@ -24,6 +24,12 @@ public:
 	Vector3 getLocation() const;
 	void setLocation(Vector3 location);
 	boolean isPromotion() const;
+
+	boolean isPawnLine(ChessSide::Side side) const;
+
+	boolean isEnpassentSquare(ChessSide::Side side) const;
+	bool setEnpassentSquare(ChessSide::Side side);
+	void removeEnpassentSquare();
 
 	float getHeadingWhite() const;
 	float getHeadingBlack() const;
@@ -39,6 +45,8 @@ public:
 	bool doHighlightAsCursor() const;
 	void setDoHighlightAsCursor(bool highlightAsCursor);
 
+	bool equals(ChessBoardSquare* square) const;
+
 	void drawOnTick();
 protected:
 	bool hasChessPiece = false;
@@ -49,7 +57,13 @@ protected:
 	Vector3 mLocation;
 	float mHeadingWhite;
 	float mHeadingBlack;
-	bool mIsPromotion;
+	bool mIsPromotion=false;
+	bool mIsWhitePawnLine = false;
+	bool mIsBlackPawnLine = false;
+
+	bool mCanWhiteEnpassentCapture = false;
+	bool mCanBlackEnpassentCapture = false;
+
 	bool mHighlightAsSelected = false;
 	bool mHighlightAsPossible = false;
 	bool mHighlightAsCursor = false;

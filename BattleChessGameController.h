@@ -22,8 +22,11 @@ private:
 	Vector3 camLastPos;
 	Vector3 camNewPos;
 
+	ChessSide::Side currentSide;
+
 	ChessBoardSquare* selectedBoardSquare = NULL;
 	ChessBoardSquare* cursorBoardSquare = NULL;
+	std::vector<ChessBoardSquare*> possibleMoves;
 
 	void drawInstructions();
 
@@ -39,6 +42,7 @@ private:
 	bool keyPressedForInvertedCamera();
 
 	bool updateBoardCursorMovement(ChessBoard* chessBoard);
+	bool updateBoardSelect(ChessBoard* chessBoard);
 
 	bool keyPressedBoardUp();
 	bool keyPressedBoardUpLeft();
@@ -49,6 +53,9 @@ private:
 	bool keyPressedBoardDown();
 	bool keyPressedBoardDownLeft();
 	bool keyPressedBoardDownRight();
+
+	void resetPossibleMoves();
+	void highlightPossibleMoves();
 
 public:
 	BattleChessGameController();

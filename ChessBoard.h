@@ -8,6 +8,7 @@ class ChessBoardSquare;
 #include "ChessPiece.h"
 class ChessSet;
 #include "ChessSet.h"
+#include "ChessMove.h"
 
 #include <vector>
 #include <array>
@@ -17,9 +18,13 @@ class ChessBoard {
 public:
 	ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDeltaY);
 
+	ChessSide::Side sideToMove();
+	void makeMove(ChessMove* chessMove);
+
 	bool hasSideChessPieceAt(ChessSide::Side side, int rank, int file);
 	ChessPiece* getChessPieceAt(int rank, int file);
 	ChessBoardSquare* getSquareAt(int rank, int file);
+	bool isValidRankAndFile(int rank, int file);
 
 	std::vector<ChessBoardSquare*> possibleMoves(ChessSide::Side side, const ChessBoardSquare* squareFrom);
 
@@ -30,12 +35,17 @@ public:
 
 	void drawOnTick();
 protected:
-	Vector3 mBaseLocation;
-	float mSquareDeltaX;
-	float mSquareDeltaY;
+	ChessSide::Side mSideToMove;
 	std::array<ChessBoardSquare*, 64>  mSquares;
 	ChessSet* mWhiteSet;
 	ChessSet* mBlackSet;
 
+	Vector3 mBaseLocation;
+	float mSquareDeltaX;
+	float mSquareDeltaY;
+
+
 	void initializeSquares();
+
+	std::vector<ChessBoardSquare*> generatePawnMoves(std::vector<ChessBoardSquare*> possibleMoves, ChessSide::Side side, const ChessBoardSquare* squareFrom);
 };

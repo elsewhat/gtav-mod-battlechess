@@ -7,16 +7,17 @@
 
 ChessBoardSquare::ChessBoardSquare()
 {
-	mPiece = nullptr;
 }
 
 
-ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, Color color, Vector3 location, float headingWhite, float headingBlack)
+ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, bool isWhitePawnLine, bool isBlackPawnLine, Color color, Vector3 location, float headingWhite, float headingBlack)
 {
 	mSquareFile = file;
 	mSquareRank = rank;
 	mColor = color;
 	mIsPromotion = isPromotion;
+	mIsBlackPawnLine = isBlackPawnLine;
+	mIsWhitePawnLine = isWhitePawnLine;
 	mLocation = location;
 	mHeadingWhite = headingWhite;
 	mHeadingBlack = headingBlack;
@@ -70,7 +71,7 @@ void ChessBoardSquare::setPiece(ChessPiece* piece)
 
 void ChessBoardSquare::removePiece()
 {
-	mPiece = nullptr;
+	mPiece = NULL;
 	hasChessPiece = false;
 }
 
@@ -88,6 +89,46 @@ boolean ChessBoardSquare::isPromotion() const
 {
 	return mIsPromotion;
 }
+
+boolean ChessBoardSquare::isPawnLine(ChessSide::Side side) const
+{
+	if (side == ChessSide::WHITE) {
+		return mIsWhitePawnLine;
+	}
+	else {
+		return mIsBlackPawnLine;
+	}
+
+}
+
+boolean ChessBoardSquare::isEnpassentSquare(ChessSide::Side side) const
+{
+	if (side == ChessSide::WHITE) {
+		return mCanWhiteEnpassentCapture;
+	}
+	else {
+		return mCanBlackEnpassentCapture;
+	}
+}
+
+bool ChessBoardSquare::setEnpassentSquare(ChessSide::Side side)
+{
+	if (side == ChessSide::WHITE) {
+		mCanWhiteEnpassentCapture = true;
+		mCanBlackEnpassentCapture = false;
+	}
+	else {
+		mCanBlackEnpassentCapture = true;
+		mCanWhiteEnpassentCapture = false;
+	}
+}
+
+void ChessBoardSquare::removeEnpassentSquare()
+{
+	mCanBlackEnpassentCapture = false;
+	mCanWhiteEnpassentCapture = false;
+}
+
 
 float ChessBoardSquare::getHeadingWhite() const
 {
@@ -133,18 +174,28 @@ void ChessBoardSquare::setDoHighlightAsCursor(bool highlightAsCursor)
 	mHighlightAsCursor = highlightAsCursor;
 }
 
+bool ChessBoardSquare::equals(ChessBoardSquare* square) const
+{
+	if (mSquareRank == square->getSquareRank() && mSquareFile == square->getSquareFile()) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 void ChessBoardSquare::drawOnTick()
 {
-	if (mHighlightAsCursor) {
-		int highlightColorR = 255;
-		int highlightColorG = 255;
-		int highlightColorB = 255;
-		GRAPHICS::DRAW_SPOT_LIGHT(mLocation.x, mLocation.y, mLocation.z + 20.0f, 0, 0, -1.0, highlightColorR, highlightColorG, highlightColorB, 100.0f, 1.0, 0.0f, 4.0f, 1.0f);
-	}
-	else if (mHighlightAsSelected) {
+
+	if (mHighlightAsSelected) {
 		int highlightColorR = 192;
 		int highlightColorG = 192;
 		int highlightColorB = 192;
+		GRAPHICS::DRAW_SPOT_LIGHT(mLocation.x, mLocation.y, mLocation.z + 20.0f, 0, 0, -1.0, highlightColorR, highlightColorG, highlightColorB, 100.0f, 1.0, 0.0f, 4.0f, 1.0f);
+	}else if (mHighlightAsCursor) {
+		int highlightColorR = 255;
+		int highlightColorG = 255;
+		int highlightColorB = 255;
 		GRAPHICS::DRAW_SPOT_LIGHT(mLocation.x, mLocation.y, mLocation.z + 20.0f, 0, 0, -1.0, highlightColorR, highlightColorG, highlightColorB, 100.0f, 1.0, 0.0f, 4.0f, 1.0f);
 	}
 	else if (mHighlightAsPossible){

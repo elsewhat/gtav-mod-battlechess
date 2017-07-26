@@ -22,6 +22,7 @@
     <ClCompile Include="ChessPed.cpp" />
     <ClCompile Include="ChessSide.cpp" />
     <ClCompile Include="ChessBoardSquare.cpp" />
+    <ClCompile Include="ChessMove.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\inc\enums.h">
@@ -57,6 +58,7 @@
     <ClInclude Include="ChessPed.h" />
     <ClInclude Include="ChessSide.h" />
     <ClInclude Include="ChessBoardSquare.h" />
+    <ClInclude Include="ChessMove.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

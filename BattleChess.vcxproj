@@ -12,6 +12,7 @@
     <ClCompile Include="ChessBattle.cpp" />
     <ClCompile Include="ChessBoard.cpp" />
     <ClCompile Include="ChessBoardSquare.cpp" />
+    <ClCompile Include="ChessMove.cpp" />
     <ClCompile Include="ChessPed.cpp" />
     <ClCompile Include="ChessPiece.cpp" />
     <ClCompile Include="ChessSet.cpp" />
@@ -39,6 +40,7 @@
     <ClInclude Include="ChessBattle.h" />
     <ClInclude Include="ChessBoard.h" />
     <ClInclude Include="ChessBoardSquare.h" />
+    <ClInclude Include="ChessMove.h" />
     <ClInclude Include="ChessPed.h" />
     <ClInclude Include="ChessPiece.h" />
     <ClInclude Include="ChessSet.h" />
