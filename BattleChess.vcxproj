@@ -24,17 +24,12 @@
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Ligthing.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Network.cpp" />
     <ClCompile Include="Scenario.cpp" />
     <ClCompile Include="BattleChess.cpp" />
     <ClCompile Include="Tinyxml2.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\inc\main.h" />
-    <ClInclude Include="..\..\inc\enums.h" />
-    <ClInclude Include="..\..\inc\natives.h" />
-    <ClInclude Include="..\..\inc\types.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="BattleChessGameController.h" />
     <ClInclude Include="ChessBattle.h" />
@@ -49,9 +44,13 @@
     <ClInclude Include="EngineModeController.h" />
     <ClInclude Include="GTAObject.h" />
     <ClInclude Include="GTAUtils.h" />
+    <ClInclude Include="inc\enums.h" />
+    <ClInclude Include="inc\main.h" />
+    <ClInclude Include="inc\nativeCaller.h" />
+    <ClInclude Include="inc\natives.h" />
+    <ClInclude Include="inc\types.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Lighting.h" />
-    <ClInclude Include="Network.h" />
     <ClInclude Include="Prop.h" />
     <ClInclude Include="Scenario.h" />
     <ClInclude Include="BattleChess.h" />
@@ -84,8 +83,8 @@
     <TargetExt>.asi</TargetExt>
     <OutDir>bin\$(Configuration)\</OutDir>
     <IntDir>tmp\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\dev\cpprestsdk\Release\include</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;C:\dev\cpprestsdk\Binaries\x64\Release</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -105,8 +104,8 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalOptions>..\..\lib\ScriptHookV.lib %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);winhttp.lib;libcpprest140_2_9.lib;Bcrypt.lib;crypt32.lib;</AdditionalDependencies>
+      <AdditionalOptions>lib\ScriptHookV.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "C:\dev\ScriptHookV_SDK\samples\gtav-mod-battlechess\bin\Release\*.asi" "C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V"</Command>

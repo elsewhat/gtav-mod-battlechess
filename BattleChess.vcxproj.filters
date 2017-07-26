@@ -5,7 +5,6 @@
     <ClCompile Include="Ligthing.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="GTAObject.cpp" />
-    <ClCompile Include="Network.cpp" />
     <ClCompile Include="BattleChess.cpp" />
     <ClCompile Include="GTAUtils.cpp" />
     <ClCompile Include="ClipsetMovement.cpp" />
@@ -25,23 +24,10 @@
     <ClCompile Include="ChessMove.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\inc\enums.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\inc\natives.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\inc\types.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\inc\main.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Prop.h" />
     <ClInclude Include="GTAObject.h" />
-    <ClInclude Include="Network.h" />
     <ClInclude Include="BattleChess.h" />
     <ClInclude Include="EngineModeController.h" />
     <ClInclude Include="GTAUtils.h" />
@@ -59,10 +45,23 @@
     <ClInclude Include="ChessSide.h" />
     <ClInclude Include="ChessBoardSquare.h" />
     <ClInclude Include="ChessMove.h" />
+    <ClInclude Include="inc\enums.h" />
+    <ClInclude Include="inc\main.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\nativeCaller.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\natives.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\types.h">
+      <Filter>inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{5d58942b-ebbf-4d0a-9526-359e3a556796}</UniqueIdentifier>
+    <Filter Include="inc">
+      <UniqueIdentifier>{232c69a9-b327-4758-95ce-5939d827d0ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
