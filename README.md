@@ -1,7 +1,7 @@
 # gtav-mod-battlechess
 BattleChess for GTA V by elsewhat
 
-Source available at: https://github.com/elsewhat/gtav-mod-battlewchess
+Source available at: https://github.com/elsewhat/gtav-mod-battlechess
 
 Demo video: TBD
 
@@ -40,6 +40,7 @@ Move
 - Updates ChessBoardSquare and ChessPiece
 5. Execute ChessBattle
 
+```
 Board overview
 A  B  C  D  E  F  G  H
 File value                Rank value
@@ -52,3 +53,4 @@ File value                Rank value
 40 41 42 43 44 45 46 47    6
 48 49 50 51 52 53 54 55    7
 56 57 58 59 60 61 62 63    8
+```
