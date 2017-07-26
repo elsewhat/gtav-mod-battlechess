@@ -23,7 +23,7 @@ private:
 	Vector3 camLastPos;
 	Vector3 camNewPos;
 
-	ChessSide::Side currentSide;
+	ChessSide::Side sideToMove;
 
 	ChessBoardSquare* selectedBoardSquare = NULL;
 	ChessBoardSquare* cursorBoardSquare = NULL;
@@ -57,6 +57,8 @@ private:
 
 	void resetPossibleMoves();
 	void highlightPossibleMoves();
+
+	ChessMove findPossibleMoveFromTo(ChessBoardSquare* squareFrom, ChessBoardSquare* squareTo);
 
 public:
 	BattleChessGameController();

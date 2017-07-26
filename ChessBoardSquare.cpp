@@ -130,15 +130,16 @@ void ChessBoardSquare::removeEnpassentSquare()
 }
 
 
-float ChessBoardSquare::getHeadingWhite() const
+float ChessBoardSquare::getHeading(ChessSide::Side side) const
 {
-	return mHeadingWhite;
+	if (side == ChessSide::WHITE) {
+		return mHeadingWhite;
+	}
+	else {
+		return mHeadingBlack;
+	}
 }
 
-float ChessBoardSquare::getHeadingBlack() const
-{
-	return mHeadingBlack;
-}
 
 void ChessBoardSquare::drawSpotAbove(int colorR, int colorG, int colorB) const {
 

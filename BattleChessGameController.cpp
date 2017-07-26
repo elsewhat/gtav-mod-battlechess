@@ -58,7 +58,7 @@ void BattleChessGameController::onEnterMode(ChessBoard* chessBoard)
 {
 	Logger::logInfo(" BattleChessGameController::onEnterMode()");
 
-	currentSide = chessBoard->sideToMove();
+	sideToMove = chessBoard->sideToMove();
 
 	cursorBoardSquare = chessBoard->getSquareAt(2, 5);
 	cursorBoardSquare->setDoHighlightAsCursor(true);
@@ -448,7 +448,7 @@ bool BattleChessGameController::updateBoardSelect(ChessBoard * chessBoard)
 	if (keyPressedBoardSelect() && cursorBoardSquare) {
 		//On first select, generate possible moves
 		if (!selectedBoardSquare) {
-			if (cursorBoardSquare->isEmpty() || cursorBoardSquare->getPiece()->getSide() != currentSide) {
+			if (cursorBoardSquare->isEmpty() || cursorBoardSquare->getPiece()->getSide() != sideToMove) {
 				Logger::logInfo("User has selected an empty or piece for the other side");
 				return true;
 			}
@@ -456,7 +456,7 @@ bool BattleChessGameController::updateBoardSelect(ChessBoard * chessBoard)
 			selectedBoardSquare = cursorBoardSquare;
 			selectedBoardSquare->setDoHighlightAsSelected(true);
 			resetPossibleMoves();
-			possibleMoves = chessBoard->possibleMoves(currentSide, selectedBoardSquare);
+			possibleMoves = chessBoard->possibleMoves(sideToMove, selectedBoardSquare);
 			highlightPossibleMoves();
 			return true;
 		}
@@ -469,10 +469,21 @@ bool BattleChessGameController::updateBoardSelect(ChessBoard * chessBoard)
 		}
 		else if(cursorBoardSquare->doHighlightAsPossible()){//on second select check if move is valid and then execute it
 			Logger::logInfo("User has selected a valid move");
+			
+			ChessMove chessMove = findPossibleMoveFromTo(selectedBoardSquare, cursorBoardSquare); 
+			chessBoard->makeMove(chessMove);
+			sideToMove = chessBoard->sideToMove();
+
+			selectedBoardSquare->setDoHighlightAsSelected(false);
+			selectedBoardSquare = NULL;
+			resetPossibleMoves();
+
 			return true;
 		}
 		else {
-			Logger::logInfo("User has selected any not possible move. Ignoring");
+			Logger::logInfo("User has selected any not possible move");
+			selectedBoardSquare = NULL;
+			resetPossibleMoves();
 			return true;
 		}
 	}
@@ -582,4 +593,14 @@ void BattleChessGameController::highlightPossibleMoves()
 	for (auto possibleMove : possibleMoves) {
 		possibleMove.getSquareTo()->setDoHighlightAsPossible(true);
 	}
+}
+
+ChessMove BattleChessGameController::findPossibleMoveFromTo(ChessBoardSquare * squareFrom, ChessBoardSquare * squareTo)
+{
+	for (auto chessMove : possibleMoves) {
+		if (chessMove.getSquareFrom()->equals(squareFrom) && chessMove.getSquareTo()->equals(squareTo)) {
+			return chessMove;
+		}
+	}
+	Logger::logError("BattleChessGameController::findPossibleMoveFromTo ERROR found no possible move in possibleMoves vector");
 }

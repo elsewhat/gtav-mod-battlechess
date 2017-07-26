@@ -26,12 +26,8 @@ bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessPie
 		//TODO: Split into a standard method in abstract class
 		Vector3 mLocation = squareTo.getLocation();
 		float walkSpeed = 1.0;
-		float heading = squareTo.getHeadingWhite();
-		if (attacker->getSide() == ChessSide::WHITE) {
-			heading = squareTo.getHeadingBlack();
-		}
 
-		AI::TASK_GO_STRAIGHT_TO_COORD(attacker->getPed(), mLocation.x, mLocation.y, mLocation.z, walkSpeed, -1, heading, 0.5f);
+		AI::TASK_GO_STRAIGHT_TO_COORD(attacker->getPed(), mLocation.x, mLocation.y, mLocation.z, walkSpeed, -1, squareTo.getHeading(attacker->getSide()), 0.5f);
 		//TODO: Wait for person to walk to square
 		return true;
 	}

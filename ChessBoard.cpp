@@ -19,9 +19,46 @@ ChessSide::Side ChessBoard::sideToMove()
 	return mSideToMove;
 }
 
-void ChessBoard::makeMove(ChessMove * chessMove)
+void ChessBoard::makeMove(ChessMove chessMove)
 {
-	//TODO
+	if (chessMove.isNull()) {
+		Logger::logError("ChessBoard::makeMove chessMove is unexpectedly null!");
+		return;
+	}
+	ChessBoardSquare* squareFrom = chessMove.getSquareFrom();
+	ChessBoardSquare* squareTo = chessMove.getSquareTo();
+
+	Logger::assert(!squareFrom->isEmpty(), "ChessBoard::makeMove SquareFrom has no ChessPiece");
+
+	if (chessMove.isCapture() && chessMove.isPromotion()) {
+		Logger::logInfo("ChessBoard::makeMove TODO handle move that is both capture and promotion");
+	}
+	else if (chessMove.isPromotion()) {
+		Logger::logInfo("ChessBoard::makeMove TODO handle move that is promotion");
+	}
+	else if (chessMove.isEnpassentCapture()) {
+		Logger::logInfo("ChessBoard::makeMove TODO handle move that is enpassent capture");
+	}
+	else if (chessMove.isCastling()) {
+		Logger::logInfo("ChessBoard::makeMove TODO handle move that is castling");
+	}
+	else if (chessMove.isCapture()) {
+		Logger::logInfo("ChessBoard::makeMove TODO handle move that is capture");
+	}
+	else {
+		ChessPiece* chessPiece = squareFrom->getPiece();
+		squareFrom->removePiece();
+		squareTo->setPiece(chessPiece);
+
+		chessPiece->startMovement(chessMove);
+	}
+
+
+
+	if (chessMove.isEnpassentEnabling()) {
+		Logger::logInfo("ChessBoard::makeMove TODO set enpassent on square");
+	}
+	//TODO: Switch sides
 	mSideToMove = ChessSide::oppositeSide(mSideToMove);
 }
 

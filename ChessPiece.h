@@ -3,6 +3,8 @@
 #include "..\..\inc\types.h"
 #include "ChessPed.h"
 #include "ChessBoard.h"
+
+#include "ChessMove.h"
 #include <vector>
 
 class ChessPiece {
@@ -35,7 +37,9 @@ public:
 	void spawnPed();
 	void revivePed();
 	void removePed();
-	
+
+	void startMovement(ChessMove chessMove);
+	bool isMovementCompleted(ChessMove chessMove, int nrChecksDone);
 
 	LPCSTR getPrimaryWeapon();
 	void setPrimaryWeapon(LPCSTR primaryWeapon);
@@ -52,6 +56,9 @@ public:
 
 protected:
 	bool mPieceTaken = false;
+	bool mIsMoving = false;
+	bool mIsInBattle = false;
+	float mWalkingSpeed = 1.0f;
 	ChessPed mChessPed;
 	ChessSide::Side mSide;
 	Type mPieceType;

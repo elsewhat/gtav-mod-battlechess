@@ -20,7 +20,7 @@ public:
 	ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDeltaY);
 
 	ChessSide::Side sideToMove();
-	void makeMove(ChessMove* chessMove);
+	void makeMove(ChessMove chessMove);
 
 	bool hasSideChessPieceAt(ChessSide::Side side, int rank, int file);
 	ChessPiece* getChessPieceAt(int rank, int file);

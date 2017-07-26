@@ -4,9 +4,10 @@ ChessMove::ChessMove()
 {
 	mSquareFrom = NULL;
 	mSquareTo = NULL;
+	mIsNull = true;
 }
 
-ChessMove::ChessMove(ChessBoardSquare * squareFrom, ChessBoardSquare * squareTo, bool isCapture, bool isPromotion, bool isEnpassentCapture, bool isEnpassentEnabling)
+ChessMove::ChessMove(ChessBoardSquare * squareFrom, ChessBoardSquare * squareTo, bool isCapture, bool isPromotion, bool isEnpassentCapture, bool isEnpassentEnabling,bool isCastling)
 {
 	mSquareFrom = squareFrom;
 	mSquareTo = squareTo;
@@ -14,6 +15,8 @@ ChessMove::ChessMove(ChessBoardSquare * squareFrom, ChessBoardSquare * squareTo,
 	mIsPromotion = isPromotion;
 	mIsEnpassentCapture = isEnpassentCapture;
 	mIsEnpassentEnabling = isEnpassentEnabling;
+	mIsCastling = isCastling;
+	mIsNull = false;
 }
 
 ChessBoardSquare * ChessMove::getSquareFrom()
@@ -44,5 +47,15 @@ bool ChessMove::isEnpassentCapture()
 bool ChessMove::isEnpassentEnabling()
 {
 	return mIsEnpassentEnabling;
+}
+
+bool ChessMove::isCastling()
+{
+	return mIsCastling;
+}
+
+bool ChessMove::isNull()
+{
+	return mIsNull;
 }
 

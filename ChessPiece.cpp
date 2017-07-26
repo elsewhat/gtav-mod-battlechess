@@ -96,6 +96,34 @@ void ChessPiece::removePed()
 	mChessPed.removePed();
 }
 
+void ChessPiece::startMovement(ChessMove chessMove)
+{
+	mIsMoving = true;
+
+	//Vector3 squareTolocation = chessMove.getSquareTo()->getLocation();
+	Vector3 squareToLocation = mLocation;
+	if (mPieceType == ROOK) {
+		//TODO: Special handling with task sequence
+		AI::TASK_GO_STRAIGHT_TO_COORD(getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkingSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);
+	}
+	else {
+		AI::TASK_GO_STRAIGHT_TO_COORD(getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkingSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);
+	}
+}
+
+bool ChessPiece::isMovementCompleted(ChessMove chessMove, int nrChecksDone)
+{
+	float minDistance = 0.5f;
+	Vector3 currentLocation  = ENTITY::GET_ENTITY_COORDS(getPed(), true);
+	float distanceToTarget = SYSTEM::VDIST(mLocation.x, mLocation.y, mLocation.z, currentLocation.x, currentLocation.y, currentLocation.z);
+	if (distanceToTarget < minDistance) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 LPCSTR ChessPiece::getPrimaryWeapon()
 {
 	return mPrimaryWeapon;

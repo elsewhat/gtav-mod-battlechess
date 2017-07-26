@@ -31,8 +31,7 @@ public:
 	bool setEnpassentSquare(ChessSide::Side side);
 	void removeEnpassentSquare();
 
-	float getHeadingWhite() const;
-	float getHeadingBlack() const;
+	float getHeading(ChessSide::Side side) const;
 
 	void ChessBoardSquare::drawSpotAbove(int colorR, int colorG, int colorB) const;
 
