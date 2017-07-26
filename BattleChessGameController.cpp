@@ -571,15 +571,15 @@ bool BattleChessGameController::keyPressedBoardDownRight()
 
 void BattleChessGameController::resetPossibleMoves()
 {
-	for (auto* possibleMove: possibleMoves) {
-		possibleMove->setDoHighlightAsPossible(false);
+	for (auto possibleMove: possibleMoves) {
+		possibleMove.getSquareTo()->setDoHighlightAsPossible(false);
 	}
 	possibleMoves.clear();
 }
 
 void BattleChessGameController::highlightPossibleMoves()
 {
-	for (auto* possibleMove : possibleMoves) {
-		possibleMove->setDoHighlightAsPossible(true);
+	for (auto possibleMove : possibleMoves) {
+		possibleMove.getSquareTo()->setDoHighlightAsPossible(true);
 	}
 }

@@ -4,6 +4,7 @@
 #include "..\..\inc\types.h"
 
 #include "EngineModeController.h"
+#include "ChessMove.h"
 
 #include <vector>
 #include <memory>
@@ -26,7 +27,7 @@ private:
 
 	ChessBoardSquare* selectedBoardSquare = NULL;
 	ChessBoardSquare* cursorBoardSquare = NULL;
-	std::vector<ChessBoardSquare*> possibleMoves;
+	std::vector<ChessMove> possibleMoves;
 
 	void drawInstructions();
 

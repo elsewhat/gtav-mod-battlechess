@@ -27,7 +27,7 @@ public:
 	ChessBoardSquare* getSquareAt(int rank, int file);
 	bool isValidRankAndFile(int rank, int file);
 
-	std::vector<ChessBoardSquare*> possibleMoves(ChessSide::Side side, const ChessBoardSquare* squareFrom);
+	std::vector<ChessMove> possibleMoves(ChessSide::Side side, ChessBoardSquare* squareFrom);
 
 	void setWhiteChessSet(ChessSet* whiteSet);
 	void setBlackChessSet(ChessSet* blackSet);
@@ -48,5 +48,5 @@ protected:
 
 	void initializeSquares();
 
-	std::vector<ChessBoardSquare*> generatePawnMoves(std::vector<ChessBoardSquare*> possibleMoves, ChessSide::Side side, const ChessBoardSquare* squareFrom);
+	std::vector<ChessMove> generatePawnMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare* squareFrom);
 };

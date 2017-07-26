@@ -193,9 +193,9 @@ bool ChessBoard::isValidRankAndFile(int rank, int file)
 	}
 }
 
-std::vector<ChessBoardSquare*> ChessBoard::possibleMoves(ChessSide::Side side, const ChessBoardSquare * squareFrom)
+std::vector<ChessMove> ChessBoard::possibleMoves(ChessSide::Side side, ChessBoardSquare * squareFrom)
 {
-	std::vector<ChessBoardSquare*> possibleMoves;
+	std::vector<ChessMove> possibleMoves;
 	
 	if (!squareFrom->isEmpty()) {
 		int rankFrom = squareFrom->getSquareRank();
@@ -222,7 +222,7 @@ std::vector<ChessBoardSquare*> ChessBoard::possibleMoves(ChessSide::Side side, c
 }
 
 
-std::vector<ChessBoardSquare*> ChessBoard::generatePawnMoves(std::vector<ChessBoardSquare*> possibleMoves, ChessSide::Side side, const ChessBoardSquare * squareFrom)
+std::vector<ChessMove> ChessBoard::generatePawnMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom)
 {
 	Logger::logInfo("ChessBoard::generatePawnMoves");
 	//verify with https://github.com/cutechess/cutechess/blob/master/projects/lib/src/board/westernboard.cpp#L1145
@@ -239,7 +239,7 @@ std::vector<ChessBoardSquare*> ChessBoard::generatePawnMoves(std::vector<ChessBo
 	if (isValidRankAndFile(rank + (pawnStep), file)) {
 		squareForward = getSquareAt(rank + (pawnStep), file);
 		if (squareForward->isEmpty()) {
-			possibleMoves.push_back(squareForward);
+			possibleMoves.push_back(ChessMove(squareFrom, squareForward, false, squareForward->isPromotion()));
 		}
 	}
 
@@ -251,12 +251,12 @@ std::vector<ChessBoardSquare*> ChessBoard::generatePawnMoves(std::vector<ChessBo
 			if (!squareForwardSide->isEmpty()) {
 				ChessPiece* potentialCapturePiece = squareForwardSide->getPiece();
 				if (potentialCapturePiece->getSide() == ChessSide::oppositeSide(side)) {
-					possibleMoves.push_back(squareForwardSide);
+					possibleMoves.push_back(ChessMove(squareFrom, squareForwardSide,true));
 				}
 			}
 			//enpassent
 			if (squareForwardSide->isEmpty() && squareForwardSide->isEnpassentSquare(side)) {
-				possibleMoves.push_back(squareForwardSide);
+				possibleMoves.push_back(ChessMove(squareFrom, squareForwardSide, true,false,true));
 			}
 		}
 	}
@@ -266,7 +266,7 @@ std::vector<ChessBoardSquare*> ChessBoard::generatePawnMoves(std::vector<ChessBo
 		if (isValidRankAndFile(rank + (pawnStep * 2), file)) {	
 			ChessBoardSquare * squareDoubleMove = getSquareAt(rank + (pawnStep * 2), file);
 			if (squareForward->isEmpty() && squareDoubleMove->isEmpty()) {
-				possibleMoves.push_back(squareDoubleMove);
+				possibleMoves.push_back(ChessMove(squareFrom, squareDoubleMove, false));
 				//when executed, this move should set the enpassent of the first square
 			}
 		}
