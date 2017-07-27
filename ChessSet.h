@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\inc\types.h"
+#include "inc\types.h"
 class ChessSide;
 #include "ChessBoard.h"
 class ChessPiece;

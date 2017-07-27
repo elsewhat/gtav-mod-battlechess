@@ -7,7 +7,7 @@
 #include "gtautils.h"
 
 #include "utils.h"
-#include "..\..\inc\natives.h"
+#include "inc\natives.h"
 
 #include <windows.h>
 #include <sstream>
@@ -69,7 +69,8 @@ void WeaponUtils::giveAllWeapons(Ped ped)
 
 void WeaponUtils::giveWeapon(Ped ped, LPCSTR weaponName)
 {
-	WEAPON::GIVE_DELAYED_WEAPON_TO_PED(ped, GAMEPLAY::GET_HASH_KEY((char *)weaponName), 1000, 0);
+	Logger::logDebug("Giving and equiping weapon " + std::string(weaponName) + " to ped " + std::to_string(ped));
+	WEAPON::GIVE_WEAPON_TO_PED(ped, GAMEPLAY::GET_HASH_KEY((char *)weaponName), 1000, 1,1);
 }
 
 void GTAModUtils::checkCorruptPlayerPed()

@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include "..\..\inc\types.h"
+#include "inc\types.h"
 
 
 class GTAModUtils {

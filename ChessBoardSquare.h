@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\inc\types.h"
+#include "inc\types.h"
 class ChessPiece;
 #include "ChessPiece.h"
 
@@ -47,6 +47,7 @@ public:
 	bool equals(ChessBoardSquare* square) const;
 
 	void drawOnTick();
+	std::string toString();
 protected:
 	bool hasChessPiece = false;
 	int mSquareFile;

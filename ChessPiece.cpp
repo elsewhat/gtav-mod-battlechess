@@ -1,6 +1,6 @@
 #include "ChessPiece.h"
 
-#include "..\..\inc\natives.h"
+#include "inc\natives.h"
 #include "Utils.h"
 #include "GTAUtils.h"
 
@@ -15,6 +15,7 @@ ChessPiece::ChessPiece(ChessSide::Side side, Type pieceType, ChessPed chessPed, 
 	mChessPed = chessPed;
 	mLocation = location;
 	mHeading = heading;
+	mPrimaryWeapon = "WEAPON_COMBATPISTOL";
 }
 
 ChessSide::Side ChessPiece::getSide()
@@ -68,7 +69,7 @@ ChessPed ChessPiece::getChessPed() const
 
 bool ChessPiece::isPedDead() const
 {
-	mChessPed.isPedDead();
+	return mChessPed.isPedDead();
 }
 
 bool ChessPiece::isPieceTaken() const
@@ -104,12 +105,13 @@ void ChessPiece::startMovement(ChessMove chessMove)
 	Vector3 squareToLocation = mLocation;
 	if (mPieceType == ROOK) {
 		//TODO: Special handling with task sequence
-		AI::TASK_GO_STRAIGHT_TO_COORD(getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkingSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);
+		AI::TASK_GO_STRAIGHT_TO_COORD(getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);
 	}
 	else {
-		AI::TASK_GO_STRAIGHT_TO_COORD(getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkingSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);
+		AI::TASK_GO_STRAIGHT_TO_COORD(getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);
 	}
 }
+
 
 bool ChessPiece::isMovementCompleted(ChessMove chessMove, int nrChecksDone)
 {
@@ -122,6 +124,14 @@ bool ChessPiece::isMovementCompleted(ChessMove chessMove, int nrChecksDone)
 	else {
 		return false;
 	}
+}
+
+std::shared_ptr<ChessBattle> ChessPiece::startChessBattle(ChessMove chessMove)
+{
+	ChessBattleFirePrimaryWeapon chessBattle;
+	chessBattle.startExecution(GetTickCount(), chessMove);
+
+	return std::make_shared<ChessBattleFirePrimaryWeapon>(chessBattle);
 }
 
 LPCSTR ChessPiece::getPrimaryWeapon()
@@ -156,7 +166,7 @@ void ChessPiece::setMeleeWeapon(LPCSTR meleeWeapon)
 
 void ChessPiece::equipPrimaryWeapon()
 {
-	if (mPrimaryWeapon == NULL || mPrimaryWeapon[0] == 0) {
+	if (mPrimaryWeapon != NULL || mPrimaryWeapon[0] != 0) {
 		WeaponUtils::giveWeapon(mChessPed.getPed(), mPrimaryWeapon);
 	}
 }
@@ -173,5 +183,10 @@ void ChessPiece::equipMeleeWeapon()
 	if (mSecondaryWeapon == NULL || mSecondaryWeapon[0] == 0) {
 		WeaponUtils::giveWeapon(mChessPed.getPed(), mMeleeWeapon);
 	}
+}
+
+float ChessPiece::getWalkSpeed()
+{
+	return mWalkSpeed;
 }
 

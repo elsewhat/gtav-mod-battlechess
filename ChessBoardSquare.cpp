@@ -1,7 +1,7 @@
 #include "ChessBoardSquare.h"
 
-#include "..\..\inc\natives.h"
-#include "..\..\inc\types.h"
+#include "inc\natives.h"
+#include "inc\types.h"
 
 #include "Utils.h"
 
@@ -56,7 +56,7 @@ ChessPiece* ChessBoardSquare::getPiece() const
 void ChessBoardSquare::setPiece(ChessPiece* piece)
 {
 	Logger::logDebug("ChessBoardSquare::setPiece");
-	Logger::assert(mPiece != nullptr, "Already exist a piece for Square");
+	Logger::assert(isEmpty(), "Already exist a piece for Square");
 
 	mPiece = piece;
 	mPiece->setLocation(mLocation);
@@ -205,6 +205,11 @@ void ChessBoardSquare::drawOnTick()
 		int highlightColorB = 0;
 		GRAPHICS::DRAW_SPOT_LIGHT(mLocation.x, mLocation.y, mLocation.z + 20.0f, 0, 0, -1.0, highlightColorR, highlightColorG, highlightColorB, 100.0f, 1.0, 0.0f, 4.0f, 1.0f);
 	}
+}
+
+std::string ChessBoardSquare::toString()
+{
+	return std::to_string(mSquareRank) + "" + std::to_string(mSquareFile);
 }
 
 

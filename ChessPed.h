@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\..\inc\types.h"
+#include "inc\types.h"
 #include <array>
 
 class ChessPed {

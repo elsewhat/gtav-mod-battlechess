@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..\..\inc\natives.h"
-#include "..\..\inc\types.h"
+#include "inc\natives.h"
+#include "inc\types.h"
 
 #include "EngineModeController.h"
 #include "ChessMove.h"
@@ -28,6 +28,9 @@ private:
 	ChessBoardSquare* selectedBoardSquare = NULL;
 	ChessBoardSquare* cursorBoardSquare = NULL;
 	std::vector<ChessMove> possibleMoves;
+
+	ChessMove currentChessMove;
+	std::shared_ptr<ChessBattle> currentChessBattle=nullptr;
 
 	void drawInstructions();
 

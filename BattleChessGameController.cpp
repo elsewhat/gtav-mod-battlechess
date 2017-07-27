@@ -39,6 +39,15 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 		if (updateBoardSelect(chessBoard)) {
 			nextWaitTicks = 150;
 		}
+
+		if (currentChessBattle != nullptr) {
+			if (currentChessBattle->isExecutionCompleted(GetTickCount(), currentChessMove)) {
+				Logger::logInfo("Chessbattle completed");
+				currentChessBattle = nullptr;
+				currentChessMove = ChessMove();
+			}
+		}
+	
 	}
 
 	//Camera control by player
@@ -57,6 +66,11 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 void BattleChessGameController::onEnterMode(ChessBoard* chessBoard)
 {
 	Logger::logInfo(" BattleChessGameController::onEnterMode()");
+	Vector3 baseLocation;
+	baseLocation.x = 1649.0;
+	baseLocation.y = 3215.0;
+	baseLocation.z = 41.0;
+	GTAModUtils::teleportEntityToLocation(PLAYER::PLAYER_PED_ID(), baseLocation, false);
 
 	sideToMove = chessBoard->sideToMove();
 
@@ -471,7 +485,19 @@ bool BattleChessGameController::updateBoardSelect(ChessBoard * chessBoard)
 			Logger::logInfo("User has selected a valid move");
 			
 			ChessMove chessMove = findPossibleMoveFromTo(selectedBoardSquare, cursorBoardSquare); 
+			Logger::logInfo(chessMove.toString());
 			chessBoard->makeMove(chessMove);
+
+			currentChessMove = chessMove;
+
+			if (chessMove.isCapture()) {
+				currentChessBattle = chessMove.getAttacker()->startChessBattle(chessMove);
+			}
+			else {
+				chessMove.getAttacker()->startMovement(chessMove);
+				currentChessBattle = nullptr;
+			}
+
 			sideToMove = chessBoard->sideToMove();
 
 			selectedBoardSquare->setDoHighlightAsSelected(false);

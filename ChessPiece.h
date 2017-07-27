@@ -1,11 +1,14 @@
 #pragma once
 
-#include "..\..\inc\types.h"
+#include "inc\types.h"
 #include "ChessPed.h"
 #include "ChessBoard.h"
 
 #include "ChessMove.h"
+class ChessBattle;
+#include "ChessBattle.h"
 #include <vector>
+#include <memory>
 
 class ChessPiece {
 public:
@@ -41,6 +44,8 @@ public:
 	void startMovement(ChessMove chessMove);
 	bool isMovementCompleted(ChessMove chessMove, int nrChecksDone);
 
+	std::shared_ptr<ChessBattle> startChessBattle(ChessMove chessMove);
+
 	LPCSTR getPrimaryWeapon();
 	void setPrimaryWeapon(LPCSTR primaryWeapon);
 
@@ -54,11 +59,13 @@ public:
 	void equipSecondaryWeapon();
 	void equipMeleeWeapon();
 
+	float getWalkSpeed();
+
 protected:
 	bool mPieceTaken = false;
 	bool mIsMoving = false;
 	bool mIsInBattle = false;
-	float mWalkingSpeed = 1.0f;
+	float mWalkSpeed = 1.0f;
 	ChessPed mChessPed;
 	ChessSide::Side mSide;
 	Type mPieceType;

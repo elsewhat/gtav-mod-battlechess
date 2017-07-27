@@ -1,6 +1,6 @@
 #include "ChessBoard.h"
 
-#include "..\..\inc\natives.h"
+#include "inc\natives.h"
 #include "Utils.h"
 
 
@@ -43,14 +43,20 @@ void ChessBoard::makeMove(ChessMove chessMove)
 		Logger::logInfo("ChessBoard::makeMove TODO handle move that is castling");
 	}
 	else if (chessMove.isCapture()) {
+		ChessPiece* attacker = chessMove.getAttacker();
+		ChessPiece* defender = chessMove.getDefender();
+
+		squareFrom->removePiece();
+		squareTo->removePiece();
+		squareTo->setPiece(attacker);
+
 		Logger::logInfo("ChessBoard::makeMove TODO handle move that is capture");
 	}
 	else {
-		ChessPiece* chessPiece = squareFrom->getPiece();
+		ChessPiece* chessPiece = chessMove.getAttacker();
 		squareFrom->removePiece();
 		squareTo->setPiece(chessPiece);
 
-		chessPiece->startMovement(chessMove);
 	}
 
 

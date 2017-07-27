@@ -1,5 +1,7 @@
 #include "ChessMove.h"
 
+#include <string>
+
 ChessMove::ChessMove()
 {
 	mSquareFrom = NULL;
@@ -17,6 +19,12 @@ ChessMove::ChessMove(ChessBoardSquare * squareFrom, ChessBoardSquare * squareTo,
 	mIsEnpassentEnabling = isEnpassentEnabling;
 	mIsCastling = isCastling;
 	mIsNull = false;
+
+	//Note we store the pieces when it's created. This since ChessBoardSquare->getPiece will be updated by ChessBoard->makeMove
+	mAttacker = mSquareFrom->getPiece();
+	if (mIsCapture) {
+		mDefender = mSquareTo->getPiece();
+	}
 }
 
 ChessBoardSquare * ChessMove::getSquareFrom()
@@ -27,6 +35,16 @@ ChessBoardSquare * ChessMove::getSquareFrom()
 ChessBoardSquare * ChessMove::getSquareTo()
 {
 	return mSquareTo;
+}
+
+ChessPiece * ChessMove::getAttacker()
+{
+	return mAttacker;
+}
+
+ChessPiece * ChessMove::getDefender()
+{
+	return mDefender;
 }
 
 bool ChessMove::isPromotion()
@@ -57,5 +75,11 @@ bool ChessMove::isCastling()
 bool ChessMove::isNull()
 {
 	return mIsNull;
+}
+
+std::string ChessMove::toString()
+{
+
+	return mSquareFrom->toString() + mSquareTo->toString() + " isCapture" + std::to_string(isCapture());
 }
 

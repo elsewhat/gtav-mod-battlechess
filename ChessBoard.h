@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "..\..\inc\types.h"
+#include "inc\types.h"
 #include "ChessSide.h"
 class ChessBoardSquare;
 #include "ChessBoardSquare.h"

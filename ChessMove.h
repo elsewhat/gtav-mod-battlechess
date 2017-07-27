@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ChessBoardSquare.h";
+#include "ChessPiece.h";
 
 class ChessMove {
 public:
@@ -10,6 +11,9 @@ public:
 	ChessBoardSquare* getSquareFrom();
 	ChessBoardSquare* getSquareTo();
 
+	ChessPiece* getAttacker();
+	ChessPiece* getDefender();
+
 	bool isPromotion();
 	bool isCapture();;
 	bool isEnpassentCapture();
@@ -17,10 +21,13 @@ public:
 	bool isCastling();
 
 	bool isNull();
+	std::string toString();
 protected:
 	bool mIsNull = true;
 	ChessBoardSquare* mSquareFrom;
 	ChessBoardSquare* mSquareTo;
+	ChessPiece* mAttacker;
+	ChessPiece* mDefender;
 	bool mIsPromotion;
 	bool mIsCapture;
 	bool mIsEnpassentCapture;

@@ -1,7 +1,8 @@
 #include "ChessPed.h"
 
 #include "Utils.h"
-#include "..\..\inc\natives.h"
+#include "GTAUtils.h"
+#include "inc\natives.h"
 
 ChessPed::ChessPed()
 {
@@ -49,6 +50,13 @@ void ChessPed::spawnPed(Vector3 location, float heading)
 
 	//clear model from mem
 	STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(mPedModelHash);
+
+	//never flee
+	PED::SET_PED_COMBAT_ATTRIBUTES(mPed, 46, true);
+	//fight with melee weapons
+	PED::SET_PED_COMBAT_ATTRIBUTES(mPed, 5, true);
+	//TODO: Remove temporary
+	WeaponUtils::giveAllWeapons(mPed);
 }
 
 void ChessPed::revivePed(Vector3 location, float heading)

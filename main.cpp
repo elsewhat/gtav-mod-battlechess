@@ -4,7 +4,7 @@
 			(C) Alexander Blade 2015
 */
 
-#include "..\..\inc\main.h"
+#include "inc\main.h"
 #include "BattleChess.h"
 #include "Keyboard.h"
 

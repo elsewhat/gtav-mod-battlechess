@@ -45,7 +45,6 @@
     <ClInclude Include="ChessSide.h" />
     <ClInclude Include="ChessBoardSquare.h" />
     <ClInclude Include="ChessMove.h" />
-    <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\main.h">
       <Filter>inc</Filter>
     </ClInclude>
@@ -56,6 +55,9 @@
       <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="inc\types.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\enums.h">
       <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>
