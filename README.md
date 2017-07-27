@@ -12,13 +12,16 @@ Installation: Requires Scripthook V. Copy BattleChess.asi into game directory
 2. Install openIV http://openiv.com/
 3. Install Scripthook V http://www.dev-c.com/gtav/scripthookv/
 (SDK should be not be required as key files are in git repo)
-4. Install Visual Studio (I'm using Visual Studio 2015 Community edition)
-5. Clone git repo
-6. Open BattleChess.sln in Visual Studio
-7. Build project. This should copy Battlechess.asi to your game directory 
+4. Create empty file ScriptHookV.dev in GTA V game directory
 C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V
-8. Launch GTA V through OpenIV
-9. Once in single player mode, press F7 to start Battlechess
+This allows you to press CTRL+R to unload the mod, deploy from Visual Studio and then CTRL+R to reload it again
+5. Install Visual Studio (I'm using Visual Studio 2015 Community edition)
+6. Clone git repo
+7. Open BattleChess.sln in Visual Studio
+8. Build project. This should copy Battlechess.asi to your game directory 
+C:\Program Files (x86)\Steam\steamapps\common\Grand Theft Auto V
+9. Launch GTA V through OpenIV
+10. Once in single player mode, press F7 to start Battlechess
 
 
 ## Chess code overview
