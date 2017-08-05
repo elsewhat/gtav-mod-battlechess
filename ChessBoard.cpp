@@ -240,42 +240,48 @@ std::vector<ChessMove> ChessBoard::possibleMoves(ChessSide::Side side, ChessBoar
 {
 	std::vector<ChessMove> possibleMoves;
 	
+	//Inspired by cutechess
+	//https://github.com/cutechess/cutechess/blob/master/projects/lib/src/board/westernboard.cpp
+
 	if (!squareFrom->isEmpty()) {
 		int rankFrom = squareFrom->getSquareRank();
 		int fileFrom = squareFrom->getSquareFile();
 
-		Logger::logInfo("ChessBoard::possibleMoves for  rankFrom" + std::to_string(rankFrom) + " fileFrom" + std::to_string(fileFrom));
-
 		ChessPiece* pieceFrom = squareFrom->getPiece();
-
 		ChessPiece::Type type = pieceFrom->getPieceType();
 
 		Logger::logInfo("ChessBoard::possibleMoves for  rankFrom" + std::to_string(rankFrom) + " fileFrom" + std::to_string(fileFrom) + " Type:" + std::to_string(type));
 
 		if (type == ChessPiece::PAWN) {
-			possibleMoves = generatePawnMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
-		}
-		else if (type == ChessPiece::BISHOP) {
-			possibleMoves = generateSlidingMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
+			possibleMoves = generatePawnMoves(possibleMoves, pieceFrom->getSide(), squareFrom, pieceFrom);
 		}
 		else if (type == ChessPiece::KNIGHT) {
-			possibleMoves = generateHoppingMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
+			possibleMoves = generateHoppingMoves(possibleMoves, pieceFrom->getSide(), squareFrom, pieceFrom);
+		}
+		else if (type == ChessPiece::BISHOP) {
+			possibleMoves = generateSlidingMoves(possibleMoves, pieceFrom->getSide(), squareFrom, pieceFrom);
+		}
+		else if (type == ChessPiece::ROOK) {
+			possibleMoves = generateSlidingMoves(possibleMoves, pieceFrom->getSide(), squareFrom, pieceFrom);
+			possibleMoves = generateCastlingMoves(possibleMoves, pieceFrom->getSide(), squareFrom, pieceFrom);
 		}
 		else if (type == ChessPiece::QUEEN) {
-			possibleMoves = generateSlidingMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
+			possibleMoves = generateSlidingMoves(possibleMoves, pieceFrom->getSide(), squareFrom, pieceFrom);
+		}
+		else if (type == ChessPiece::KING) {
+			possibleMoves = generateKingMoves(possibleMoves, pieceFrom->getSide(), squareFrom, pieceFrom);
+			possibleMoves = generateCastlingMoves(possibleMoves, pieceFrom->getSide(), squareFrom, pieceFrom);
 		}
 
-		//TODO: Integrate with WesternBoard::generateMovesForPiece 
-		//https://github.com/cutechess/cutechess/blob/master/projects/lib/src/board/westernboard.cpp
+
 	}
 
 	Logger::logInfo("ChessBoard::possibleMoves returns " + std::to_string(possibleMoves.size()) + " moves");
-	//TODO: Implement
 	return possibleMoves;
 }
 
 
-std::vector<ChessMove> ChessBoard::generatePawnMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom)
+std::vector<ChessMove> ChessBoard::generatePawnMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom, ChessPiece* piece)
 {
 	Logger::logInfo("ChessBoard::generatePawnMoves");
 	//verify with https://github.com/cutechess/cutechess/blob/master/projects/lib/src/board/westernboard.cpp#L1145
@@ -327,12 +333,29 @@ std::vector<ChessMove> ChessBoard::generatePawnMoves(std::vector<ChessMove> poss
 	return possibleMoves;
 }
 
-std::vector<ChessMove> ChessBoard::generateSlidingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom)
-{
-	int rankOffsets[] = { 1,1,-1,-1 };
-	int fileOffsets[] = { 1,-1,1,-1 };
 
-	for (int i = 0; i < 4; i++) {
+std::vector<ChessMove> ChessBoard::generateSlidingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom, ChessPiece* piece)
+{
+
+	std::vector<int> rankOffsets;
+	std::vector<int> fileOffsets;
+	bool doMoveSingleSquare = false;
+
+	ChessPiece::Type type = piece->getPieceType();
+	if (type == ChessPiece::BISHOP) {
+		rankOffsets = { 1,1,-1,-1 };
+		fileOffsets = { 1,-1,1,-1 };
+	}
+	else if (type == ChessPiece::QUEEN) {
+		rankOffsets = { 1,1,-1,-1, 1,-1, 0, 0};
+		fileOffsets = { 1,-1,1,-1, 0, 0, 1, -1};
+	}
+	else if (type == ChessPiece::ROOK) {
+		rankOffsets = { 1,-1, 0, 0 };
+		fileOffsets = { 0, 0, 1, -1 };
+	}
+
+	for (int i = 0; i < rankOffsets.size(); i++) {
 		int targetRank = squareFrom->getSquareRank()+rankOffsets[i];
 		int targetFile = squareFrom->getSquareFile()+fileOffsets[i];
 
@@ -357,12 +380,45 @@ std::vector<ChessMove> ChessBoard::generateSlidingMoves(std::vector<ChessMove> p
 }
 
 
-std::vector<ChessMove> ChessBoard::generateHoppingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom)
+std::vector<ChessMove> ChessBoard::generateHoppingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom, ChessPiece* piece)
 {
-	int rankOffsets[] = { 1 ,2 ,1 ,2 ,-1,-2,-1,-2 };
-	int fileOffsets[] = { 2 ,1 ,-2,-1,-2,-1, 2, 1};
+	std::array<int, 8>  rankOffsets = { 1 ,2 ,1 ,2 ,-1,-2,-1,-2 };
+	std::array<int, 8> fileOffsets = { 2 ,1 ,-2,-1,-2,-1, 2, 1};
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < rankOffsets.size(); i++) {
+		int targetRank = squareFrom->getSquareRank() + rankOffsets[i];
+		int targetFile = squareFrom->getSquareFile() + fileOffsets[i];
+
+		if (isValidRankAndFile(targetRank, targetFile)) {
+			ChessBoardSquare* targetSquare = getSquareAt(targetRank, targetFile);
+			if (targetSquare->isEmpty()) {
+				possibleMoves.push_back(ChessMove(squareFrom, targetSquare, false));
+			}
+			else {
+				ChessPiece* targetPiece = targetSquare->getPiece();
+				if (targetPiece->getSide() != side) {
+					possibleMoves.push_back(ChessMove(squareFrom, targetSquare, true));
+				}
+			}
+		}
+	}
+	return possibleMoves;
+}
+
+std::vector<ChessMove> ChessBoard::generateCastlingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom, ChessPiece* piece)
+{
+	return possibleMoves;
+}
+
+
+std::vector<ChessMove> ChessBoard::generateKingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom, ChessPiece* piece)
+{
+	std::array<int,8> rankOffsets= { 1,1,-1,-1, 1,-1, 0, 0 };;
+	std::array<int,8> fileOffsets= { 1,-1,1,-1, 0, 0, 1, -1 };;
+
+	//TODO For each move, verify if king is in check
+
+	for (int i = 0; i < rankOffsets.size(); i++) {
 		int targetRank = squareFrom->getSquareRank() + rankOffsets[i];
 		int targetFile = squareFrom->getSquareFile() + fileOffsets[i];
 
