@@ -507,7 +507,8 @@ bool BattleChessGameController::updateBoardSelect(ChessBoard * chessBoard)
 			return true;
 		}
 		else {
-			Logger::logInfo("User has selected any not possible move");
+			Logger::logInfo("User has selected a non-possible move");
+			selectedBoardSquare->setDoHighlightAsSelected(false);
 			selectedBoardSquare = NULL;
 			resetPossibleMoves();
 			return true;

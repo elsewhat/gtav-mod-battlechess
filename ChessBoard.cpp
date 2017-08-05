@@ -160,6 +160,27 @@ void ChessBoard::drawOnTick()
 	for (auto* square : mSquares) {
 		square->drawOnTick();
 	}
+
+	/*
+	for (int rank = 1; rank <= 8; rank++) {
+		ChessBoardSquare* squareStart = getSquareAt(rank, 1);
+		ChessBoardSquare* squareEnd = getSquareAt(rank, 8);
+
+		GRAPHICS::DRAW_LINE(squareStart->getLocation().x - 1.0, squareStart->getLocation().y - 1.0, squareStart->getLocation().z, squareEnd->getLocation().x - 1.0, squareEnd->getLocation().y - 1.0, squareEnd->getLocation().z, 255, 255, 255, 255);
+		if (rank == 8) {
+			GRAPHICS::DRAW_LINE(squareStart->getLocation().x + 1.0, squareStart->getLocation().y + 1.0, squareStart->getLocation().z, squareEnd->getLocation().x + 1.0, squareEnd->getLocation().y + 1.0, squareEnd->getLocation().z, 255, 255, 255, 255);
+		}
+	}
+
+	for (int file = 1; file <= 8; file++) {
+		ChessBoardSquare* squareStart = getSquareAt(1, file);
+		ChessBoardSquare* squareEnd = getSquareAt(8, file);
+
+		GRAPHICS::DRAW_LINE(squareStart->getLocation().x - 1.0, squareStart->getLocation().y - 1.0, squareStart->getLocation().z, squareEnd->getLocation().x - 1.0, squareEnd->getLocation().y - 1.0, squareEnd->getLocation().z, 255, 255, 255, 255);
+		if (file == 8) {
+			GRAPHICS::DRAW_LINE(squareStart->getLocation().x + 1.0, squareStart->getLocation().y + 1.0, squareStart->getLocation().z, squareEnd->getLocation().x + 1.0, squareEnd->getLocation().y + 1.0, squareEnd->getLocation().z, 255, 255, 255, 255);
+		}
+	}*/
 }
 
 /*
@@ -202,7 +223,7 @@ void ChessBoard::initializeSquares()
 		for (int file = 1; file <= 8; file++) {
 			//A1 is Dark. Alternating afterwards
 			ChessBoardSquare::Color color = ChessBoardSquare::DARK;
-			if (rank + file % 2 == 1) {
+			if ((rank + file) % 2 == 1) {
 				color = ChessBoardSquare::LIGHT;
 			}
 

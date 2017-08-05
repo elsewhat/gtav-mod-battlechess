@@ -187,6 +187,28 @@ bool ChessBoardSquare::equals(ChessBoardSquare* square) const
 
 void ChessBoardSquare::drawOnTick()
 {
+	/* Chessboard pattern https://trello.com/c/4LMI1319/92-draw-chess-board-somehow-graphicsdrawbox
+	Vector3 baseLocation;
+	baseLocation.x = 1629.0;
+	baseLocation.y = 3215.0;
+	baseLocation.z = 39.55;
+	if (mColor == DARK) {
+		GRAPHICS::DRAW_BOX(mLocation.x-1.0, mLocation.y-1.0, mLocation.z, mLocation.x + 1.0, mLocation.y + 1.0, mLocation.z, 10, 10, 10, 255);
+	}
+	else {
+		GRAPHICS::DRAW_BOX(mLocation.x-1.0, mLocation.y-1.0, mLocation.z, mLocation.x + 1.0, mLocation.y + 1.0, mLocation.z, 255, 255, 255, 255);
+	}
+	*/
+
+	int colorR = 0;
+	int colorG = 0;
+	int colorB = 0;
+
+	GRAPHICS::DRAW_LINE(mLocation.x - 1.0, mLocation.y - 1.0, mLocation.z, mLocation.x - 1.0, mLocation.y + 1.0, mLocation.z, colorR, colorG, colorB, 255);
+	GRAPHICS::DRAW_LINE(mLocation.x - 1.0, mLocation.y + 1.0, mLocation.z, mLocation.x + 1.0, mLocation.y + 1.0, mLocation.z, colorR, colorG, colorB, 255);
+	GRAPHICS::DRAW_LINE(mLocation.x + 1.0, mLocation.y + 1.0, mLocation.z, mLocation.x + 1.0, mLocation.y - 1.0, mLocation.z, colorR, colorG, colorB, 255);
+	GRAPHICS::DRAW_LINE(mLocation.x + 1.0, mLocation.y - 1.0, mLocation.z, mLocation.x - 1.0, mLocation.y - 1.0, mLocation.z, colorR, colorG, colorB, 255);
+
 
 	if (mHighlightAsSelected) {
 		int highlightColorR = 192;

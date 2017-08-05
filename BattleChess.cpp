@@ -677,10 +677,10 @@ void BattleChessMain()
 	Vector3 baseLocation;
 	baseLocation.x = 1629.0;
 	baseLocation.y = 3215.0;
-	baseLocation.z = 41.0;
+	baseLocation.z = 39.55;
 
-	float squareDeltaX = 2.1; 
-	float squareDeltaY = 2.1;
+	float squareDeltaX = 2.0; 
+	float squareDeltaY = 2.0;
 	chessBoard = new ChessBoard(baseLocation, squareDeltaX, squareDeltaY);
 
 	chessBoard->setWhiteChessSet(chessSetFactory.getDefaultWhiteChessSet());
