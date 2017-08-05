@@ -69,8 +69,36 @@ void WeaponUtils::giveAllWeapons(Ped ped)
 
 void WeaponUtils::giveWeapon(Ped ped, LPCSTR weaponName)
 {
+	Hash weaponHash = GAMEPLAY::GET_HASH_KEY((char *)weaponName);
 	Logger::logDebug("Giving and equiping weapon " + std::string(weaponName) + " to ped " + std::to_string(ped));
-	WEAPON::GIVE_WEAPON_TO_PED(ped, GAMEPLAY::GET_HASH_KEY((char *)weaponName), 1000, 1,1);
+	if (WEAPON::HAS_PED_GOT_WEAPON(ped, weaponHash, false)) {
+
+		int ammoInClip;
+		WEAPON::GET_AMMO_IN_CLIP(ped, weaponHash, &ammoInClip);
+		Logger::logDebug("WEAPON ammo:" + std::to_string(WEAPON::GET_AMMO_IN_PED_WEAPON(ped, weaponHash)) + " clip:" + std::to_string(ammoInClip));
+
+
+		int maxAmmo;
+		WEAPON::GET_MAX_AMMO(ped, weaponHash, &maxAmmo);
+		WEAPON::SET_PED_AMMO(ped, weaponHash, maxAmmo);
+		//This is the important one in order to call TASK_SHOOT_AT_ENTITY multiple times
+		WEAPON::ADD_AMMO_TO_PED(ped, weaponHash, maxAmmo);
+
+		int maxAmmoInClip = WEAPON::GET_MAX_AMMO_IN_CLIP(ped, weaponHash, 1);
+		WEAPON::SET_AMMO_IN_CLIP(ped, weaponHash, maxAmmoInClip);
+
+		WEAPON::SET_CURRENT_PED_WEAPON(ped, weaponHash, 1);
+
+		WEAPON::GET_AMMO_IN_CLIP(ped, weaponHash, &ammoInClip);
+		Logger::logDebug("WEAPON ammo:" + std::to_string(WEAPON::GET_AMMO_IN_PED_WEAPON(ped, weaponHash)) + " clip:" + std::to_string(ammoInClip));
+
+	}
+	else {
+		WEAPON::GIVE_WEAPON_TO_PED(ped, weaponHash, 1000, 1, 1);
+	}
+
+
+
 }
 
 void GTAModUtils::checkCorruptPlayerPed()

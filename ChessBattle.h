@@ -12,6 +12,9 @@ public:
 	virtual bool canBeExecutedFor(ChessMove chessMove)=0;
 	virtual void startExecution(DWORD ticksStart, ChessMove chessMove)=0;
 	virtual bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove)=0;
+
+protected:
+	DWORD mTicksStarted;
 };
 
 class ChessBattleFirePrimaryWeapon : public ChessBattle {

@@ -10,12 +10,12 @@ public:
 
 	Ped getPed() const;
 
-	void spawnPed(Vector3 location, float heading);
+	void spawnPed(Vector3 location, float heading, Hash relationshipGroupHash);
 	void revivePed(Vector3 location, float heading);
 	void removePed();
 
 	bool pedExist() const;
-	bool isPedDead() const;
+	bool isPedDeadOrDying() const;
 	
 
 protected:

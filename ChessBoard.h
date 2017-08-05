@@ -5,6 +5,7 @@
 #include "ChessSide.h"
 class ChessBoardSquare;
 #include "ChessBoardSquare.h"
+class ChessPiece;
 #include "ChessPiece.h"
 class ChessSet;
 #include "ChessSet.h"
@@ -34,6 +35,9 @@ public:
 
 	void spawnChessPieces();
 
+	void freezeAllExcept(std::vector<ChessPiece*> chessPieces);
+
+
 	void drawOnTick();
 protected:
 	ChessSide::Side mSideToMove;
@@ -44,6 +48,9 @@ protected:
 	Vector3 mBaseLocation;
 	float mSquareDeltaX;
 	float mSquareDeltaY;
+
+	Hash mWhiteRelationshipGroupHash;
+	Hash mBlackRelationshipGroupHash;
 
 
 	void initializeSquares();

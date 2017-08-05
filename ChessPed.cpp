@@ -25,7 +25,7 @@ Ped ChessPed::getPed() const
 	return mPed;
 }
 
-void ChessPed::spawnPed(Vector3 location, float heading)
+void ChessPed::spawnPed(Vector3 location, float heading,Hash relationshipGroupHash)
 {
 	Logger::logDebug("ChessPed::spawnPed");
 	STREAMING::REQUEST_MODEL(mPedModelHash);
@@ -55,6 +55,12 @@ void ChessPed::spawnPed(Vector3 location, float heading)
 	PED::SET_PED_COMBAT_ATTRIBUTES(mPed, 46, true);
 	//fight with melee weapons
 	PED::SET_PED_COMBAT_ATTRIBUTES(mPed, 5, true);
+
+
+	PED::SET_PED_RELATIONSHIP_GROUP_HASH(mPed, relationshipGroupHash);
+
+	PED::SET_PED_CAN_BE_TARGETED_WHEN_INJURED(mPed, true);
+
 	//TODO: Remove temporary
 	WeaponUtils::giveAllWeapons(mPed);
 }
@@ -82,9 +88,9 @@ bool ChessPed::pedExist() const
 	}
 }
 
-bool ChessPed::isPedDead() const
+bool ChessPed::isPedDeadOrDying() const
 {
-	if (ENTITY::DOES_ENTITY_EXIST(mPed) && ENTITY::IS_ENTITY_DEAD(mPed)) {
+	if (ENTITY::DOES_ENTITY_EXIST(mPed) && (ENTITY::IS_ENTITY_DEAD(mPed) || PED::IS_PED_FATALLY_INJURED(mPed)|| AI::IS_PED_IN_WRITHE(mPed))) {
 		return true;
 	}
 	else {

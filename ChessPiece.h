@@ -33,19 +33,21 @@ public:
 
 	Ped getPed() const;
 	ChessPed getChessPed() const;
-	bool isPedDead() const;
+	bool isPedDeadOrDying() const;
 
 	bool isPieceTaken() const;
 	void setPieceTaken(bool pieceTaken);
 
-	void spawnPed();
+	void spawnPed(Hash relationshipGroupHash);
 	void revivePed();
 	void removePed();
+	void setPedFreezed(bool isFreezed);
+	void setPedCanBeDamaged(bool canBeDamaged);
 
 	void startMovement(ChessMove chessMove, ChessBoard* chessBoard);
 	bool isMovementCompleted(ChessMove chessMove, int nrChecksDone);
 
-	std::shared_ptr<ChessBattle> startChessBattle(ChessMove chessMove);
+	std::shared_ptr<ChessBattle> startChessBattle(ChessMove chessMove,ChessBoard* chessBoard);
 
 	LPCSTR getPrimaryWeapon();
 	void setPrimaryWeapon(LPCSTR primaryWeapon);
@@ -59,6 +61,7 @@ public:
 	void equipPrimaryWeapon();
 	void equipSecondaryWeapon();
 	void equipMeleeWeapon();
+	void unequipWeapons();
 
 	float getWalkSpeed();
 

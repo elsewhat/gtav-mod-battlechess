@@ -67,9 +67,9 @@ ChessPed ChessPiece::getChessPed() const
 }
 
 
-bool ChessPiece::isPedDead() const
+bool ChessPiece::isPedDeadOrDying() const
 {
-	return mChessPed.isPedDead();
+	return mChessPed.isPedDeadOrDying();
 }
 
 bool ChessPiece::isPieceTaken() const
@@ -82,9 +82,9 @@ void ChessPiece::setPieceTaken(bool pieceTaken)
 	mPieceTaken = pieceTaken;
 }
 
-void ChessPiece::spawnPed()
+void ChessPiece::spawnPed(Hash relationshipGroupHash)
 {
-	mChessPed.spawnPed(mLocation, mHeading);
+	mChessPed.spawnPed(mLocation, mHeading, relationshipGroupHash);
 }
 
 void ChessPiece::revivePed()
@@ -97,9 +97,21 @@ void ChessPiece::removePed()
 	mChessPed.removePed();
 }
 
+void ChessPiece::setPedFreezed(bool isFreezed)
+{
+	ENTITY::FREEZE_ENTITY_POSITION(getPed(), isFreezed);
+	PED::SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(getPed(), isFreezed);
+}
+
+void ChessPiece::setPedCanBeDamaged(bool canBeDamaged)
+{
+	ENTITY::SET_ENTITY_CAN_BE_DAMAGED(getPed(), canBeDamaged);
+}
+
 void ChessPiece::startMovement(ChessMove chessMove, ChessBoard* chessBoard)
 {
 	mIsMoving = true;
+	chessMove.getAttacker()->setPedFreezed(false);
 
 	Vector3 squareToLocation = mLocation;
 	if (mPieceType == KNIGHT) {
@@ -137,9 +149,15 @@ bool ChessPiece::isMovementCompleted(ChessMove chessMove, int nrChecksDone)
 	}
 }
 
-std::shared_ptr<ChessBattle> ChessPiece::startChessBattle(ChessMove chessMove)
+std::shared_ptr<ChessBattle> ChessPiece::startChessBattle(ChessMove chessMove, ChessBoard* chessBoard)
 {
 	ChessBattleFirePrimaryWeapon chessBattle;
+
+	std::vector<ChessPiece*> activePieces = { chessMove.getAttacker(), chessMove.getDefender() };
+	chessBoard->freezeAllExcept(activePieces);
+	chessMove.getAttacker()->setPedCanBeDamaged(false);
+	chessMove.getDefender()->setPedCanBeDamaged(true);
+
 	chessBattle.startExecution(GetTickCount(), chessMove);
 
 	return std::make_shared<ChessBattleFirePrimaryWeapon>(chessBattle);
@@ -179,6 +197,7 @@ void ChessPiece::equipPrimaryWeapon()
 {
 	if (mPrimaryWeapon != NULL || mPrimaryWeapon[0] != 0) {
 		WeaponUtils::giveWeapon(mChessPed.getPed(), mPrimaryWeapon);
+		//WEAPON::SET_PED_INFINITE_AMMO_CLIP(mChessPed.getPed(), true);
 	}
 }
 
@@ -194,6 +213,11 @@ void ChessPiece::equipMeleeWeapon()
 	if (mSecondaryWeapon == NULL || mSecondaryWeapon[0] == 0) {
 		WeaponUtils::giveWeapon(mChessPed.getPed(), mMeleeWeapon);
 	}
+}
+
+void ChessPiece::unequipWeapons()
+{
+	WEAPON::REMOVE_ALL_PED_WEAPONS(getPed(), true);
 }
 
 float ChessPiece::getWalkSpeed()

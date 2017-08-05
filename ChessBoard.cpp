@@ -12,6 +12,18 @@ ChessBoard::ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDel
 	mSquareDeltaY = squareDeltaY;
 	initializeSquares();
 	mSideToMove = ChessSide::WHITE;
+
+	mWhiteRelationshipGroupHash = GAMEPLAY::GET_HASH_KEY("BATTLECHESS_WHITE");
+	mBlackRelationshipGroupHash = GAMEPLAY::GET_HASH_KEY("BATTLECHESS_BLACK");
+
+	PED::REMOVE_RELATIONSHIP_GROUP(mWhiteRelationshipGroupHash);
+	PED::REMOVE_RELATIONSHIP_GROUP(mBlackRelationshipGroupHash);
+
+	PED::ADD_RELATIONSHIP_GROUP("BATTLECHESS_WHITE", &(mWhiteRelationshipGroupHash));
+	PED::ADD_RELATIONSHIP_GROUP("BATTLECHESS_BLACK", &(mBlackRelationshipGroupHash));
+
+	PED::SET_RELATIONSHIP_BETWEEN_GROUPS(3, mWhiteRelationshipGroupHash, mBlackRelationshipGroupHash);
+	PED::SET_RELATIONSHIP_BETWEEN_GROUPS(3, mBlackRelationshipGroupHash, mWhiteRelationshipGroupHash);
 }
 
 ChessSide::Side ChessBoard::sideToMove()
@@ -146,12 +158,28 @@ void ChessBoard::spawnChessPieces()
 		if (!square->isEmpty()) {
 			ChessPiece* piece = square->getPiece();
 			
-			//Logger::logInfo("Spawning piece Side:" + std::to_string(piece->getSide()) + " Type:"+ std::to_string(piece->getPieceType()));
-			piece->spawnPed();
+			if (piece->getSide() == ChessSide::WHITE) {
+				piece->spawnPed(mWhiteRelationshipGroupHash);
+			}
+			else {
+				piece->spawnPed(mBlackRelationshipGroupHash);
+			}
 		}
 		else {
 			//Logger::logDebug("Square is empty Rank" + std::to_string(square->getSquareRank()) + " File:" + std::to_string(square->getSquareFile()));
 		}
+	}
+}
+
+void ChessBoard::freezeAllExcept(std::vector<ChessPiece*> chessPieces)
+{
+	for (auto* square : mSquares) {
+		if (!square->isEmpty()) {
+			square->getPiece()->setPedFreezed(true);
+		}
+	}
+	for (auto* piece : chessPieces) {
+		piece->setPedFreezed(false);
 	}
 }
 
