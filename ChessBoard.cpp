@@ -250,13 +250,23 @@ std::vector<ChessMove> ChessBoard::possibleMoves(ChessSide::Side side, ChessBoar
 
 		ChessPiece::Type type = pieceFrom->getPieceType();
 
+		Logger::logInfo("ChessBoard::possibleMoves for  rankFrom" + std::to_string(rankFrom) + " fileFrom" + std::to_string(fileFrom) + " Type:" + std::to_string(type));
+
 		if (type == ChessPiece::PAWN) {
 			possibleMoves = generatePawnMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
+		}
+		else if (type == ChessPiece::BISHOP) {
+			possibleMoves = generateSlidingMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
+		}
+		else if (type == ChessPiece::KNIGHT) {
+			possibleMoves = generateHoppingMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
+		}
+		else if (type == ChessPiece::QUEEN) {
+			possibleMoves = generateSlidingMoves(possibleMoves, pieceFrom->getSide(), squareFrom);
 		}
 
 		//TODO: Integrate with WesternBoard::generateMovesForPiece 
 		//https://github.com/cutechess/cutechess/blob/master/projects/lib/src/board/westernboard.cpp
-
 	}
 
 	Logger::logInfo("ChessBoard::possibleMoves returns " + std::to_string(possibleMoves.size()) + " moves");
@@ -311,6 +321,61 @@ std::vector<ChessMove> ChessBoard::generatePawnMoves(std::vector<ChessMove> poss
 			if (squareForward->isEmpty() && squareDoubleMove->isEmpty()) {
 				possibleMoves.push_back(ChessMove(squareFrom, squareDoubleMove, false));
 				//when executed, this move should set the enpassent of the first square
+			}
+		}
+	}
+	return possibleMoves;
+}
+
+std::vector<ChessMove> ChessBoard::generateSlidingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom)
+{
+	int rankOffsets[] = { 1,1,-1,-1 };
+	int fileOffsets[] = { 1,-1,1,-1 };
+
+	for (int i = 0; i < 4; i++) {
+		int targetRank = squareFrom->getSquareRank()+rankOffsets[i];
+		int targetFile = squareFrom->getSquareFile()+fileOffsets[i];
+
+		while (isValidRankAndFile(targetRank, targetFile)) {
+			ChessBoardSquare* targetSquare = getSquareAt(targetRank, targetFile);
+			if (targetSquare->isEmpty()) {
+				possibleMoves.push_back(ChessMove(squareFrom, targetSquare, false));
+			}
+			else {
+				ChessPiece* targetPiece = targetSquare->getPiece();
+				if (targetPiece->getSide() != side) {
+					possibleMoves.push_back(ChessMove(squareFrom, targetSquare, true));
+				}
+				//jump out of while loop
+				break;
+			}
+			targetRank += rankOffsets[i];
+			targetFile += fileOffsets[i];
+		}
+	}
+	return possibleMoves;
+}
+
+
+std::vector<ChessMove> ChessBoard::generateHoppingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare * squareFrom)
+{
+	int rankOffsets[] = { 1 ,2 ,1 ,2 ,-1,-2,-1,-2 };
+	int fileOffsets[] = { 2 ,1 ,-2,-1,-2,-1, 2, 1};
+
+	for (int i = 0; i < 8; i++) {
+		int targetRank = squareFrom->getSquareRank() + rankOffsets[i];
+		int targetFile = squareFrom->getSquareFile() + fileOffsets[i];
+
+		if (isValidRankAndFile(targetRank, targetFile)) {
+			ChessBoardSquare* targetSquare = getSquareAt(targetRank, targetFile);
+			if (targetSquare->isEmpty()) {
+				possibleMoves.push_back(ChessMove(squareFrom, targetSquare, false));
+			}
+			else {
+				ChessPiece* targetPiece = targetSquare->getPiece();
+				if (targetPiece->getSide() != side) {
+					possibleMoves.push_back(ChessMove(squareFrom, targetSquare, true));
+				}
 			}
 		}
 	}

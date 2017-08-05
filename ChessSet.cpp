@@ -48,7 +48,7 @@ ChessSet* ChessSetFactory::getDefaultBlackChessSet()
 
 void ChessSetFactory::initialize()
 {
-	//TODO: Load from xml file
+	//TODO: Load from xml file 
 }
 
 ChessSet* ChessSetFactory::getSimpleChessSet(ChessSide::Side side)
@@ -60,12 +60,12 @@ ChessSet* ChessSetFactory::getSimpleChessSet(ChessSide::Side side)
 		pieces[index++] = new ChessPiece(side, ChessPiece::PAWN, ChessPed(), Vector3(), 1.0);;
 	}
 	pieces[index++] = new ChessPiece(side, ChessPiece::ROOK, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = new ChessPiece(side, ChessPiece::BISHOP, ChessPed(), Vector3(), 1.0);
 	pieces[index++] = new ChessPiece(side, ChessPiece::KNIGHT, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::BISHOP, ChessPed(), Vector3(), 1.0);
 	pieces[index++] = new ChessPiece(side, ChessPiece::QUEEN, ChessPed(), Vector3(), 1.0);
 	pieces[index++] = new ChessPiece(side, ChessPiece::KING, ChessPed(), Vector3(), 1.0);
-	pieces[index++] = new ChessPiece(side, ChessPiece::KNIGHT, ChessPed(), Vector3(), 1.0);
 	pieces[index++] = new ChessPiece(side, ChessPiece::BISHOP, ChessPed(), Vector3(), 1.0);
+	pieces[index++] = new ChessPiece(side, ChessPiece::KNIGHT, ChessPed(), Vector3(), 1.0);
 	pieces[index++] = new ChessPiece(side, ChessPiece::ROOK, ChessPed(), Vector3(), 1.0);
 
 	ChessSet* chessSet = new ChessSet("Simple Set", pieces);

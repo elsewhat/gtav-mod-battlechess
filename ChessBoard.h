@@ -49,4 +49,8 @@ protected:
 	void initializeSquares();
 
 	std::vector<ChessMove> generatePawnMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare* squareFrom);
+	std::vector<ChessMove> generateSlidingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare* squareFrom);
+	std::vector<ChessMove> generateHoppingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare* squareFrom);
+	std::vector<ChessMove> generateCastlingMoves(std::vector<ChessMove> possibleMoves, ChessSide::Side side, ChessBoardSquare* squareFrom);
+	
 };

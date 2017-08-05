@@ -494,7 +494,7 @@ bool BattleChessGameController::updateBoardSelect(ChessBoard * chessBoard)
 				currentChessBattle = chessMove.getAttacker()->startChessBattle(chessMove);
 			}
 			else {
-				chessMove.getAttacker()->startMovement(chessMove);
+				chessMove.getAttacker()->startMovement(chessMove, chessBoard);
 				currentChessBattle = nullptr;
 			}
 

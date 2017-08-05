@@ -97,15 +97,26 @@ void ChessPiece::removePed()
 	mChessPed.removePed();
 }
 
-void ChessPiece::startMovement(ChessMove chessMove)
+void ChessPiece::startMovement(ChessMove chessMove, ChessBoard* chessBoard)
 {
 	mIsMoving = true;
 
-	//Vector3 squareTolocation = chessMove.getSquareTo()->getLocation();
 	Vector3 squareToLocation = mLocation;
-	if (mPieceType == ROOK) {
-		//TODO: Special handling with task sequence
-		AI::TASK_GO_STRAIGHT_TO_COORD(getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);
+	if (mPieceType == KNIGHT) {
+		//Rook first move up in rank-direction, then sideways in file-direction
+		TaskSequence task_seq = 1;
+		AI::OPEN_SEQUENCE_TASK(&task_seq);
+
+		ChessBoardSquare* squareFrom = chessMove.getSquareFrom();
+		ChessBoardSquare* squareTo = chessMove.getSquareTo();
+		ChessBoardSquare* squareIntermediate = chessBoard->getSquareAt(squareTo->getSquareRank(), squareFrom->getSquareFile());
+
+		AI::TASK_GO_STRAIGHT_TO_COORD(0, squareIntermediate->getLocation().x, squareIntermediate->getLocation().y, squareIntermediate->getLocation().z, mWalkSpeed, -1, squareIntermediate->getHeading(mSide), 0.5f);
+		AI::TASK_GO_STRAIGHT_TO_COORD(0, squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);
+
+		AI::CLOSE_SEQUENCE_TASK(task_seq);
+		AI::TASK_PERFORM_SEQUENCE(getPed(), task_seq);
+		AI::CLEAR_SEQUENCE_TASK(&task_seq);
 	}
 	else {
 		AI::TASK_GO_STRAIGHT_TO_COORD(getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mWalkSpeed, -1, chessMove.getSquareTo()->getHeading(mSide), 0.5f);

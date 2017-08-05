@@ -2,6 +2,7 @@
 
 #include "inc\types.h"
 #include "ChessPed.h"
+class ChessBoard;
 #include "ChessBoard.h"
 
 #include "ChessMove.h"
@@ -41,7 +42,7 @@ public:
 	void revivePed();
 	void removePed();
 
-	void startMovement(ChessMove chessMove);
+	void startMovement(ChessMove chessMove, ChessBoard* chessBoard);
 	bool isMovementCompleted(ChessMove chessMove, int nrChecksDone);
 
 	std::shared_ptr<ChessBattle> startChessBattle(ChessMove chessMove);
