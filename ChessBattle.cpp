@@ -24,8 +24,12 @@ void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessMove ch
 	ChessPiece* attacker = chessMove.getAttacker();
 	ChessPiece* defender = chessMove.getDefender();
 
+	//worst case is that two shots take 18 damage
+	defender->setHealth(115);
 	attacker->equipPrimaryWeapon();
 	AI::TASK_SHOOT_AT_ENTITY(attacker->getPed() , defender->getPed(), -1, GAMEPLAY::GET_HASH_KEY("FIRING_PATTERN_SINGLE_SHOT"));
+
+	Logger::logDebug("startExecution Defender health " + std::to_string(ENTITY::GET_ENTITY_HEALTH(defender->getPed())));
 }
 
 bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove)
@@ -57,8 +61,17 @@ bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMov
 	}
 	else if (ticksNow - mTicksStarted > 5000) {
 		Logger::logDebug("ChessBattleFirePrimaryWeapon::More than 5000 ticks since started. Retriggering");
-		AI::CLEAR_PED_TASKS(attacker->getPed());
-		AI::TASK_SHOOT_AT_ENTITY(attacker->getPed(), defender->getPed(), -1, GAMEPLAY::GET_HASH_KEY("FIRING_PATTERN_SINGLE_SHOT"));
+
+		Logger::logDebug("Defender health " + std::to_string(ENTITY::GET_ENTITY_HEALTH(defender->getPed())));
+		attacker->removeWeapons();
+		attacker->equipPrimaryWeapon();
+		AI::CLEAR_PED_TASKS_IMMEDIATELY(attacker->getPed());
+		AI::TASK_SHOOT_AT_ENTITY(attacker->getPed(), defender->getPed(), 5000, GAMEPLAY::GET_HASH_KEY("FIRING_PATTERN_SINGLE_SHOT"));
+
+		Logger::logDebug("ENTITY::DOES_ENTITY_EXIST(defender->getPed()) " + std::to_string(ENTITY::DOES_ENTITY_EXIST(defender->getPed())));
+
+		//walkaround for issues with task_shoot_at_entity
+		PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
 		mTicksStarted = ticksNow;
 	}
 	return false;
