@@ -71,8 +71,10 @@ void WeaponUtils::giveWeapon(Ped ped, LPCSTR weaponName)
 {
 	Hash weaponHash = GAMEPLAY::GET_HASH_KEY((char *)weaponName);
 	Logger::logDebug("Giving and equiping weapon " + std::string(weaponName) + " to ped " + std::to_string(ped));
-	if (WEAPON::HAS_PED_GOT_WEAPON(ped, weaponHash, false)) {
-
+	if (WEAPON::HAS_PED_GOT_WEAPON(ped, weaponHash, true)) {
+		WEAPON::SET_CURRENT_PED_WEAPON(ped, weaponHash, 1);
+		WEAPON::SET_PED_INFINITE_AMMO_CLIP(ped, true);
+		/*
 		int ammoInClip;
 		WEAPON::GET_AMMO_IN_CLIP(ped, weaponHash, &ammoInClip);
 		Logger::logDebug("WEAPON ammo:" + std::to_string(WEAPON::GET_AMMO_IN_PED_WEAPON(ped, weaponHash)) + " clip:" + std::to_string(ammoInClip));
@@ -91,10 +93,11 @@ void WeaponUtils::giveWeapon(Ped ped, LPCSTR weaponName)
 
 		WEAPON::GET_AMMO_IN_CLIP(ped, weaponHash, &ammoInClip);
 		Logger::logDebug("WEAPON ammo:" + std::to_string(WEAPON::GET_AMMO_IN_PED_WEAPON(ped, weaponHash)) + " clip:" + std::to_string(ammoInClip));
-
+		*/
 	}
 	else {
 		WEAPON::GIVE_WEAPON_TO_PED(ped, weaponHash, 1000, 1, 1);
+		WEAPON::SET_PED_INFINITE_AMMO_CLIP(ped, true);
 	}
 
 

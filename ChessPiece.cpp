@@ -23,6 +23,11 @@ ChessSide::Side ChessPiece::getSide()
 	return mSide;
 }
 
+void ChessPiece::setSide(ChessSide::Side side)
+{
+	mSide = side;
+}
+
 ChessPiece::Type ChessPiece::getPieceType() const
 {
 	return mPieceType;
@@ -85,6 +90,9 @@ void ChessPiece::setPieceTaken(bool pieceTaken)
 void ChessPiece::spawnPed(Hash relationshipGroupHash)
 {
 	mChessPed.spawnPed(mLocation, mHeading, relationshipGroupHash);
+	if (mPieceType == ChessPiece::KING) {
+		PED::GIVE_PED_HELMET(getPed(), false, 4096, -1);
+	}
 }
 
 void ChessPiece::revivePed()
@@ -106,6 +114,11 @@ void ChessPiece::setPedFreezed(bool isFreezed)
 void ChessPiece::setPedCanBeDamaged(bool canBeDamaged)
 {
 	ENTITY::SET_ENTITY_CAN_BE_DAMAGED(getPed(), canBeDamaged);
+}
+
+void ChessPiece::setHealth(int health)
+{
+	ENTITY::SET_ENTITY_HEALTH(getPed(), health);
 }
 
 void ChessPiece::startMovement(ChessMove chessMove, ChessBoard* chessBoard)
@@ -215,7 +228,7 @@ void ChessPiece::equipMeleeWeapon()
 	}
 }
 
-void ChessPiece::unequipWeapons()
+void ChessPiece::removeWeapons()
 {
 	WEAPON::REMOVE_ALL_PED_WEAPONS(getPed(), true);
 }

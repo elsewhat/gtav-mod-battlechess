@@ -1,5 +1,7 @@
 #include "ChessSet.h"
 #include "Utils.h"
+#include "GTAUtils.h"
+
 
 ChessSet::ChessSet()
 {
@@ -21,14 +23,30 @@ std::array<ChessPiece*, 16> ChessSet::getPieces()
 	return mPieces;
 }
 
+void ChessSet::setSide(ChessSide::Side side)
+{
+	for (auto* piece : mPieces) {
+		piece->setSide(side);
+	}
+}
+
 ChessSetFactory::ChessSetFactory()
 {
+	FILENAME_CHESS_SETS = "Battlechess_sets.xml";
+	mDefaultWhiteChessSet = getSimpleChessSet(ChessSide::WHITE);
+	mDefaultBlackChessSet = getSimpleChessSet(ChessSide::BLACK);
+
 	initialize();
 }
 
 std::vector<std::string> ChessSetFactory::getChessSetNames()
 {
-	return mChessSetNames;
+	std::vector<std::string> chessSetNames;
+	for (auto* chessSet : mChessSets) {
+		chessSetNames.push_back(chessSet->getName());
+	}
+
+	return chessSetNames;
 }
 
 ChessSet* ChessSetFactory::getChessSetByName(std::string name)
@@ -38,18 +56,116 @@ ChessSet* ChessSetFactory::getChessSetByName(std::string name)
 
 ChessSet* ChessSetFactory::getDefaultWhiteChessSet()
 {
-	return getSimpleChessSet(ChessSide::WHITE);
+	mDefaultWhiteChessSet->setSide(ChessSide::WHITE);
+	return mDefaultWhiteChessSet;
 }
 
 ChessSet* ChessSetFactory::getDefaultBlackChessSet()
 {
-	return getSimpleChessSet(ChessSide::BLACK);
+	mDefaultBlackChessSet->setSide(ChessSide::BLACK);
+	return mDefaultBlackChessSet;
 }
 
 void ChessSetFactory::initialize()
 {
-	//TODO: Load from xml file 
+	tinyxml2::XMLDocument doc = new tinyxml2::XMLDocument();
+	doc.LoadFile(FILENAME_CHESS_SETS.c_str());
+	if (doc.Error()) {
+		UIUtils::setStatusText("Chess set file " + FILENAME_CHESS_SETS + " could not be loaded. Error: " + doc.ErrorName());
+		return;
+	}
+
+	tinyxml2::XMLElement* rootElement = doc.RootElement();
+
+	for (tinyxml2::XMLElement* chessSetElement = rootElement->FirstChildElement("ChessSet");
+	chessSetElement;
+		chessSetElement = chessSetElement->NextSiblingElement())
+	{
+		std::string chessSetName = chessSetElement->Attribute("name");
+		bool isDefaultWhite = chessSetElement->BoolAttribute("isDefaultWhite");
+		bool isDefaultBlack = chessSetElement->BoolAttribute("isDefaultBlack");
+
+		ChessPed chessPedPawn = getChessPedForElement(chessSetElement->FirstChildElement("Pawn"));
+		ChessPed chessPedRook = getChessPedForElement(chessSetElement->FirstChildElement("Rook"));
+		ChessPed chessPedKnight = getChessPedForElement(chessSetElement->FirstChildElement("Knight"));
+		ChessPed chessPedBishop = getChessPedForElement(chessSetElement->FirstChildElement("Bishop"));
+		ChessPed chessPedQueen = getChessPedForElement(chessSetElement->FirstChildElement("Queen"));
+		ChessPed chessPedKing = getChessPedForElement(chessSetElement->FirstChildElement("King"));
+
+
+		std::array<ChessPiece*, 16>  pieces;
+		int index = 0;
+		for (int i = 0; i < 8; i++) {
+			pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::PAWN, chessPedPawn, Vector3(), 1.0);;
+		}
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::ROOK, chessPedRook, Vector3(), 1.0);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KNIGHT, chessPedKnight, Vector3(), 1.0);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::BISHOP, chessPedBishop, Vector3(), 1.0);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::QUEEN, chessPedQueen, Vector3(), 1.0);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KING, chessPedKing, Vector3(), 1.0);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::BISHOP, chessPedBishop, Vector3(), 1.0);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KNIGHT, chessPedKnight, Vector3(), 1.0);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::ROOK, chessPedRook, Vector3(), 1.0);
+
+		ChessSet* chessSet = new ChessSet(chessSetName, pieces);
+
+		if (isDefaultWhite) {
+			mDefaultWhiteChessSet = chessSet;
+		}
+		else if (isDefaultBlack) {
+			mDefaultBlackChessSet = chessSet;
+		}
+
+		mChessSets.push_back(chessSet);
+	}
+
 }
+
+ChessPed ChessSetFactory::getChessPedForElement(tinyxml2::XMLElement * chessPieceElement)
+{
+
+	std::array<int, 12> drawableVariations;
+	std::array<int, 12> textureVariation; 
+	std::array<int, 12> paletteVariation; 
+	std::array<int, 3> propVariation; 
+	std::array<int, 3> propTextureVariation;
+
+
+	const char* strPedModelHash = chessPieceElement->Attribute("pedModelHash");
+	DWORD pedModelHash = strtoul(strPedModelHash, NULL, 0);
+
+	
+	const char* constMovementStyle = chessPieceElement->Attribute("movementStyle");
+	char* movementStyle = strdup(constMovementStyle);
+	//set variant of ped
+	for (int i = 0; i < 12; i++) {
+		const char* strDrawableVar = chessPieceElement->Attribute(("drawableVariation" + std::to_string(i)).c_str());
+		const char* strTextureVar = chessPieceElement->Attribute(("textureVariation" + std::to_string(i)).c_str());
+		const char* strPaletteVar = chessPieceElement->Attribute(("paletteVariation" + std::to_string(i)).c_str());
+
+		int drawableVar = std::stoi(strDrawableVar);
+		int textureVar = std::stoi(strTextureVar);
+		int paletteVar = std::stoi(strPaletteVar);
+		drawableVariations[i] = drawableVar;
+		textureVariation[i] = textureVar;
+		paletteVariation[i] = paletteVar;
+	}
+
+	//get props
+	for (int i = 0; i <= 2; i++) {
+		const char* strPropVar = chessPieceElement->Attribute(("propVariation" + std::to_string(i)).c_str());
+		const char* strPropTextureVar = chessPieceElement->Attribute(("propTextureVariation" + std::to_string(i)).c_str());
+
+		int propVar = std::stoi(strPropVar);
+		int propTextureVar = std::stoi(strPropTextureVar);
+		propVariation[i] = propVar;
+		propTextureVariation[i] = propTextureVar;
+	}
+
+	return ChessPed(pedModelHash, movementStyle, drawableVariations,textureVariation, paletteVariation, propVariation, propTextureVariation);
+}
+
+
 
 ChessSet* ChessSetFactory::getSimpleChessSet(ChessSide::Side side)
 {

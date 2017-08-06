@@ -6,6 +6,7 @@ class ChessSide;
 class ChessPiece;
 #include "ChessPiece.h"
 #include "ChessSet.h"
+#include "tinyxml2.h"
 #include <vector>
 #include <array>
 
@@ -15,6 +16,7 @@ public:
 	ChessSet(std::string name, std::array<ChessPiece*, 16> pieces);
 	std::string getName();
 	std::array<ChessPiece*, 16>  getPieces();
+	void setSide(ChessSide::Side side);
 
 protected:
 	std::string mName;
@@ -31,10 +33,13 @@ public:
 	ChessSet* getDefaultBlackChessSet();
 
 protected:
-	std::vector<std::string> mChessSetNames;
-	std::vector<ChessSet> mChessSets;
+	std::vector<ChessSet*> mChessSets;
+	std::string FILENAME_CHESS_SETS;
+	ChessSet* mDefaultWhiteChessSet;
+	ChessSet* mDefaultBlackChessSet;
 
 	void initialize();
+	ChessPed getChessPedForElement(tinyxml2::XMLElement* chessSetElement);
 	ChessSet* getSimpleChessSet(ChessSide::Side side);
 
 };

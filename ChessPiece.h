@@ -25,6 +25,7 @@ public:
 	ChessPiece(ChessSide::Side side, Type pieceType, ChessPed chessPed, Vector3 location, float heading);
 	
 	ChessSide::Side getSide();
+	void setSide(ChessSide::Side side);
 	Type getPieceType() const;
 	Vector3 getLocation() const;
 	void setLocation(Vector3 location); 
@@ -43,6 +44,7 @@ public:
 	void removePed();
 	void setPedFreezed(bool isFreezed);
 	void setPedCanBeDamaged(bool canBeDamaged);
+	void setHealth(int health);
 
 	void startMovement(ChessMove chessMove, ChessBoard* chessBoard);
 	bool isMovementCompleted(ChessMove chessMove, int nrChecksDone);
@@ -61,7 +63,7 @@ public:
 	void equipPrimaryWeapon();
 	void equipSecondaryWeapon();
 	void equipMeleeWeapon();
-	void unequipWeapons();
+	void removeWeapons();
 
 	float getWalkSpeed();
 

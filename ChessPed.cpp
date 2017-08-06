@@ -7,11 +7,13 @@
 ChessPed::ChessPed()
 {
 	mPedModelHash = 71929310;
+	mMovementStyle = "move_m@brave";
 }
 
-ChessPed::ChessPed(DWORD pedModelHash, std::array<int, 12> drawableVariations, std::array<int, 12> textureVariation, std::array<int, 12> paletteVariation, std::array<int, 3> propVariation, std::array<int, 3> propTextureVariation)
+ChessPed::ChessPed(DWORD pedModelHash, char* movementStyle, std::array<int, 12> drawableVariations, std::array<int, 12> textureVariation, std::array<int, 12> paletteVariation, std::array<int, 3> propVariation, std::array<int, 3> propTextureVariation)
 {
 	mPedModelHash = pedModelHash;
+	mMovementStyle = movementStyle;
 	mDrawableVariations = drawableVariations;
 	mTextureVariation = textureVariation;
 	mPaletteVariation = paletteVariation;
@@ -27,7 +29,7 @@ Ped ChessPed::getPed() const
 
 void ChessPed::spawnPed(Vector3 location, float heading,Hash relationshipGroupHash)
 {
-	Logger::logDebug("ChessPed::spawnPed");
+	Logger::logDebug("ChessPed::spawnPed Hash" + std::to_string(mPedModelHash));
 	STREAMING::REQUEST_MODEL(mPedModelHash);
 	while (!STREAMING::HAS_MODEL_LOADED(mPedModelHash)) {
 		WAIT(0);
@@ -60,6 +62,11 @@ void ChessPed::spawnPed(Vector3 location, float heading,Hash relationshipGroupHa
 	PED::SET_PED_RELATIONSHIP_GROUP_HASH(mPed, relationshipGroupHash);
 
 	PED::SET_PED_CAN_BE_TARGETED_WHEN_INJURED(mPed, true);
+	PED::SET_PED_DIES_WHEN_INJURED(mPed, true);
+
+	if (STREAMING::HAS_CLIP_SET_LOADED(mMovementStyle)) {
+		PED::SET_PED_MOVEMENT_CLIPSET(PLAYER::PLAYER_PED_ID(), mMovementStyle, 1.0);
+	}
 
 	//TODO: Remove temporary
 	WeaponUtils::giveAllWeapons(mPed);
