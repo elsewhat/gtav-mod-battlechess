@@ -217,6 +217,7 @@ bool SyncedAnimation::isCompleted()
 				return false;
 			}
 			float sceneStatus = PED::GET_SYNCHRONIZED_SCENE_PHASE(m_sceneId);
+			Logger::logDebug("SyncedAnim scene status " + std::to_string(sceneStatus));
 			if (sceneStatus >= 1.0) {
 				return true;
 			}
@@ -502,7 +503,6 @@ bool SyncedAnimationFactory::initialize()
 	tinyxml2::XMLDocument doc = new tinyxml2::XMLDocument();
 	doc.LoadFile(mFileName.c_str());
 	if (doc.Error()) {
-		Logger::logDebug("Synched animations file file " + mFileName + " could not be loaded. Error: " + doc.ErrorName());
 		Logger::logDebug("Synched animations file file " + mFileName + " could not be loaded. Error: " + doc.ErrorName());
 		return false;
 	}

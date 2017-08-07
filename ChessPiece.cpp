@@ -137,6 +137,7 @@ void ChessPiece::setHealth(int health)
 
 void ChessPiece::startMovement(ChessMove chessMove, ChessBoard* chessBoard)
 {
+	Logger::logDebug("ChessPiece::startMovement");
 	mIsMoving = true;
 	chessMove.getAttacker()->setPedFreezed(false);
 
@@ -165,10 +166,12 @@ void ChessPiece::startMovement(ChessMove chessMove, ChessBoard* chessBoard)
 
 bool ChessPiece::isMovementCompleted(ChessMove chessMove, int nrChecksDone)
 {
-	float minDistance = 0.5f;
+	float minDistance = 1.5f;
 	Vector3 currentLocation  = ENTITY::GET_ENTITY_COORDS(getPed(), true);
 	float distanceToTarget = SYSTEM::VDIST(mLocation.x, mLocation.y, mLocation.z, currentLocation.x, currentLocation.y, currentLocation.z);
+	Logger::logDebug("ChessPiece::isMovementCompleted distance:" + std::to_string(distanceToTarget));
 	if (distanceToTarget < minDistance) {
+		Logger::logDebug("ChessPiece::isMovementCompleted distance:" + std::to_string(distanceToTarget));
 		return true;
 	}
 	else {

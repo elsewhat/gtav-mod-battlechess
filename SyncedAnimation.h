@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <memory>
 #include <windows.h>
 class ChessPiece;
 #include "ChessPiece.h"

@@ -116,3 +116,56 @@ void ChessBattleFireSecondaryWeapon::equipWeapon(ChessMove chessMove)
 	chessMove.getAttacker()->equipSecondaryWeapon(); 
 	chessMove.getDefender()->setHealth(115);
 }
+
+ChessBattleSyncedAnimation::ChessBattleSyncedAnimation(std::shared_ptr<SyncedAnimation> syncedAnimation, bool killAfterwards, bool useDefenderLocation,Vector3 locationOffset)
+{
+	mSyncedAnimation = syncedAnimation;
+	mKillAfterwards = killAfterwards;
+	mUseDefenderLocation = useDefenderLocation;
+	mLocationOffset = locationOffset;
+}
+
+void ChessBattleSyncedAnimation::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	Logger::logDebug("ChessBattleSyncedAnimation::startExecution " + mSyncedAnimation->getTitle());
+	std::vector<ChessPiece*> actors = { chessMove.getAttacker(), chessMove.getDefender() };
+
+	Vector3 startLocation = ENTITY::GET_ENTITY_COORDS(chessMove.getAttacker()->getPed(), true);
+	if (mUseDefenderLocation) {
+		startLocation = ENTITY::GET_ENTITY_COORDS(chessMove.getDefender()->getPed(), true);
+	}
+	startLocation.x = startLocation.x+ mLocationOffset.x;
+	startLocation.y = startLocation.y + mLocationOffset.y;
+	startLocation.z = startLocation.z + mLocationOffset.z;
+	mSyncedAnimation->executeSyncedAnimation(true, actors, false, startLocation, false, true, false);
+}
+
+bool ChessBattleSyncedAnimation::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	ChessPiece* defender = chessMove.getDefender();
+	ChessPiece* attacker = chessMove.getAttacker();
+
+	if (mIsMovingToSquare) {
+		Logger::logDebug("mNrMovementChecks" + std::to_string(mNrMovementChecks));
+		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
+	}
+	else if (mSyncedAnimation->isCompleted()) {
+		mSyncedAnimation->cleanupAfterExecution(true, false);
+		if (!defender->isPedDeadOrDying()) {
+			Logger::logDebug("Defender is not dead. Exploding head death");
+			if (mKillAfterwards) {
+				PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
+			}
+			else {
+				defender->removePed();
+			}
+		}
+		mIsMovingToSquare = true;
+		attacker->startMovement(chessMove, chessBoard);
+		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
+	}
+	else {
+		return false;
+	}
+
+}

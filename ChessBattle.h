@@ -3,7 +3,10 @@
 #include "inc\types.h"
 #include "ChessBoard.h"
 #include "ChessPiece.h"
+class SyncedAnimation;
+#include "SyncedAnimation.h"
 #include <vector>
+#include <memory>
 
 class ChessBattle {
 public:
@@ -41,4 +44,18 @@ public:
 
 protected:
 	void equipWeapon(ChessMove chessMove)override;
+};
+
+class ChessBattleSyncedAnimation : public ChessBattle {
+public:
+	ChessBattleSyncedAnimation(std::shared_ptr<SyncedAnimation> syncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset);
+
+	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mKillAfterwards;
+	bool mUseDefenderLocation;
+	Vector3 mLocationOffset;
+	std::shared_ptr<SyncedAnimation> mSyncedAnimation;
 };

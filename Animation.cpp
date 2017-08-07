@@ -62,6 +62,10 @@ std::vector<Animation> AnimationFactory::getAllAnimations() {
 
 bool AnimationFactory::initialize() {
 	Logger::logDebug("SyncedAnimationFactory::initialize");
+	//Add a null animation in first index
+	mGtaAnimations = {
+		{ 0,"00000","","",0 }
+	};
 	mGtaAnimations.reserve(99500);
 
 
@@ -107,5 +111,6 @@ Animation AnimationFactory::getAnimationForShortcutIndex(std::string strIndex) {
 AnimationFactory::AnimationFactory(std::string fileName)
 {
 	mFileName = fileName;
+
 	initialize();
 }

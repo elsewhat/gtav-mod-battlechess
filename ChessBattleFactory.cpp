@@ -31,8 +31,16 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForPawn(ChessMove
 	
 	switch (chessMove.getDefender()->getPieceType())
 	{
-	case ChessPiece::PAWN:
-		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
+	case ChessPiece::PAWN: {
+		std::shared_ptr<SyncedAnimation> syncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Drunken fist fight");
+		if (syncedAnimation != nullptr) {
+			return std::make_shared <ChessBattleSyncedAnimation>(ChessBattleSyncedAnimation(syncedAnimation,true,true, Vector3()));
+		}
+		else {
+			Logger::logDebug("Drunken fist fight synced anim does not exist");
+			return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
+		}
+	}
 	case ChessPiece::ROOK:
 		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
 	case ChessPiece::KNIGHT:
@@ -77,8 +85,20 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForKnight(ChessMo
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
 	case ChessPiece::ROOK:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
-	case ChessPiece::KNIGHT:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+	case ChessPiece::KNIGHT: {
+		std::shared_ptr<SyncedAnimation> syncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Guitar beatdown");
+		if (syncedAnimation != nullptr) {
+			Vector3 offset;
+			offset.x = -1.5;
+			offset.y = -0.5;
+			offset.z = 0.0;
+			return std::make_shared <ChessBattleSyncedAnimation>(ChessBattleSyncedAnimation(syncedAnimation,false,true, offset));
+		}
+		else {
+			Logger::logDebug("Guitar beatdown synced anim does not exist");
+			return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		}
+	}
 	case ChessPiece::BISHOP:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
 	case ChessPiece::QUEEN:
