@@ -59,3 +59,53 @@ protected:
 	Vector3 mLocationOffset;
 	std::shared_ptr<SyncedAnimation> mSyncedAnimation;
 };
+
+class ChessBattleSyncedAnimationChained : public ChessBattle {
+public:
+	ChessBattleSyncedAnimationChained(std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset);
+
+	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mKillAfterwards;
+	bool mUseDefenderLocation;
+	bool mIsFirstCompleted;
+	Vector3 mLocationOffset;
+	Vector3 mStartLocation;
+	std::shared_ptr<SyncedAnimation> mFirstSyncedAnimation;
+	std::shared_ptr<SyncedAnimation> mSecondSyncedAnimation;
+};
+
+
+class ChessBattleHeadbutt : public ChessBattle {
+public:
+	ChessBattleHeadbutt(ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	std::shared_ptr<SyncedAnimation> mSyncedAnimation;
+};
+
+class ChessBattleStealthKill : public ChessBattle {
+public:
+	ChessBattleStealthKill();
+
+	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+};
+
+class ChessBattleDeathByCop : public ChessBattle {
+public:
+	ChessBattleDeathByCop();
+
+	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	Any mIncidentId;
+};

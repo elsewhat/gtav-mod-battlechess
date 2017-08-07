@@ -2117,7 +2117,7 @@ namespace GAMEPLAY
 	static int _0xEB4A0C2D56441717(int p0) { return invoke<int>(0xEB4A0C2D56441717, p0); } // 0xEB4A0C2D56441717 0x3CE5BF6B
 	static Any CREATE_INCIDENT(Any p1, Any p2, Any p3, Any p4, Any p5, Any p6, Any p7) { return invoke<Any>(0x3F892CAF67444AE7, p1, p2, p3, p4, p5, p6, p7); } // 0x3F892CAF67444AE7 0xFC5FF7B3
 	static BOOL CREATE_INCIDENT_WITH_ENTITY(int p0, Entity p1, int p2, float p3, Any* p4) { return invoke<BOOL>(0x05983472F0494E60, p0, p1, p2, p3, p4); } // 0x05983472F0494E60 0xBBC35B03
-	static void DELETE_INCIDENT(int* incidentId) { invoke<Void>(0x556C1AA270D5A207, incidentId); } // 0x556C1AA270D5A207 0x212BD0DC
+	static void DELETE_INCIDENT(Any* incidentId) { invoke<Void>(0x556C1AA270D5A207, incidentId); } // 0x556C1AA270D5A207 0x212BD0DC
 	static BOOL IS_INCIDENT_VALID(Any p0) { return invoke<BOOL>(0xC8BC6461E629BEAA, p0); } // 0xC8BC6461E629BEAA 0x31FD0BA4
 	static void _0xB08B85D860E7BA3C(Any p0, Any p1, Any p2) { invoke<Void>(0xB08B85D860E7BA3C, p0, p1, p2); } // 0xB08B85D860E7BA3C 0x0242D88E
 	static void _0xD261BA3E7E998072(Any p0, float p1) { invoke<Void>(0xD261BA3E7E998072, p0, p1); } // 0xD261BA3E7E998072 0x1F38102E
