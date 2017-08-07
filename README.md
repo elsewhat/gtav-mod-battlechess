@@ -5,7 +5,7 @@ Source available at: https://github.com/elsewhat/gtav-mod-battlechess
 
 Demo video: TBD
 
-Installation: Requires Scripthook V. Copy BattleChess.asi into game directory
+Installation: Requires Scripthook V. Copy BattleChess.asi, Battlechess_anims.txt, Battlechess_sets.xml and Battlechess_synchedanims.xml into game directory
 
 ## Developer setup
 1. Get GTA V (steam version preferred)
