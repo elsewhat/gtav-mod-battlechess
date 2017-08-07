@@ -13,6 +13,8 @@ ChessBoard::ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDel
 	initializeSquares();
 	mSideToMove = ChessSide::WHITE;
 
+	mChessBattleFactory = new ChessBattleFactory();
+
 	mWhiteRelationshipGroupHash = GAMEPLAY::GET_HASH_KEY("BATTLECHESS_WHITE");
 	mBlackRelationshipGroupHash = GAMEPLAY::GET_HASH_KEY("BATTLECHESS_BLACK");
 
@@ -62,7 +64,7 @@ void ChessBoard::makeMove(ChessMove chessMove)
 		squareTo->removePiece();
 		squareTo->setPiece(attacker);
 
-		Logger::logInfo("ChessBoard::makeMove TODO handle move that is capture");
+		//Logger::logInfo("ChessBoard::makeMove TODO handle move that is capture");
 	}
 	else {
 		ChessPiece* chessPiece = chessMove.getAttacker();
@@ -181,6 +183,11 @@ void ChessBoard::freezeAllExcept(std::vector<ChessPiece*> chessPieces)
 	for (auto* piece : chessPieces) {
 		piece->setPedFreezed(false);
 	}
+}
+
+ChessBattleFactory * ChessBoard::getChessBattleFactory()
+{
+	return mChessBattleFactory;
 }
 
 void ChessBoard::drawOnTick()

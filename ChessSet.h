@@ -2,6 +2,7 @@
 
 #include "inc\types.h"
 class ChessSide;
+#include "ChessSide.h"
 #include "ChessBoard.h"
 class ChessPiece;
 #include "ChessPiece.h"

@@ -4,19 +4,26 @@
 #include "Utils.h"
 #include "GTAUtils.h"
 
+ChessBattle::ChessBattle()
+{
+}
 
+void ChessBattle::initializeBattle(ChessMove chessMove, ChessBoard * chessBoard)
+{
+	std::vector<ChessPiece*> activePieces = { chessMove.getAttacker(), chessMove.getDefender() };
+	chessBoard->freezeAllExcept(activePieces);
+	chessMove.getAttacker()->setPedCanBeDamaged(false);
+	chessMove.getDefender()->setPedCanBeDamaged(true);
+	mIsMovingToSquare = false;
+	mNrMovementChecks = 0;
+}
 
 ChessBattleFirePrimaryWeapon::ChessBattleFirePrimaryWeapon()
 {
 }
 
-bool ChessBattleFirePrimaryWeapon::canBeExecutedFor(ChessMove chessMove)
-{
-	return true;
-}
 
-
-void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessMove chessMove)
+void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)
 {
 	Logger::logDebug("ChessBattleFirePrimaryWeapon::startExecution");
 	mTicksStarted = ticksStart;
@@ -32,14 +39,21 @@ void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessMove ch
 	Logger::logDebug("startExecution Defender health " + std::to_string(ENTITY::GET_ENTITY_HEALTH(defender->getPed())));
 }
 
-bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove)
+bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)
 {
 	//Important to get from chessMove and not from ChessBoardSquare
 	ChessPiece* attacker = chessMove.getAttacker();
 	ChessPiece* defender = chessMove.getDefender();
 
+	if (mIsMovingToSquare) {
+		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
+	}
+	else if (defender->isPedDeadOrDying()) {
+		mIsMovingToSquare = true; 
+		attacker->startMovement(chessMove, chessBoard);
 
-	if (defender->isPedDeadOrDying()) {
+		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
+		/*
 		//TODO: Split into a standard method in abstract class
 		Vector3 mLocation = chessMove.getSquareTo()->getLocation();
 		float walkSpeed = 1.0;
@@ -57,7 +71,7 @@ bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMov
 		AI::CLEAR_SEQUENCE_TASK(&task_seq);
 
 		//TODO: Wait for person to walk to square
-		return true;
+		return true;*/
 	}
 	else if (ticksNow - mTicksStarted > 5000) {
 		Logger::logDebug("ChessBattleFirePrimaryWeapon::More than 5000 ticks since started. Retriggering");
@@ -77,6 +91,4 @@ bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMov
 	return false;
 }
 
-ChessBattle::ChessBattle()
-{
-}
+

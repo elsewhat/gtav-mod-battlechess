@@ -164,16 +164,11 @@ bool ChessPiece::isMovementCompleted(ChessMove chessMove, int nrChecksDone)
 
 std::shared_ptr<ChessBattle> ChessPiece::startChessBattle(ChessMove chessMove, ChessBoard* chessBoard)
 {
-	ChessBattleFirePrimaryWeapon chessBattle;
+	std::shared_ptr<ChessBattle> chessBattle = chessBoard->getChessBattleFactory()->findBattle(chessMove, chessBoard);
+	chessBattle->initializeBattle(chessMove, chessBoard);
+	chessBattle->startExecution(GetTickCount(), chessMove);
 
-	std::vector<ChessPiece*> activePieces = { chessMove.getAttacker(), chessMove.getDefender() };
-	chessBoard->freezeAllExcept(activePieces);
-	chessMove.getAttacker()->setPedCanBeDamaged(false);
-	chessMove.getDefender()->setPedCanBeDamaged(true);
-
-	chessBattle.startExecution(GetTickCount(), chessMove);
-
-	return std::make_shared<ChessBattleFirePrimaryWeapon>(chessBattle);
+	return chessBattle;
 }
 
 LPCSTR ChessPiece::getPrimaryWeapon()

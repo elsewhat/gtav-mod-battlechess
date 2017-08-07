@@ -8,6 +8,8 @@ class ChessBoard;
 #include "ChessMove.h"
 class ChessBattle;
 #include "ChessBattle.h"
+class ChessBattleFactory;
+#include "ChessBattleFactory.h"
 #include <vector>
 #include <memory>
 

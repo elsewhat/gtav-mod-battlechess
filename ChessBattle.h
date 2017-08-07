@@ -9,19 +9,22 @@ class ChessBattle {
 public:
 	ChessBattle();
 
-	virtual bool canBeExecutedFor(ChessMove chessMove)=0;
-	virtual void startExecution(DWORD ticksStart, ChessMove chessMove)=0;
-	virtual bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove)=0;
+	virtual void initializeBattle(ChessMove chessMove, ChessBoard* chessBoard);
+	virtual void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)=0;
+	virtual bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove,ChessBoard* chessBoard)=0;
 
 protected:
 	DWORD mTicksStarted;
+	bool mIsMovingToSquare;
+	int mNrMovementChecks;
 };
+
+
 
 class ChessBattleFirePrimaryWeapon : public ChessBattle {
 public:
 	ChessBattleFirePrimaryWeapon();
 
-	bool canBeExecutedFor(ChessMove chessMove)override;
-	void startExecution(DWORD ticksStart, ChessMove chessMove)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove)override;
+	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
 };

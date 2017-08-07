@@ -11,6 +11,8 @@ class ChessSet;
 #include "ChessSet.h"
 class ChessMove;
 #include "ChessMove.h"
+class ChessBattleFactory;
+#include "ChessBattleFactory.h"
 
 #include <vector>
 #include <array>
@@ -36,6 +38,7 @@ public:
 	void spawnChessPieces();
 
 	void freezeAllExcept(std::vector<ChessPiece*> chessPieces);
+	ChessBattleFactory* getChessBattleFactory();
 
 
 	void drawOnTick();
@@ -44,6 +47,8 @@ protected:
 	std::array<ChessBoardSquare*, 64>  mSquares;
 	ChessSet* mWhiteSet;
 	ChessSet* mBlackSet;
+
+	ChessBattleFactory* mChessBattleFactory;
 
 	Vector3 mBaseLocation;
 	float mSquareDeltaX;
