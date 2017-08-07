@@ -23,6 +23,7 @@
     <ClCompile Include="ChessBoardSquare.cpp" />
     <ClCompile Include="ChessMove.cpp" />
     <ClCompile Include="ChessBattleFactory.cpp" />
+    <ClCompile Include="SyncedAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lighting.h" />
@@ -62,6 +63,7 @@
       <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="ChessBattleFactory.h" />
+    <ClInclude Include="SyncedAnimation.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="inc">

@@ -15,7 +15,21 @@ ChessPiece::ChessPiece(ChessSide::Side side, Type pieceType, ChessPed chessPed, 
 	mChessPed = chessPed;
 	mLocation = location;
 	mHeading = heading;
-	mPrimaryWeapon = "WEAPON_COMBATPISTOL";
+	mPrimaryWeapon = "WEAPON_PUMPSHOTGUN";
+	mSecondaryWeapon = "WEAPON_COMBATPISTOL";
+	mMeleeWeapon = "WEAPON_KNIFE";
+}
+
+ChessPiece::ChessPiece(ChessSide::Side side, Type pieceType, ChessPed chessPed, Vector3 location, float heading, std::string primaryWeapon, std::string secondaryWeapon, std::string meleeWeapon)
+{
+	mSide = side;
+	mPieceType = pieceType;
+	mChessPed = chessPed;
+	mLocation = location;
+	mHeading = heading;
+	mPrimaryWeapon = primaryWeapon;
+	mSecondaryWeapon = secondaryWeapon;
+	mMeleeWeapon = meleeWeapon;
 }
 
 ChessSide::Side ChessPiece::getSide()
@@ -166,61 +180,54 @@ std::shared_ptr<ChessBattle> ChessPiece::startChessBattle(ChessMove chessMove, C
 {
 	std::shared_ptr<ChessBattle> chessBattle = chessBoard->getChessBattleFactory()->findBattle(chessMove, chessBoard);
 	chessBattle->initializeBattle(chessMove, chessBoard);
-	chessBattle->startExecution(GetTickCount(), chessMove);
+	chessBattle->startExecution(GetTickCount(), chessMove, chessBoard);
 
 	return chessBattle;
 }
 
-LPCSTR ChessPiece::getPrimaryWeapon()
+std::string ChessPiece::getPrimaryWeapon()
 {
 	return mPrimaryWeapon;
 }
 
-void ChessPiece::setPrimaryWeapon(LPCSTR primaryWeapon)
+void ChessPiece::setPrimaryWeapon(std::string primaryWeapon)
 {
 	mPrimaryWeapon = primaryWeapon;
 }
 
-LPCSTR ChessPiece::getSecondaryWeapon()
+std::string ChessPiece::getSecondaryWeapon()
 {
 	return mSecondaryWeapon;
 }
 
-void ChessPiece::setSecondaryWeapon(LPCSTR secondaryWeapon)
+void ChessPiece::setSecondaryWeapon(std::string secondaryWeapon)
 {
 	mSecondaryWeapon = secondaryWeapon;
 }
 
-LPCSTR ChessPiece::getMeleeWeapon()
+std::string ChessPiece::getMeleeWeapon()
 {
 	return mMeleeWeapon;
 }
 
-void ChessPiece::setMeleeWeapon(LPCSTR meleeWeapon)
+void ChessPiece::setMeleeWeapon(std::string meleeWeapon)
 {
 	mMeleeWeapon = meleeWeapon;
 }
 
 void ChessPiece::equipPrimaryWeapon()
 {
-	if (mPrimaryWeapon != NULL || mPrimaryWeapon[0] != 0) {
-		WeaponUtils::giveWeapon(mChessPed.getPed(), mPrimaryWeapon);
-		//WEAPON::SET_PED_INFINITE_AMMO_CLIP(mChessPed.getPed(), true);
-	}
+	WeaponUtils::giveWeapon(mChessPed.getPed(), mPrimaryWeapon);
 }
 
 void ChessPiece::equipSecondaryWeapon()
 {
-	if (mSecondaryWeapon == NULL || mSecondaryWeapon[0] == 0) {
-		WeaponUtils::giveWeapon(mChessPed.getPed(), mSecondaryWeapon);
-	}
+	WeaponUtils::giveWeapon(mChessPed.getPed(), mSecondaryWeapon);
 }
 
 void ChessPiece::equipMeleeWeapon()
 {
-	if (mSecondaryWeapon == NULL || mSecondaryWeapon[0] == 0) {
-		WeaponUtils::giveWeapon(mChessPed.getPed(), mMeleeWeapon);
-	}
+	WeaponUtils::giveWeapon(mChessPed.getPed(), mMeleeWeapon);
 }
 
 void ChessPiece::removeWeapons()

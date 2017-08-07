@@ -537,20 +537,6 @@ void BattleChessMain()
 
 	initReadKeyMapping();
 
-	//gtaScenarios = getAllGTAScenarios();
-	/*
-	gtaWalkingStyles = getAllMovementClipSet();
-	for (auto & walkingStyle : gtaWalkingStyles) {
-		STREAMING::REQUEST_CLIP_SET(walkingStyle.id);
-	}*/
-
-	bool animOk = initAnimations(configFileAnimations);
-	if (animOk) {
-		Logger::logInfo("GTA Animations initialized: ");
-	}
-	else {
-		Logger::logInfo("GTA Animations initialization failed. SceneDirectorAnim.txt file missing?");
-	}
 
 	//initializeSyncedAnimations();
 
@@ -570,6 +556,12 @@ void BattleChessMain()
 	chessBoard->setBlackChessSet(chessSetFactory.getDefaultBlackChessSet());
 
 	Logger::logInfo("BattleChess initialized");
+
+	AnimationFactory* animationFactory = new AnimationFactory(configFileAnimations);
+	SyncedAnimationFactory* syncedAnimationFactory = new SyncedAnimationFactory(configFileSynchedAnimations, animationFactory);
+
+	chessBoard->setSyncedAnimationFactory(syncedAnimationFactory);
+	chessBoard->setAnimationFactory(animationFactory);
 
 	mainEngineLoop();
 }

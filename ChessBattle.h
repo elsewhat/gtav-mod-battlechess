@@ -24,7 +24,21 @@ protected:
 class ChessBattleFirePrimaryWeapon : public ChessBattle {
 public:
 	ChessBattleFirePrimaryWeapon();
+	ChessBattleFirePrimaryWeapon(std::string firingPattern);
 
 	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
 	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	std::string mFiringPattern;
+	virtual void equipWeapon(ChessMove chessMove);
+};
+
+class ChessBattleFireSecondaryWeapon : public ChessBattleFirePrimaryWeapon {
+public:
+	ChessBattleFireSecondaryWeapon();
+	ChessBattleFireSecondaryWeapon(std::string firingPattern);
+
+protected:
+	void equipWeapon(ChessMove chessMove)override;
 };

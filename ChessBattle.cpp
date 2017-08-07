@@ -20,6 +20,12 @@ void ChessBattle::initializeBattle(ChessMove chessMove, ChessBoard * chessBoard)
 
 ChessBattleFirePrimaryWeapon::ChessBattleFirePrimaryWeapon()
 {
+	mFiringPattern = "FIRING_PATTERN_SINGLE_SHOT";
+}
+
+ChessBattleFirePrimaryWeapon::ChessBattleFirePrimaryWeapon(std::string firingPattern)
+{
+	mFiringPattern = firingPattern;
 }
 
 
@@ -32,9 +38,10 @@ void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessMove ch
 	ChessPiece* defender = chessMove.getDefender();
 
 	//worst case is that two shots take 18 damage
-	defender->setHealth(115);
-	attacker->equipPrimaryWeapon();
-	AI::TASK_SHOOT_AT_ENTITY(attacker->getPed() , defender->getPed(), -1, GAMEPLAY::GET_HASH_KEY("FIRING_PATTERN_SINGLE_SHOT"));
+	defender->setHealth(300);
+	equipWeapon(chessMove);
+
+	AI::TASK_SHOOT_AT_ENTITY(attacker->getPed() , defender->getPed(), -1, GAMEPLAY::GET_HASH_KEY(strdup(mFiringPattern.c_str())));
 
 	Logger::logDebug("startExecution Defender health " + std::to_string(ENTITY::GET_ENTITY_HEALTH(defender->getPed())));
 }
@@ -78,9 +85,9 @@ bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMov
 
 		Logger::logDebug("Defender health " + std::to_string(ENTITY::GET_ENTITY_HEALTH(defender->getPed())));
 		attacker->removeWeapons();
-		attacker->equipPrimaryWeapon();
+		equipWeapon(chessMove);
 		AI::CLEAR_PED_TASKS_IMMEDIATELY(attacker->getPed());
-		AI::TASK_SHOOT_AT_ENTITY(attacker->getPed(), defender->getPed(), 5000, GAMEPLAY::GET_HASH_KEY("FIRING_PATTERN_SINGLE_SHOT"));
+		AI::TASK_SHOOT_AT_ENTITY(attacker->getPed(), defender->getPed(), -1, GAMEPLAY::GET_HASH_KEY(strdup(mFiringPattern.c_str())));
 
 		Logger::logDebug("ENTITY::DOES_ENTITY_EXIST(defender->getPed()) " + std::to_string(ENTITY::DOES_ENTITY_EXIST(defender->getPed())));
 
@@ -91,4 +98,21 @@ bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMov
 	return false;
 }
 
+void ChessBattleFirePrimaryWeapon::equipWeapon(ChessMove chessMove)
+{
+	chessMove.getAttacker()->equipPrimaryWeapon();
+}
 
+ChessBattleFireSecondaryWeapon::ChessBattleFireSecondaryWeapon():ChessBattleFirePrimaryWeapon()
+{
+}
+
+ChessBattleFireSecondaryWeapon::ChessBattleFireSecondaryWeapon(std::string firingPattern):ChessBattleFirePrimaryWeapon(firingPattern)
+{
+}
+
+void ChessBattleFireSecondaryWeapon::equipWeapon(ChessMove chessMove)
+{
+	chessMove.getAttacker()->equipSecondaryWeapon(); 
+	chessMove.getDefender()->setHealth(115);
+}

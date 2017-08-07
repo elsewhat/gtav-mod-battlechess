@@ -13,6 +13,10 @@ class ChessMove;
 #include "ChessMove.h"
 class ChessBattleFactory;
 #include "ChessBattleFactory.h"
+class SyncedAnimationFactory;
+#include "SyncedAnimation.h"
+class AnimationFactory;
+#include "Animation.h"
 
 #include <vector>
 #include <array>
@@ -40,6 +44,12 @@ public:
 	void freezeAllExcept(std::vector<ChessPiece*> chessPieces);
 	ChessBattleFactory* getChessBattleFactory();
 
+	void setSyncedAnimationFactory(SyncedAnimationFactory* syncedAnimationFactory);
+	SyncedAnimationFactory* getSyncedAnimationFactory();
+
+	void setAnimationFactory(AnimationFactory* animationFactory);
+	AnimationFactory* getAnimationFactory();
+
 
 	void drawOnTick();
 protected:
@@ -49,6 +59,8 @@ protected:
 	ChessSet* mBlackSet;
 
 	ChessBattleFactory* mChessBattleFactory;
+	SyncedAnimationFactory* mSyncedAnimationFactory;
+	AnimationFactory* mAnimationFactory;
 
 	Vector3 mBaseLocation;
 	float mSquareDeltaX;

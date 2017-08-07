@@ -73,8 +73,6 @@ void ChessBoard::makeMove(ChessMove chessMove)
 
 	}
 
-
-
 	if (chessMove.isEnpassentEnabling()) {
 		Logger::logInfo("ChessBoard::makeMove TODO set enpassent on square");
 	}
@@ -188,6 +186,26 @@ void ChessBoard::freezeAllExcept(std::vector<ChessPiece*> chessPieces)
 ChessBattleFactory * ChessBoard::getChessBattleFactory()
 {
 	return mChessBattleFactory;
+}
+
+void ChessBoard::setSyncedAnimationFactory(SyncedAnimationFactory * syncedAnimationFactory)
+{
+	mSyncedAnimationFactory = syncedAnimationFactory;
+}
+
+SyncedAnimationFactory * ChessBoard::getSyncedAnimationFactory()
+{
+	return mSyncedAnimationFactory;
+}
+
+void ChessBoard::setAnimationFactory(AnimationFactory * animationFactory)
+{
+	mAnimationFactory = animationFactory;
+}
+
+AnimationFactory * ChessBoard::getAnimationFactory()
+{
+	return mAnimationFactory;
 }
 
 void ChessBoard::drawOnTick()

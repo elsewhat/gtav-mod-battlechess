@@ -25,6 +25,7 @@ public:
 	};
 	ChessPiece();
 	ChessPiece(ChessSide::Side side, Type pieceType, ChessPed chessPed, Vector3 location, float heading);
+	ChessPiece(ChessSide::Side side, Type pieceType, ChessPed chessPed, Vector3 location, float heading, std::string primaryWeapon, std::string secondaryWeapon, std::string meleeWeapon);
 	
 	ChessSide::Side getSide();
 	void setSide(ChessSide::Side side);
@@ -53,14 +54,14 @@ public:
 
 	std::shared_ptr<ChessBattle> startChessBattle(ChessMove chessMove,ChessBoard* chessBoard);
 
-	LPCSTR getPrimaryWeapon();
-	void setPrimaryWeapon(LPCSTR primaryWeapon);
+	std::string getPrimaryWeapon();
+	void setPrimaryWeapon(std::string primaryWeapon);
 
-	LPCSTR getSecondaryWeapon();
-	void setSecondaryWeapon(LPCSTR secondaryWeapon);
+	std::string getSecondaryWeapon();
+	void setSecondaryWeapon(std::string secondaryWeapon);
 
-	LPCSTR getMeleeWeapon();
-	void setMeleeWeapon(LPCSTR meleeWeapon);
+	std::string getMeleeWeapon();
+	void setMeleeWeapon(std::string meleeWeapon);
 
 	void equipPrimaryWeapon();
 	void equipSecondaryWeapon();
@@ -79,8 +80,8 @@ protected:
 	Type mPieceType;
 	Vector3 mLocation; 
 	float mHeading; 
-	LPCSTR mPrimaryWeapon;
-	LPCSTR mSecondaryWeapon;
-	LPCSTR mMeleeWeapon;
+	std::string mPrimaryWeapon;
+	std::string mSecondaryWeapon;
+	std::string mMeleeWeapon;
 	
 };

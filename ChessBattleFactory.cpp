@@ -32,19 +32,19 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForPawn(ChessMove
 	switch (chessMove.getDefender()->getPieceType())
 	{
 	case ChessPiece::PAWN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
 	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
 	case ChessPiece::KNIGHT:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
 	case ChessPiece::BISHOP:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
 	case ChessPiece::QUEEN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
 	case ChessPiece::KING:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
 	default:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
 	}
 }
 
@@ -53,19 +53,19 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForRook(ChessMove
 	switch (chessMove.getDefender()->getPieceType())
 	{
 	case ChessPiece::PAWN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon("FIRING_PATTERN_FULL_AUTO"));
 	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon("FIRING_PATTERN_FULL_AUTO"));
 	case ChessPiece::KNIGHT:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon("FIRING_PATTERN_FULL_AUTO"));
 	case ChessPiece::BISHOP:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon("FIRING_PATTERN_FULL_AUTO"));
 	case ChessPiece::QUEEN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon("FIRING_PATTERN_FULL_AUTO"));
 	case ChessPiece::KING:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon("FIRING_PATTERN_FULL_AUTO"));
 	default:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon());
+		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon("FIRING_PATTERN_FULL_AUTO"));
 	}
 }
 

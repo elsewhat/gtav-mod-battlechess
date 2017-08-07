@@ -41,6 +41,7 @@ protected:
 
 	void initialize();
 	ChessPed getChessPedForElement(tinyxml2::XMLElement* chessSetElement);
+	std::array<std::string, 3> getChessWeaponsForElement(tinyxml2::XMLElement* chessPieceElement);
 	ChessSet* getSimpleChessSet(ChessSide::Side side);
 
 };

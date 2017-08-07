@@ -26,10 +26,10 @@ public:
 
 class WeaponUtils {
 protected:
-	static const LPCSTR weaponNames[];
+	static char* weaponNames[];
 public:
 	static void giveAllWeapons(Ped ped); 
-	static void giveWeapon(Ped ped, LPCSTR weaponName);
+	static void giveWeapon(Ped ped, std::string weaponName);
 };
 
 

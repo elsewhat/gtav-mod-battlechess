@@ -41,7 +41,7 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 		}
 
 		if (currentChessBattle != nullptr) {
-			if (currentChessBattle->isExecutionCompleted(GetTickCount(), currentChessMove)) {
+			if (currentChessBattle->isExecutionCompleted(GetTickCount(), currentChessMove, chessBoard)) {
 				Logger::logInfo("Chessbattle completed");
 				currentChessBattle = nullptr;
 				currentChessMove = ChessMove();

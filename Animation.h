@@ -111,13 +111,19 @@ enum ANIMATION_FLAGS
 	ANIMATION_FLAG19 = 262144,
 };
 
+class AnimationFactory {
+public:
+	AnimationFactory(std::string fileName);
+
+	std::vector<Animation> getAllAnimations();
+	Animation getAnimationForShortcutIndex(int index);
+	Animation getAnimationForShortcutIndex(std::string strIndex);
+
+protected:
+	std::string mFileName;
+	std::vector<Animation> mGtaAnimations;
+
+	bool initialize();
+};
 
 
-bool initAnimations(std::string fileName);
-std::vector<Animation> getAllAnimations();
-Animation getAnimationForShortcutIndex(int index);
-Animation getAnimationForShortcutIndex(std::string strIndex);
-
-std::vector<AnimationFlag> getAnimationFlags();
-AnimationFlag getDefaultAnimationFlag();
-AnimationFlag getNextAnimationFlag(AnimationFlag animationFlag);

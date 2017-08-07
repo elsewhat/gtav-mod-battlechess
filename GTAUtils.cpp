@@ -17,7 +17,7 @@
 #include <vector>
 
 
-const LPCSTR WeaponUtils::weaponNames[] = {
+char* WeaponUtils::weaponNames[] = {
 	"WEAPON_KNIFE", "WEAPON_NIGHTSTICK", "WEAPON_HAMMER", "WEAPON_BAT", "WEAPON_GOLFCLUB", "WEAPON_CROWBAR",
 	"WEAPON_PISTOL", "WEAPON_COMBATPISTOL", "WEAPON_APPISTOL", "WEAPON_PISTOL50", "WEAPON_MICROSMG", "WEAPON_SMG",
 	"WEAPON_ASSAULTSMG", "WEAPON_ASSAULTRIFLE", "WEAPON_CARBINERIFLE", "WEAPON_ADVANCEDRIFLE", "WEAPON_MG",
@@ -63,13 +63,13 @@ void UIUtils::DRAW_TEXT(char* Text, float X, float Y, float S_X, float S_Y, int 
 void WeaponUtils::giveAllWeapons(Ped ped)
 {
 	for (int i = 0; i < sizeof(WeaponUtils::weaponNames) / sizeof(WeaponUtils::weaponNames[0]); i++) {
-		WEAPON::GIVE_DELAYED_WEAPON_TO_PED(ped, GAMEPLAY::GET_HASH_KEY((char *)WeaponUtils::weaponNames[i]), 1000, 0);
+		WEAPON::GIVE_DELAYED_WEAPON_TO_PED(ped, GAMEPLAY::GET_HASH_KEY(WeaponUtils::weaponNames[i]), 1000, 0);
 	}
 }
 
-void WeaponUtils::giveWeapon(Ped ped, LPCSTR weaponName)
+void WeaponUtils::giveWeapon(Ped ped, std::string weaponName)
 {
-	Hash weaponHash = GAMEPLAY::GET_HASH_KEY((char *)weaponName);
+	Hash weaponHash = GAMEPLAY::GET_HASH_KEY(strdup(weaponName.c_str()));
 	Logger::logDebug("Giving and equiping weapon " + std::string(weaponName) + " to ped " + std::to_string(ped));
 	if (WEAPON::HAS_PED_GOT_WEAPON(ped, weaponHash, true)) {
 		WEAPON::SET_CURRENT_PED_WEAPON(ped, weaponHash, 1);

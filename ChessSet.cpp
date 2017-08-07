@@ -92,20 +92,26 @@ void ChessSetFactory::initialize()
 		ChessPed chessPedQueen = getChessPedForElement(chessSetElement->FirstChildElement("Queen"));
 		ChessPed chessPedKing = getChessPedForElement(chessSetElement->FirstChildElement("King"));
 
+		std::array<std::string, 3> pawnWeapons = getChessWeaponsForElement(chessSetElement->FirstChildElement("Pawn"));
+		std::array<std::string, 3> rookWeapons = getChessWeaponsForElement(chessSetElement->FirstChildElement("Rook"));
+		std::array<std::string, 3> knightWeapons = getChessWeaponsForElement(chessSetElement->FirstChildElement("Knight"));
+		std::array<std::string, 3> bishopWeapons = getChessWeaponsForElement(chessSetElement->FirstChildElement("Bishop"));
+		std::array<std::string, 3> queenWeapons = getChessWeaponsForElement(chessSetElement->FirstChildElement("Queen"));
+		std::array<std::string, 3> kingWeapons = getChessWeaponsForElement(chessSetElement->FirstChildElement("King"));
 
 		std::array<ChessPiece*, 16>  pieces;
 		int index = 0;
 		for (int i = 0; i < 8; i++) {
-			pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::PAWN, chessPedPawn, Vector3(), 1.0);;
+			pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::PAWN, chessPedPawn, Vector3(), 1.0, pawnWeapons[0], pawnWeapons[1], pawnWeapons[2]);
 		}
-		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::ROOK, chessPedRook, Vector3(), 1.0);
-		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KNIGHT, chessPedKnight, Vector3(), 1.0);
-		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::BISHOP, chessPedBishop, Vector3(), 1.0);
-		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::QUEEN, chessPedQueen, Vector3(), 1.0);
-		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KING, chessPedKing, Vector3(), 1.0);
-		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::BISHOP, chessPedBishop, Vector3(), 1.0);
-		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KNIGHT, chessPedKnight, Vector3(), 1.0);
-		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::ROOK, chessPedRook, Vector3(), 1.0);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::ROOK, chessPedRook, Vector3(), 1.0, rookWeapons[0], rookWeapons[1], rookWeapons[2]);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KNIGHT, chessPedKnight, Vector3(), 1.0, knightWeapons[0], knightWeapons[1], knightWeapons[2]);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::BISHOP, chessPedBishop, Vector3(), 1.0, bishopWeapons[0], bishopWeapons[1], bishopWeapons[2]);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::QUEEN, chessPedQueen, Vector3(), 1.0, queenWeapons[0], queenWeapons[1], queenWeapons[2]);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KING, chessPedKing, Vector3(), 1.0, kingWeapons[0], kingWeapons[1], kingWeapons[2]);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::BISHOP, chessPedBishop, Vector3(), 1.0, bishopWeapons[0], bishopWeapons[1], bishopWeapons[2]);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::KNIGHT, chessPedKnight, Vector3(), 1.0, knightWeapons[0], knightWeapons[1], knightWeapons[2]);
+		pieces[index++] = new ChessPiece(ChessSide::WHITE, ChessPiece::ROOK, chessPedRook, Vector3(), 1.0, rookWeapons[0], rookWeapons[1], rookWeapons[2]);
 
 		ChessSet* chessSet = new ChessSet(chessSetName, pieces);
 
@@ -163,6 +169,15 @@ ChessPed ChessSetFactory::getChessPedForElement(tinyxml2::XMLElement * chessPiec
 	}
 
 	return ChessPed(pedModelHash, movementStyle, drawableVariations,textureVariation, paletteVariation, propVariation, propTextureVariation);
+}
+
+std::array<std::string, 3> ChessSetFactory::getChessWeaponsForElement(tinyxml2::XMLElement * chessPieceElement)
+{
+	std::array<std::string, 3> weapons;
+	weapons[0] = chessPieceElement->Attribute("primaryWeapon");
+	weapons[1] = chessPieceElement->Attribute("secondaryWeapon");
+	weapons[2] = chessPieceElement->Attribute("meleeWeapon"); 
+	return weapons;
 }
 
 
