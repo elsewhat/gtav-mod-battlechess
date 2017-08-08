@@ -1,5 +1,6 @@
 #include "ChessBattleFactory.h"
 #include <stdlib.h>
+#include "GTAUtils.h"
 
 ChessBattleFactory::ChessBattleFactory()
 {
@@ -33,11 +34,11 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForPawn(ChessMove
 	switch (chessMove.getDefender()->getPieceType())
 	{
 	case ChessPiece::PAWN: {
-		if (rand() % 2 == 0) {
-			return std::make_shared <ChessBattleHeadbutt>(ChessBattleHeadbutt(chessBoard));
+		if (MathUtils::percentageChance(65)) {
+			return std::make_shared <ChessBattleHandToHandWeapon>(ChessBattleHandToHandWeapon(WeaponUtils::getRandomHandToHandWeaponName(), WeaponUtils::getRandomHandToHandWeaponName(), false, 150));
 		}
 		else {
-			return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon());
+			return std::make_shared <ChessBattleHeadbutt>(ChessBattleHeadbutt(chessBoard));
 		}
 	}
 	case ChessPiece::ROOK:
@@ -58,7 +59,8 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForPawn(ChessMove
 		}
 	}
 	case ChessPiece::BISHOP:
-		return std::make_shared <ChessBattleStealthKill>(ChessBattleStealthKill());
+		return std::make_shared <ChessBattleJerryCan>(ChessBattleJerryCan());
+		//return std::make_shared <ChessBattleStealthKill>(ChessBattleStealthKill());
 	case ChessPiece::QUEEN:
 		return std::make_shared <ChessBattleDeathByCop>(ChessBattleDeathByCop());
 	case ChessPiece::KING:

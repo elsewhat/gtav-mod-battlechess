@@ -240,6 +240,8 @@ bool SyncedAnimation::isCompleted()
 				maxLength = animation.duration;
 			}
 		}
+		//subtract some overhead
+		maxLength = maxLength - 30;
 		if (GetTickCount() - m_ticksStarted >= (DWORD) maxLength) {
 			return true;
 		}

@@ -66,6 +66,7 @@ public:
 	void equipPrimaryWeapon();
 	void equipSecondaryWeapon();
 	void equipMeleeWeapon();
+	void equipWeapon(std::string weaponName);
 	void removeWeapons();
 
 	float getWalkSpeed();

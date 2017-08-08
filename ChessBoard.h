@@ -33,6 +33,7 @@ public:
 	ChessPiece* getChessPieceAt(int rank, int file);
 	ChessBoardSquare* getSquareAt(int rank, int file);
 	bool isValidRankAndFile(int rank, int file);
+	ChessBoardSquare* getSquareInFrontOf(ChessBoardSquare* square, ChessSide::Side side);
 
 	std::vector<ChessMove> possibleMoves(ChessSide::Side side, ChessBoardSquare* squareFrom);
 

@@ -25,6 +25,28 @@ std::string MathUtils::roundNumber(float number)
 	return roundResult;
 }
 
+bool MathUtils::percentageChance(int percentage)
+{
+	//adapted from https://stackoverflow.com/questions/12657962/how-do-i-generate-a-random-number-between-two-variables-that-i-have-stored
+	int min = 1;
+	int max = 100;
+
+	int n = max - min + 1;
+	int remainder = RAND_MAX % n;
+	int x;
+	do {
+		x = rand();
+	} while (x >= RAND_MAX - remainder);
+
+	Logger::logDebug("Change: " + std::to_string((min + x % n)) + "%");
+	if ((min + x % n) <= percentage) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 float IOUtils::inputFloat()
 {
 	GAMEPLAY::DISPLAY_ONSCREEN_KEYBOARD(true, "FMMC_KEY_TIP8", "", "", "", "", "", 6);

@@ -233,6 +233,11 @@ void ChessPiece::equipMeleeWeapon()
 	WeaponUtils::giveWeapon(mChessPed.getPed(), mMeleeWeapon);
 }
 
+void ChessPiece::equipWeapon(std::string weaponName)
+{
+	WeaponUtils::giveWeapon(mChessPed.getPed(), weaponName);
+}
+
 void ChessPiece::removeWeapons()
 {
 	WEAPON::REMOVE_ALL_PED_WEAPONS(getPed(), true);

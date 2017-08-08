@@ -64,6 +64,7 @@ public:
 	static Vector3 rotationToDirection(Vector3 rotation);
 	static Vector3 crossProduct(Vector3 a, Vector3 b);
 	static std::string roundNumber(float number);
+	static bool percentageChance(int percentage);
 };
 
 #define PI 3.14159265

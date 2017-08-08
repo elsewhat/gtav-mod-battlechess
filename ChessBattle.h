@@ -86,6 +86,9 @@ public:
 	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
+	ChessBoardSquare* mSquareSetup;
+	bool mIsMovingIntoPosition;
+	bool mIsWaitingForTriggeringHeadbut;
 	std::shared_ptr<SyncedAnimation> mSyncedAnimation;
 };
 
@@ -108,4 +111,28 @@ public:
 
 protected:
 	Any mIncidentId;
+};
+
+class ChessBattleJerryCan : public ChessBattle {
+public:
+	ChessBattleJerryCan();
+
+	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+};
+
+class ChessBattleHandToHandWeapon : public ChessBattle {
+public:
+	ChessBattleHandToHandWeapon(std::string handToHandWeaponAttacker, std::string handToHandWeaponDefender, bool defenderIsUnarmed, int defenderHealth);
+
+	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	std::string mHandToHandWeaponAttacker;
+	std::string mHandToHandWeaponDefender;
+	bool mDefenderIsUnarmed;
+	int mDefenderHealth;
 };

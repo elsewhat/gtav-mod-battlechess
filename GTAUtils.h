@@ -27,7 +27,9 @@ public:
 class WeaponUtils {
 protected:
 	static char* weaponNames[];
+	static std::vector<std::string> handToHandWeaponNames;
 public:
+	static std::string getRandomHandToHandWeaponName();
 	static void giveAllWeapons(Ped ped); 
 	static void giveWeapon(Ped ped, std::string weaponName);
 };

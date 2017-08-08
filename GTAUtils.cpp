@@ -31,6 +31,10 @@ char* WeaponUtils::weaponNames[] = {
 	"WEAPON_COMBATPDW", "WEAPON_KNUCKLE", "WEAPON_MARKSMANPISTOL"
 };
 
+std::vector<std::string> WeaponUtils::handToHandWeaponNames = {
+	"WEAPON_KNIFE", "WEAPON_NIGHTSTICK", "WEAPON_HAMMER", "WEAPON_BAT", "WEAPON_GOLFCLUB", "WEAPON_CROWBAR","WEAPON_HATCHET","WEAPON_KNUCKLE",
+};
+
 const std::vector<int> GTAModUtils::playerControlsToDisable = {
 	0,2,3,4,5,6,16,17,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,44,45,71,72,75,140,141,142,143,156,243,257,261,262,263,264,267,268,269,270,271,272,273
 };
@@ -58,6 +62,11 @@ void UIUtils::DRAW_TEXT(char* Text, float X, float Y, float S_X, float S_Y, int 
 	UI::_SET_TEXT_ENTRY("STRING");
 	UI::_ADD_TEXT_COMPONENT_STRING(Text);
 	UI::_DRAW_TEXT(X, Y);
+}
+
+std::string WeaponUtils::getRandomHandToHandWeaponName()
+{
+	return handToHandWeaponNames[rand() % handToHandWeaponNames.size()];
 }
 
 void WeaponUtils::giveAllWeapons(Ped ped)

@@ -263,9 +263,9 @@ bool BattleChessGameController::updateCameraMovement()
 			camDelta.z *= 3;
 		}
 		else if (keyPressedForSlowCameraMovement()) {
-			camDelta.x /= 20;
-			camDelta.y /= 20;
-			camDelta.z /= 20;
+			camDelta.x /= 5;
+			camDelta.y /= 5;
+			camDelta.z /= 5;
 		}
 
 		camNewPos = CAM::GET_CAM_COORD(cameraHandle);

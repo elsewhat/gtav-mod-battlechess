@@ -310,6 +310,21 @@ bool ChessBoard::isValidRankAndFile(int rank, int file)
 	}
 }
 
+ChessBoardSquare * ChessBoard::getSquareInFrontOf(ChessBoardSquare * square, ChessSide::Side side)
+{
+	if (square->getSquareRank() == 8 || square->getSquareRank() == 1) {
+		Logger::logError("ChessBoard::getSquareInFrontOf is already on the edge");
+		return square;
+	}
+	if (side == ChessSide::WHITE) {
+		return getSquareAt(square->getSquareRank() - 1, square->getSquareFile());
+	}
+	else {
+		return getSquareAt(square->getSquareRank() + 1, square->getSquareFile());
+	}
+
+}
+
 std::vector<ChessMove> ChessBoard::possibleMoves(ChessSide::Side side, ChessBoardSquare * squareFrom)
 {
 	std::vector<ChessMove> possibleMoves;
