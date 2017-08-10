@@ -10,6 +10,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="BattleChessGameController.cpp" />
     <ClCompile Include="ChessBattle.cpp" />
+    <ClCompile Include="ChessBattleAction.cpp" />
     <ClCompile Include="ChessBattleFactory.cpp" />
     <ClCompile Include="ChessBoard.cpp" />
     <ClCompile Include="ChessBoardSquare.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="BattleChessGameController.h" />
     <ClInclude Include="ChessBattle.h" />
+    <ClInclude Include="ChessBattleAction.h" />
     <ClInclude Include="ChessBattleFactory.h" />
     <ClInclude Include="ChessBoard.h" />
     <ClInclude Include="ChessBoardSquare.h" />

@@ -24,6 +24,7 @@
     <ClCompile Include="ChessMove.cpp" />
     <ClCompile Include="ChessBattleFactory.cpp" />
     <ClCompile Include="SyncedAnimation.cpp" />
+    <ClCompile Include="ChessBattleAction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Lighting.h" />
@@ -64,6 +65,7 @@
     </ClInclude>
     <ClInclude Include="ChessBattleFactory.h" />
     <ClInclude Include="SyncedAnimation.h" />
+    <ClInclude Include="ChessBattleAction.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="inc">

@@ -42,6 +42,8 @@ public:
 
 	void spawnChessPieces();
 
+	Vector3 getVehicleSpawnZone(ChessSide::Side side);
+
 	void freezeAllExcept(std::vector<ChessPiece*> chessPieces);
 	ChessBattleFactory* getChessBattleFactory();
 

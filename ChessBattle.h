@@ -1,6 +1,8 @@
 #pragma once
 
 #include "inc\types.h"
+class ActionGoToSquare;
+#include "ChessBattleAction.h"
 #include "ChessBoard.h"
 #include "ChessPiece.h"
 class SyncedAnimation;
@@ -10,13 +12,14 @@ class SyncedAnimation;
 
 class ChessBattle {
 public:
-	ChessBattle();
+	ChessBattle(ChessMove chessMove, ChessBoard* chessBoard);
 
-	virtual void initializeBattle(ChessMove chessMove, ChessBoard* chessBoard);
-	virtual void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)=0;
-	virtual bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove,ChessBoard* chessBoard)=0;
+	virtual void initializeBattle(ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard);
+	virtual void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)=0;
+	virtual bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove,ChessBoard* chessBoard)=0;
 
 protected:
+	std::shared_ptr<ActionGoToSquare> mActionGoToEndSquare;
 	DWORD mTicksStarted;
 	bool mIsMovingToSquare;
 	int mNrMovementChecks;
@@ -26,11 +29,11 @@ protected:
 
 class ChessBattleFirePrimaryWeapon : public ChessBattle {
 public:
-	ChessBattleFirePrimaryWeapon();
-	ChessBattleFirePrimaryWeapon(std::string firingPattern);
+	ChessBattleFirePrimaryWeapon(ChessMove chessMove, ChessBoard* chessBoard);
+	ChessBattleFirePrimaryWeapon(ChessMove chessMove, ChessBoard* chessBoard,std::string firingPattern);
 
-	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
 	std::string mFiringPattern;
@@ -39,8 +42,8 @@ protected:
 
 class ChessBattleFireSecondaryWeapon : public ChessBattleFirePrimaryWeapon {
 public:
-	ChessBattleFireSecondaryWeapon();
-	ChessBattleFireSecondaryWeapon(std::string firingPattern);
+	ChessBattleFireSecondaryWeapon(ChessMove chessMove, ChessBoard* chessBoard);
+	ChessBattleFireSecondaryWeapon(ChessMove chessMove, ChessBoard* chessBoard,std::string firingPattern);
 
 protected:
 	void equipWeapon(ChessMove chessMove)override;
@@ -48,10 +51,10 @@ protected:
 
 class ChessBattleSyncedAnimation : public ChessBattle {
 public:
-	ChessBattleSyncedAnimation(std::shared_ptr<SyncedAnimation> syncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset);
+	ChessBattleSyncedAnimation(ChessMove chessMove, ChessBoard* chessBoard,std::shared_ptr<SyncedAnimation> syncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset);
 
-	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
 	bool mKillAfterwards;
@@ -62,10 +65,10 @@ protected:
 
 class ChessBattleSyncedAnimationChained : public ChessBattle {
 public:
-	ChessBattleSyncedAnimationChained(std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset);
+	ChessBattleSyncedAnimationChained(ChessMove chessMove, ChessBoard* chessBoard,std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset);
 
-	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
 	bool mKillAfterwards;
@@ -80,10 +83,10 @@ protected:
 
 class ChessBattleHeadbutt : public ChessBattle {
 public:
-	ChessBattleHeadbutt(ChessBoard* chessBoard);
+	ChessBattleHeadbutt(ChessMove chessMove, ChessBoard* chessBoard);
 
-	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
 	ChessBoardSquare* mSquareSetup;
@@ -94,20 +97,20 @@ protected:
 
 class ChessBattleStealthKill : public ChessBattle {
 public:
-	ChessBattleStealthKill();
+	ChessBattleStealthKill(ChessMove chessMove, ChessBoard* chessBoard);
 
-	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
 };
 
 class ChessBattleDeathByCop : public ChessBattle {
 public:
-	ChessBattleDeathByCop();
+	ChessBattleDeathByCop(ChessMove chessMove, ChessBoard* chessBoard);
 
-	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
 	Any mIncidentId;
@@ -115,20 +118,20 @@ protected:
 
 class ChessBattleJerryCan : public ChessBattle {
 public:
-	ChessBattleJerryCan();
+	ChessBattleJerryCan(ChessMove chessMove, ChessBoard* chessBoard);
 
-	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
 };
 
 class ChessBattleHandToHandWeapon : public ChessBattle {
 public:
-	ChessBattleHandToHandWeapon(std::string handToHandWeaponAttacker, std::string handToHandWeaponDefender, bool defenderIsUnarmed, int defenderHealth);
+	ChessBattleHandToHandWeapon(ChessMove chessMove, ChessBoard* chessBoard,std::string handToHandWeaponAttacker, std::string handToHandWeaponDefender, bool defenderIsUnarmed, int defenderHealth);
 
-	void startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)override;
-	bool isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)override;
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
 	std::string mHandToHandWeaponAttacker;

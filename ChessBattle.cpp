@@ -4,38 +4,37 @@
 #include "Utils.h"
 #include "GTAUtils.h"
 
-ChessBattle::ChessBattle()
+ChessBattle::ChessBattle(ChessMove chessMove, ChessBoard* chessBoard)
 {
+	ChessBoardSquare* squareTo = chessMove.getSquareTo();
+	mActionGoToEndSquare = std::make_shared<ActionGoToSquare>(ActionGoToSquare(squareTo, squareTo->getHeading(chessMove.getAttacker()->getSide()), 1.0));
 }
 
-void ChessBattle::initializeBattle(ChessMove chessMove, ChessBoard * chessBoard)
+void ChessBattle::initializeBattle(ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-	std::vector<ChessPiece*> activePieces = { chessMove.getAttacker(), chessMove.getDefender() };
+	std::vector<ChessPiece*> activePieces = { attacker, defender };
 	chessBoard->freezeAllExcept(activePieces);
-	chessMove.getAttacker()->setPedCanBeDamaged(false);
-	chessMove.getDefender()->setPedCanBeDamaged(true);
+	attacker->setPedCanBeDamaged(false);
+	defender->setPedCanBeDamaged(true);
 	mIsMovingToSquare = false;
 	mNrMovementChecks = 0;
 }
 
-ChessBattleFirePrimaryWeapon::ChessBattleFirePrimaryWeapon()
+ChessBattleFirePrimaryWeapon::ChessBattleFirePrimaryWeapon(ChessMove chessMove, ChessBoard* chessBoard) : ChessBattle(chessMove, chessBoard)
 {
 	mFiringPattern = "FIRING_PATTERN_SINGLE_SHOT";
 }
 
-ChessBattleFirePrimaryWeapon::ChessBattleFirePrimaryWeapon(std::string firingPattern)
+ChessBattleFirePrimaryWeapon::ChessBattleFirePrimaryWeapon(ChessMove chessMove, ChessBoard* chessBoard, std::string firingPattern) : ChessBattle(chessMove, chessBoard)
 {
 	mFiringPattern = firingPattern;
 }
 
 
-void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard* chessBoard)
+void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)
 {
 	Logger::logDebug("ChessBattleFirePrimaryWeapon::startExecution");
 	mTicksStarted = ticksStart;
-	//Important to get from chessMove and not from ChessBoardSquare
-	ChessPiece* attacker = chessMove.getAttacker();
-	ChessPiece* defender = chessMove.getDefender();
 
 	//worst case is that two shots take 18 damage
 	defender->setHealth(300);
@@ -46,12 +45,8 @@ void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessMove ch
 	Logger::logDebug("startExecution Defender health " + std::to_string(ENTITY::GET_ENTITY_HEALTH(defender->getPed())));
 }
 
-bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard* chessBoard)
+bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)
 {
-	//Important to get from chessMove and not from ChessBoardSquare
-	ChessPiece* attacker = chessMove.getAttacker();
-	ChessPiece* defender = chessMove.getDefender();
-
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -103,11 +98,11 @@ void ChessBattleFirePrimaryWeapon::equipWeapon(ChessMove chessMove)
 	chessMove.getAttacker()->equipPrimaryWeapon();
 }
 
-ChessBattleFireSecondaryWeapon::ChessBattleFireSecondaryWeapon():ChessBattleFirePrimaryWeapon()
+ChessBattleFireSecondaryWeapon::ChessBattleFireSecondaryWeapon(ChessMove chessMove, ChessBoard* chessBoard) :ChessBattleFirePrimaryWeapon(chessMove, chessBoard)
 {
 }
 
-ChessBattleFireSecondaryWeapon::ChessBattleFireSecondaryWeapon(std::string firingPattern):ChessBattleFirePrimaryWeapon(firingPattern)
+ChessBattleFireSecondaryWeapon::ChessBattleFireSecondaryWeapon(ChessMove chessMove, ChessBoard* chessBoard, std::string firingPattern) : ChessBattleFirePrimaryWeapon(chessMove, chessBoard, firingPattern)
 {
 }
 
@@ -117,7 +112,7 @@ void ChessBattleFireSecondaryWeapon::equipWeapon(ChessMove chessMove)
 	chessMove.getDefender()->setHealth(115);
 }
 
-ChessBattleSyncedAnimation::ChessBattleSyncedAnimation(std::shared_ptr<SyncedAnimation> syncedAnimation, bool killAfterwards, bool useDefenderLocation,Vector3 locationOffset)
+ChessBattleSyncedAnimation::ChessBattleSyncedAnimation(ChessMove chessMove, ChessBoard* chessBoard, std::shared_ptr<SyncedAnimation> syncedAnimation, bool killAfterwards, bool useDefenderLocation,Vector3 locationOffset) : ChessBattle(chessMove, chessBoard)
 {
 	mSyncedAnimation = syncedAnimation;
 	mKillAfterwards = killAfterwards;
@@ -125,14 +120,14 @@ ChessBattleSyncedAnimation::ChessBattleSyncedAnimation(std::shared_ptr<SyncedAni
 	mLocationOffset = locationOffset;
 }
 
-void ChessBattleSyncedAnimation::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard * chessBoard)
+void ChessBattleSyncedAnimation::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 	Logger::logDebug("ChessBattleSyncedAnimation::startExecution " + mSyncedAnimation->getTitle());
-	std::vector<ChessPiece*> actors = { chessMove.getAttacker(), chessMove.getDefender() };
+	std::vector<ChessPiece*> actors = { attacker, defender };
 
-	Vector3 startLocation = ENTITY::GET_ENTITY_COORDS(chessMove.getAttacker()->getPed(), true);
+	Vector3 startLocation = ENTITY::GET_ENTITY_COORDS(attacker->getPed(), true);
 	if (mUseDefenderLocation) {
-		startLocation = ENTITY::GET_ENTITY_COORDS(chessMove.getDefender()->getPed(), true);
+		startLocation = ENTITY::GET_ENTITY_COORDS(defender->getPed(), true);
 	}
 	startLocation.x = startLocation.x+ mLocationOffset.x;
 	startLocation.y = startLocation.y + mLocationOffset.y;
@@ -140,11 +135,8 @@ void ChessBattleSyncedAnimation::startExecution(DWORD ticksStart, ChessMove ches
 	mSyncedAnimation->executeSyncedAnimation(true, actors, false, startLocation, false, true, false);
 }
 
-bool ChessBattleSyncedAnimation::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard * chessBoard)
+bool ChessBattleSyncedAnimation::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-	ChessPiece* defender = chessMove.getDefender();
-	ChessPiece* attacker = chessMove.getAttacker();
-
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -169,12 +161,12 @@ bool ChessBattleSyncedAnimation::isExecutionCompleted(DWORD ticksNow, ChessMove 
 
 }
 
-ChessBattleHeadbutt::ChessBattleHeadbutt(ChessBoard* chessBoard)
+ChessBattleHeadbutt::ChessBattleHeadbutt(ChessMove chessMove, ChessBoard * chessBoard) : ChessBattle(chessMove, chessBoard)
 {
 	mSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("takedown_front_headbutt 2266");
 }
 
-void ChessBattleHeadbutt::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard * chessBoard)
+void ChessBattleHeadbutt::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 	Logger::logDebug("ChessBattleHeadbutt::startExecution " + mSyncedAnimation->getTitle());
 	
@@ -186,16 +178,13 @@ void ChessBattleHeadbutt::startExecution(DWORD ticksStart, ChessMove chessMove, 
 	//6. Wait for getting close to target square
 
 	mIsMovingIntoPosition = true;
-	mSquareSetup = chessBoard->getSquareInFrontOf(chessMove.getSquareTo(), chessMove.getAttacker()->getSide());
+	mSquareSetup = chessBoard->getSquareInFrontOf(chessMove.getSquareTo(), attacker->getSide());
 	Vector3 squareToLocation = mSquareSetup->getLocation();
-	AI::TASK_GO_STRAIGHT_TO_COORD(chessMove.getAttacker()->getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, 1.0, -1, chessMove.getAttacker()->getSide(), 0.5f);
+	AI::TASK_GO_STRAIGHT_TO_COORD(attacker->getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, 1.0, -1, attacker->getSide(), 0.5f);
 }
 
-bool ChessBattleHeadbutt::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard * chessBoard)
+bool ChessBattleHeadbutt::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-	ChessPiece* defender = chessMove.getDefender();
-	ChessPiece* attacker = chessMove.getAttacker();
-
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -243,7 +232,7 @@ bool ChessBattleHeadbutt::isExecutionCompleted(DWORD ticksNow, ChessMove chessMo
 	}
 }
 
-ChessBattleSyncedAnimationChained::ChessBattleSyncedAnimationChained(std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset)
+ChessBattleSyncedAnimationChained::ChessBattleSyncedAnimationChained(ChessMove chessMove, ChessBoard * chessBoard,std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset) : ChessBattle(chessMove, chessBoard)
 {
 	mFirstSyncedAnimation = firstSyncedAnimation;
 	mSecondSyncedAnimation = secondSyncedAnimation;
@@ -252,14 +241,14 @@ ChessBattleSyncedAnimationChained::ChessBattleSyncedAnimationChained(std::shared
 	mLocationOffset = locationOffset;
 }
 
-void ChessBattleSyncedAnimationChained::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard * chessBoard)
+void ChessBattleSyncedAnimationChained::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 	Logger::logDebug("ChessBattleSyncedAnimation::startExecution " + mFirstSyncedAnimation->getTitle());
-	std::vector<ChessPiece*> actors = { chessMove.getAttacker(), chessMove.getDefender() };
+	std::vector<ChessPiece*> actors = { attacker, defender };
 
-	mStartLocation = ENTITY::GET_ENTITY_COORDS(chessMove.getAttacker()->getPed(), true);
+	mStartLocation = ENTITY::GET_ENTITY_COORDS(attacker->getPed(), true);
 	if (mUseDefenderLocation) {
-		mStartLocation = ENTITY::GET_ENTITY_COORDS(chessMove.getDefender()->getPed(), true);
+		mStartLocation = ENTITY::GET_ENTITY_COORDS(defender->getPed(), true);
 	}
 	mStartLocation.x = mStartLocation.x + mLocationOffset.x;
 	mStartLocation.y = mStartLocation.y + mLocationOffset.y;
@@ -268,11 +257,8 @@ void ChessBattleSyncedAnimationChained::startExecution(DWORD ticksStart, ChessMo
 	mIsFirstCompleted = false;
 }
 
-bool ChessBattleSyncedAnimationChained::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard * chessBoard)
+bool ChessBattleSyncedAnimationChained::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-	ChessPiece* defender = chessMove.getDefender();
-	ChessPiece* attacker = chessMove.getAttacker();
-
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -305,29 +291,21 @@ bool ChessBattleSyncedAnimationChained::isExecutionCompleted(DWORD ticksNow, Che
 	}
 }
 
-ChessBattleStealthKill::ChessBattleStealthKill()
+ChessBattleStealthKill::ChessBattleStealthKill(ChessMove chessMove, ChessBoard * chessBoard) : ChessBattle(chessMove, chessBoard)
 {
 }
 
-void ChessBattleStealthKill::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard * chessBoard)
+void ChessBattleStealthKill::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 	Logger::logDebug("ChessBattleStealthKill::startExecution");
 	mTicksStarted = ticksStart;
-	//Important to get from chessMove and not from ChessBoardSquare
-	ChessPiece* attacker = chessMove.getAttacker();
-	ChessPiece* defender = chessMove.getDefender();
-
 	
 	//AI::TASK_STEALTH_KILL(attacker->getPed(), defender->getPed(), GAMEPLAY::GET_HASH_KEY("AR_stealth_kill_knife"), 1.0f, 0);
 	AI::TASK_STEALTH_KILL(attacker->getPed(), defender->getPed(), GAMEPLAY::GET_HASH_KEY("AR_stealth_kill_a"), 10.0f, 1);
 }
 
-bool ChessBattleStealthKill::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard * chessBoard)
+bool ChessBattleStealthKill::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-	//Important to get from chessMove and not from ChessBoardSquare
-	ChessPiece* attacker = chessMove.getAttacker();
-	ChessPiece* defender = chessMove.getDefender();
-
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -347,17 +325,14 @@ bool ChessBattleStealthKill::isExecutionCompleted(DWORD ticksNow, ChessMove ches
 	return false;
 }
 
-ChessBattleDeathByCop::ChessBattleDeathByCop()
+ChessBattleDeathByCop::ChessBattleDeathByCop(ChessMove chessMove, ChessBoard * chessBoard) : ChessBattle(chessMove, chessBoard)
 {
 }
 
-void ChessBattleDeathByCop::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard * chessBoard)
+void ChessBattleDeathByCop::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 	Logger::logDebug("ChessBattleStealthKill::startExecution");
 	mTicksStarted = ticksStart;
-	//Important to get from chessMove and not from ChessBoardSquare
-	ChessPiece* attacker = chessMove.getAttacker();
-	ChessPiece* defender = chessMove.getDefender();
 	/*
 	FireDepartment = 3,
 	Paramedics = 5,
@@ -372,12 +347,8 @@ void ChessBattleDeathByCop::startExecution(DWORD ticksStart, ChessMove chessMove
 	AUDIO::_PLAY_AMBIENT_SPEECH_WITH_VOICE(attacker->getPed(), "PHONE_CALL_COPS", "A_M_M_GOLFER_01_WHITE_MINI_01", "SPEECH_PARAMS_STANDARD",0);
 }
 
-bool ChessBattleDeathByCop::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard * chessBoard)
+bool ChessBattleDeathByCop::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-	//Important to get from chessMove and not from ChessBoardSquare
-	ChessPiece* attacker = chessMove.getAttacker();
-	ChessPiece* defender = chessMove.getDefender();
-
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -403,11 +374,11 @@ bool ChessBattleDeathByCop::isExecutionCompleted(DWORD ticksNow, ChessMove chess
 	return false;
 }
 
-ChessBattleJerryCan::ChessBattleJerryCan()
+ChessBattleJerryCan::ChessBattleJerryCan(ChessMove chessMove, ChessBoard * chessBoard) : ChessBattle(chessMove, chessBoard)
 {
 }
 
-void ChessBattleJerryCan::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard * chessBoard)
+void ChessBattleJerryCan::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 
 	Logger::logDebug("ChessBattleJerryCan::startExecution");
@@ -422,20 +393,20 @@ void ChessBattleJerryCan::startExecution(DWORD ticksStart, ChessMove chessMove, 
 		}
 	}
 	chessMove.getAttacker()->equipWeapon("WEAPON_PETROLCAN");
-
+	Vector3 location = chessMove.getAttacker()->getLocation();
 	PED::SET_PED_WEAPON_MOVEMENT_CLIPSET(chessMove.getAttacker()->getPed(), "move_ped_wpn_jerrycan_generic");
 
 	chessMove.getAttacker()->startMovement(chessMove, chessBoard);
 }
 
-bool ChessBattleJerryCan::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard * chessBoard)
+bool ChessBattleJerryCan::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 	//walkaround for issues with task_shoot_at_entity
 	PED::EXPLODE_PED_HEAD(chessMove.getDefender()->getPed(), 0x5FC3C11);
 	return true;
 }
 
-ChessBattleHandToHandWeapon::ChessBattleHandToHandWeapon(std::string handToHandWeaponAttacker, std::string handToHandWeaponDefender, bool defenderIsUnarmed, int defenderHealth)
+ChessBattleHandToHandWeapon::ChessBattleHandToHandWeapon(ChessMove chessMove, ChessBoard * chessBoard,std::string handToHandWeaponAttacker, std::string handToHandWeaponDefender, bool defenderIsUnarmed, int defenderHealth) : ChessBattle(chessMove, chessBoard)
 {
 	mHandToHandWeaponAttacker = handToHandWeaponAttacker;
 	mHandToHandWeaponDefender = handToHandWeaponDefender;
@@ -443,31 +414,27 @@ ChessBattleHandToHandWeapon::ChessBattleHandToHandWeapon(std::string handToHandW
 	mDefenderHealth = defenderHealth;
 }
 
-void ChessBattleHandToHandWeapon::startExecution(DWORD ticksStart, ChessMove chessMove, ChessBoard * chessBoard)
+void ChessBattleHandToHandWeapon::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 	Logger::logDebug("ChessBattleHandToHandWeapon::startExecution");
 
 	mTicksStarted = ticksStart;
-	chessMove.getAttacker()->removeWeapons();
-	chessMove.getAttacker()->equipWeapon(mHandToHandWeaponAttacker);
+	attacker->removeWeapons();
+	attacker->equipWeapon(mHandToHandWeaponAttacker);
 
-	chessMove.getDefender()->removeWeapons();
+	defender->removeWeapons();
 	if (!mDefenderIsUnarmed) {
-		chessMove.getDefender()->equipWeapon(mHandToHandWeaponDefender);
+		defender->equipWeapon(mHandToHandWeaponDefender);
 	}
 
-	chessMove.getDefender()->setHealth(mDefenderHealth);
+	defender->setHealth(mDefenderHealth);
 
-	AI::TASK_COMBAT_PED(chessMove.getAttacker()->getPed(), chessMove.getDefender()->getPed(), 0, 16);
-	AI::TASK_COMBAT_PED(chessMove.getDefender()->getPed(), chessMove.getAttacker()->getPed(), 0, 16);
+	AI::TASK_COMBAT_PED(attacker->getPed(), defender->getPed(), 0, 16);
+	AI::TASK_COMBAT_PED(defender->getPed(), attacker->getPed(), 0, 16);
 }
 
-bool ChessBattleHandToHandWeapon::isExecutionCompleted(DWORD ticksNow, ChessMove chessMove, ChessBoard * chessBoard)
+bool ChessBattleHandToHandWeapon::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-	//Important to get from chessMove and not from ChessBoardSquare
-	ChessPiece* attacker = chessMove.getAttacker();
-	ChessPiece* defender = chessMove.getDefender();
-
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}

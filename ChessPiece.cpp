@@ -182,8 +182,8 @@ bool ChessPiece::isMovementCompleted(ChessMove chessMove, int nrChecksDone)
 std::shared_ptr<ChessBattle> ChessPiece::startChessBattle(ChessMove chessMove, ChessBoard* chessBoard)
 {
 	std::shared_ptr<ChessBattle> chessBattle = chessBoard->getChessBattleFactory()->findBattle(chessMove, chessBoard);
-	chessBattle->initializeBattle(chessMove, chessBoard);
-	chessBattle->startExecution(GetTickCount(), chessMove, chessBoard);
+	chessBattle->initializeBattle(chessMove.getAttacker(), chessMove.getDefender(), chessMove, chessBoard);
+	chessBattle->startExecution(GetTickCount(), chessMove.getAttacker(), chessMove.getDefender(), chessMove, chessBoard);
 
 	return chessBattle;
 }

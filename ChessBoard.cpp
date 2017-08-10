@@ -171,6 +171,20 @@ void ChessBoard::spawnChessPieces()
 	}
 }
 
+Vector3 ChessBoard::getVehicleSpawnZone(ChessSide::Side side)
+{
+	Vector3 spawnZone;
+	if (side == ChessSide::WHITE) {
+		spawnZone = getSquareAt(1, 1)->getLocation();
+		spawnZone.x = spawnZone.x - 50.0;
+	}
+	else {
+		spawnZone = getSquareAt(8, 8)->getLocation();
+		spawnZone.x = spawnZone.x + 50.0;
+	}
+	return spawnZone;
+}
+
 void ChessBoard::freezeAllExcept(std::vector<ChessPiece*> chessPieces)
 {
 	for (auto* square : mSquares) {
