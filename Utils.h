@@ -40,7 +40,7 @@ protected:
 	static const char* FileNameLog;
 public:
 	static void logInfo(std::string msg);
-	static void logDebug(std::string msg);
+	static void logDebug(std::string msg, bool includeTicks = false);
 	static void logError(std::string msg);
 	static void assert(bool assertion, std::string msg);
 private: 

@@ -152,9 +152,12 @@ void Logger::logInfo(std::string msg)
 	}
 }
 
-void Logger::logDebug(std::string msg)
+void Logger::logDebug(std::string msg, bool includeTicks)
 {
 	if (Logger::LogDebug) {
+		if (includeTicks) {
+			msg = std::to_string(GetTickCount()) + " " + msg;
+		}
 		log("Debug", msg);
 	}
 }

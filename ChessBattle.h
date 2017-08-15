@@ -2,6 +2,7 @@
 
 #include "inc\types.h"
 class ActionGoToSquare;
+class ActionGoToCoord;
 #include "ChessBattleAction.h"
 #include "ChessBoard.h"
 #include "ChessPiece.h"
@@ -124,6 +125,13 @@ public:
 	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
+	std::vector<std::shared_ptr<ActionGoToCoord>> mCoordsToSneak;
+	std::shared_ptr<ActionGoToCoord> mActionShootingLocation;
+	Vector3 mLocationPetrol;
+	int mCoordsToSneakIndex = 0;
+	bool mIsPouring;
+	bool mIsShooting;
+	TaskSequence mPourTaskSequence;
 };
 
 class ChessBattleHandToHandWeapon : public ChessBattle {

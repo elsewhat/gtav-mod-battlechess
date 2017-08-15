@@ -21,6 +21,7 @@ ActionGoToCoord::ActionGoToCoord(Vector3 location, float heading, float walkingS
 void ActionGoToCoord::start(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
 	mHasBeenStarted = true;
+	Logger::logDebug("ActionGoToCoord::start moving to (" + std::to_string(mLocation.x) + "," + std::to_string(mLocation.y) + "," + std::to_string(mLocation.z) + ")");
 	AI::TASK_GO_STRAIGHT_TO_COORD(attacker->getPed(), mLocation.x, mLocation.y, mLocation.z, mWalkingSpeed, -1, mHeading, 0.5f);
 }
 

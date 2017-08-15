@@ -376,12 +376,31 @@ bool ChessBattleDeathByCop::isExecutionCompleted(DWORD ticksNow, ChessPiece* att
 
 ChessBattleJerryCan::ChessBattleJerryCan(ChessMove chessMove, ChessBoard * chessBoard) : ChessBattle(chessMove, chessBoard)
 {
+	
+	ChessBoardSquare* squareBehind = chessBoard->getSquareBehind(chessMove.getSquareTo(), chessMove.getAttacker()->getSide());
+	//only Pawn can use this move with this
+	ChessBoardSquare* squareOneStep = chessBoard->getSquareInFrontOf(chessMove.getSquareFrom(), chessMove.getDefender()->getSide());
+	ChessBoardSquare* squareTwoStep = chessBoard->getSquareInFrontOf(squareOneStep, chessMove.getDefender()->getSide());
+
+	mCoordsToSneak.push_back(std::make_shared<ActionGoToCoord>(ActionGoToCoord(squareTwoStep->getLocation(), chessMove.getSquareTo()->getHeading(chessMove.getAttacker()->getSide()), 1.0)));
+	mCoordsToSneak.push_back(std::make_shared<ActionGoToCoord>(ActionGoToCoord(squareBehind->getLocation(), chessMove.getSquareTo()->getHeading(chessMove.getDefender()->getSide()), 1.0)));
+	
+	std::shared_ptr<ActionGoToCoord> lastAction = std::make_shared<ActionGoToCoord>(ActionGoToCoord(chessMove.getSquareTo()->getLocation(), chessMove.getSquareTo()->getHeading(chessMove.getAttacker()->getSide()), 1.0));
+	lastAction->setMinDistance(1.1);
+	mCoordsToSneak.push_back(lastAction);
+
+	mActionShootingLocation = std::make_shared<ActionGoToCoord>(ActionGoToCoord(squareTwoStep->getLocation(), chessMove.getSquareTo()->getHeading(chessMove.getDefender()->getSide()), 1.0));
+
 }
 
 void ChessBattleJerryCan::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-
+	mIsPouring = false;
 	Logger::logDebug("ChessBattleJerryCan::startExecution");
+
+	//Make defender ignore gunshots
+	PED::SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(defender->getPed(), true);
+	PED::SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(attacker->getPed(), true);
 
 	STREAMING::REQUEST_CLIP_SET("move_ped_wpn_jerrycan_generic");
 	while (!STREAMING::HAS_CLIP_SET_LOADED("move_ped_wpn_jerrycan_generic"))
@@ -392,18 +411,92 @@ void ChessBattleJerryCan::startExecution(DWORD ticksStart, ChessPiece* attacker,
 			return;
 		}
 	}
-	chessMove.getAttacker()->equipWeapon("WEAPON_PETROLCAN");
-	Vector3 location = chessMove.getAttacker()->getLocation();
-	PED::SET_PED_WEAPON_MOVEMENT_CLIPSET(chessMove.getAttacker()->getPed(), "move_ped_wpn_jerrycan_generic");
 
-	chessMove.getAttacker()->startMovement(chessMove, chessBoard);
+	
+	mCoordsToSneak[mCoordsToSneakIndex]->start(ticksStart, attacker, defender, chessMove, chessBoard);
 }
 
 bool ChessBattleJerryCan::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-	//walkaround for issues with task_shoot_at_entity
-	PED::EXPLODE_PED_HEAD(chessMove.getDefender()->getPed(), 0x5FC3C11);
-	return true;
+	if (mIsShooting) {
+		if (AI::GET_SEQUENCE_PROGRESS(attacker->getPed()) == -1) {
+			if (!defender->isPedDeadOrDying()) {
+				PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
+			}
+
+			mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
+			return true;
+		}
+		else if (ticksNow - mTicksStarted > 400) {
+			FIRE::START_ENTITY_FIRE(defender->getPed());
+
+			mTicksStarted = mTicksStarted + mTicksStarted;
+		}
+	}
+	else if (mIsPouring) {
+		if (AI::GET_SEQUENCE_PROGRESS(attacker->getPed()) == -1) {
+			mIsPouring = false;
+			mLocationPetrol = ENTITY::GET_ENTITY_COORDS(attacker->getPed(), true);
+			mLocationPetrol.z = mLocationPetrol.z - 1.0;
+			mActionShootingLocation->start(ticksNow, attacker, defender, chessMove, chessBoard);
+
+			return false;
+		}
+	}
+	else if (mActionShootingLocation->hasBeenStarted()) {
+		if (mActionShootingLocation->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard)) {
+			mIsShooting = true;
+			PED::SET_PED_STEALTH_MOVEMENT(chessMove.getAttacker()->getPed(), 0, 0);
+
+			TaskSequence taskSequence = 100;
+			AI::OPEN_SEQUENCE_TASK(&taskSequence);
+
+			chessMove.getAttacker()->equipPrimaryWeapon();
+			AI::TASK_SHOOT_AT_COORD(0, mLocationPetrol.x, mLocationPetrol.y, mLocationPetrol.z, 2000, 3337513804);
+
+			AI::CLOSE_SEQUENCE_TASK(taskSequence);
+			AI::TASK_PERFORM_SEQUENCE(attacker->getPed(), taskSequence);
+			AI::CLEAR_SEQUENCE_TASK(&taskSequence);
+			mTicksStarted = ticksNow;
+			
+
+			return false;
+		}
+	}
+	else if (mCoordsToSneak[mCoordsToSneakIndex]->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard)) {
+		if (mCoordsToSneakIndex == 0) {
+			chessMove.getAttacker()->equipWeapon("WEAPON_PETROLCAN");
+			PED::SET_PED_WEAPON_MOVEMENT_CLIPSET(chessMove.getAttacker()->getPed(), "move_ped_wpn_jerrycan_generic");
+
+			PED::SET_PED_STEALTH_MOVEMENT(chessMove.getAttacker()->getPed(), 1, 0);
+			PED::FORCE_PED_MOTION_STATE(chessMove.getAttacker()->getPed(), 1110276645, false, 0, 0);
+			PED::_0x2208438012482A1A(chessMove.getAttacker()->getPed(), 0, 0);
+			UNK1::_0x81CBAE94390F9F89();
+
+			PED::SET_PED_MOVEMENT_CLIPSET(chessMove.getAttacker()->getPed(), "move_ped_crouched", 1.0);
+		}
+		
+		mCoordsToSneakIndex++;
+		if (mCoordsToSneakIndex < mCoordsToSneak.size()) {
+			mCoordsToSneak[mCoordsToSneakIndex]->start(ticksNow, attacker, defender, chessMove, chessBoard);
+			return false;
+		}
+		else {
+			mIsPouring = true;
+			mPourTaskSequence = 99;
+			AI::OPEN_SEQUENCE_TASK(&mPourTaskSequence);
+
+			Logger::logDebug("Pouring petrol for 5000 ms", true);
+			AI::TASK_SHOOT_AT_COORD(0, 0.0, 0.0, 0.0, 5000, 3337513804);
+
+			AI::CLOSE_SEQUENCE_TASK(mPourTaskSequence);
+			AI::TASK_PERFORM_SEQUENCE(attacker->getPed(), mPourTaskSequence);
+			AI::CLEAR_SEQUENCE_TASK(&mPourTaskSequence);
+			return false;
+		}
+	}
+	return false;
+
 }
 
 ChessBattleHandToHandWeapon::ChessBattleHandToHandWeapon(ChessMove chessMove, ChessBoard * chessBoard,std::string handToHandWeaponAttacker, std::string handToHandWeaponDefender, bool defenderIsUnarmed, int defenderHealth) : ChessBattle(chessMove, chessBoard)

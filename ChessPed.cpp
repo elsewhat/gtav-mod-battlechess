@@ -65,7 +65,7 @@ void ChessPed::spawnPed(Vector3 location, float heading,Hash relationshipGroupHa
 	PED::SET_PED_DIES_WHEN_INJURED(mPed, true);
 
 	if (STREAMING::HAS_CLIP_SET_LOADED(mMovementStyle)) {
-		PED::SET_PED_MOVEMENT_CLIPSET(PLAYER::PLAYER_PED_ID(), mMovementStyle, 1.0);
+		PED::SET_PED_MOVEMENT_CLIPSET(mPed, mMovementStyle, 1.0);
 	}
 
 	//TODO: Remove temporary

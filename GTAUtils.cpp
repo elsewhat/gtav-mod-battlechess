@@ -163,31 +163,31 @@ void GTAModUtils::teleportEntityToLocation(Entity entityToTeleport, Vector3 loca
 	Logger::logInfo("teleport_entity_to_location: Entity:" + std::to_string(entityToTeleport));
 	//From the native trainer. Could it be replaced with PATHFIND::GET_SAFE_COORD_FOR_PED ?
 
-	if (trustZValue == false) {
-		// load needed map region and check height levels for ground existence
-		bool groundFound = false;
-		static float groundCheckHeight[] = {
-			100.0, 150.0, 50.0, 0.0, 200.0, 250.0, 300.0, 350.0, 400.0,
-			450.0, 500.0, 550.0, 600.0, 650.0, 700.0, 750.0, 800.0
-		};
-		for (int i = 0; i < sizeof(groundCheckHeight) / sizeof(float); i++)
+if (trustZValue == false) {
+	// load needed map region and check height levels for ground existence
+	bool groundFound = false;
+	static float groundCheckHeight[] = {
+		100.0, 150.0, 50.0, 0.0, 200.0, 250.0, 300.0, 350.0, 400.0,
+		450.0, 500.0, 550.0, 600.0, 650.0, 700.0, 750.0, 800.0
+	};
+	for (int i = 0; i < sizeof(groundCheckHeight) / sizeof(float); i++)
+	{
+		ENTITY::SET_ENTITY_COORDS_NO_OFFSET(entityToTeleport, location.x, location.y, groundCheckHeight[i], 0, 0, 1);
+		WAIT(100);
+		if (GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(location.x, location.y, groundCheckHeight[i], &location.z, 0))
 		{
-			ENTITY::SET_ENTITY_COORDS_NO_OFFSET(entityToTeleport, location.x, location.y, groundCheckHeight[i], 0, 0, 1);
-			WAIT(100);
-			if (GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(location.x, location.y, groundCheckHeight[i], &location.z, 0))
-			{
-				groundFound = true;
-				location.z += 3.0;
-				break;
-			}
-		}
-		// if ground not found then set Z in air and give player a parachute
-		if (!groundFound)
-		{
-			location.z = 1000.0;
-			WEAPON::GIVE_DELAYED_WEAPON_TO_PED(PLAYER::PLAYER_PED_ID(), 0xFBAB5776, 1, 0);
+			groundFound = true;
+			location.z += 3.0;
+			break;
 		}
 	}
+	// if ground not found then set Z in air and give player a parachute
+	if (!groundFound)
+	{
+		location.z = 1000.0;
+		WEAPON::GIVE_DELAYED_WEAPON_TO_PED(PLAYER::PLAYER_PED_ID(), 0xFBAB5776, 1, 0);
+	}
+}
 
 	ENTITY::SET_ENTITY_COORDS_NO_OFFSET(entityToTeleport, location.x, location.y, location.z, 0, 0, 1);
 

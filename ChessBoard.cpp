@@ -339,6 +339,28 @@ ChessBoardSquare * ChessBoard::getSquareInFrontOf(ChessBoardSquare * square, Che
 
 }
 
+ChessBoardSquare * ChessBoard::getSquareBehind(ChessBoardSquare * square, ChessSide::Side side)
+{
+	if (square->getSquareRank() == 8 || square->getSquareRank() == 1) {
+		Logger::logError("ChessBoard::getSquareInFrontOf is already on the edge");
+		return square;
+	}
+	if (side == ChessSide::WHITE) {
+		if (square->getSquareRank() == 8) {
+			Logger::logError("ChessBoard::getSquareBehind is already on the edge");
+			return square;
+		}
+		return getSquareAt(square->getSquareRank() + 1, square->getSquareFile());
+	}
+	else {
+		if (square->getSquareRank() == 1) {
+			Logger::logError("ChessBoard::getSquareBehind is already on the edge");
+			return square;
+		}
+		return getSquareAt(square->getSquareRank() - 1, square->getSquareFile());
+	}
+}
+
 std::vector<ChessMove> ChessBoard::possibleMoves(ChessSide::Side side, ChessBoardSquare * squareFrom)
 {
 	std::vector<ChessMove> possibleMoves;
