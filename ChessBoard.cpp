@@ -149,6 +149,16 @@ void ChessBoard::setBlackChessSet(ChessSet* blackSet)
 	}
 }
 
+ChessSet * ChessBoard::getChessSet(ChessSide::Side side)
+{
+	if (side == ChessSide::WHITE) {
+		return mWhiteSet;
+	}
+	else {
+		return mBlackSet;
+	}
+}
+
 void ChessBoard::spawnChessPieces()
 {
 	Logger::logInfo("ChessBoard::spawnChessPieces");
@@ -176,17 +186,18 @@ Vector3 ChessBoard::getVehicleSpawnZone(ChessSide::Side side)
 	Vector3 spawnZone;
 	if (side == ChessSide::WHITE) {
 		spawnZone = getSquareAt(1, 1)->getLocation();
-		spawnZone.x = spawnZone.x - 50.0;
+		spawnZone.x = spawnZone.x - 20.0;
 	}
 	else {
 		spawnZone = getSquareAt(8, 8)->getLocation();
-		spawnZone.x = spawnZone.x + 50.0;
+		spawnZone.x = spawnZone.x + 20.0;
 	}
 	return spawnZone;
 }
 
 void ChessBoard::freezeAllExcept(std::vector<ChessPiece*> chessPieces)
 {
+	//TODO - Rewrite
 	for (auto* square : mSquares) {
 		if (!square->isEmpty()) {
 			square->getPiece()->setPedFreezed(true);

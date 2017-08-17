@@ -1,6 +1,7 @@
 #include "ChessBattleFactory.h"
 #include <stdlib.h>
 #include "GTAUtils.h"
+#include "Animation.h"
 
 ChessBattleFactory::ChessBattleFactory()
 {
@@ -42,7 +43,8 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForPawn(ChessMove
 		}
 	}
 	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon(chessMove, chessBoard ));
+		return std::make_shared <ChessBattleFiringSquad>(ChessBattleFiringSquad(chessMove, chessBoard, "WEAPON_MOLOTOV", true, chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(2925)));
+		//return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon(chessMove, chessBoard ));
 	case ChessPiece::KNIGHT: {
 		std::shared_ptr<SyncedAnimation> firstSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Knife struggle (tackle)");
 		std::shared_ptr<SyncedAnimation> secondSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Knife struggle (loop)");
@@ -95,7 +97,8 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForRook(ChessMove
 	case ChessPiece::BISHOP:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard, "FIRING_PATTERN_FULL_AUTO"));
 	case ChessPiece::QUEEN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard, "FIRING_PATTERN_FULL_AUTO"));
+		return std::make_shared <ChessBattleTank>(ChessBattleTank(chessMove, chessBoard));
+		//return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard, "FIRING_PATTERN_FULL_AUTO"));
 	case ChessPiece::KING:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard, "FIRING_PATTERN_FULL_AUTO"));
 	default:
@@ -181,14 +184,15 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForKing(ChessMove
 	{
 	case ChessPiece::PAWN:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
-	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+	case ChessPiece::ROOK://WEAPON_MOLOTOV
+		return std::make_shared <ChessBattleFiringSquad>(ChessBattleFiringSquad(chessMove, chessBoard, "WEAPON_GRENADE", true, chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(2925)));
 	case ChessPiece::KNIGHT:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::BISHOP:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::QUEEN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleFiringSquad>(ChessBattleFiringSquad(chessMove, chessBoard, "WEAPON_SNOWBALL", false, chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(2925)));
+		//return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::KING:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	default:

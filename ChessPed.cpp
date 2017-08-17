@@ -68,6 +68,8 @@ void ChessPed::spawnPed(Vector3 location, float heading,Hash relationshipGroupHa
 		PED::SET_PED_MOVEMENT_CLIPSET(mPed, mMovementStyle, 1.0);
 	}
 
+	ENTITY::SET_ENTITY_AS_MISSION_ENTITY(mPed, true, true);
+
 	//TODO: Remove temporary
 	WeaponUtils::giveAllWeapons(mPed);
 }

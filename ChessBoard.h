@@ -40,6 +40,7 @@ public:
 
 	void setWhiteChessSet(ChessSet* whiteSet);
 	void setBlackChessSet(ChessSet* blackSet);
+	ChessSet* getChessSet(ChessSide::Side side);
 
 	void spawnChessPieces();
 

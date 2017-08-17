@@ -49,3 +49,18 @@ public:
 	ActionGoToSquare(ChessBoardSquare* squareTo, float heading, float walkingSpeed);
 protected:
 };
+
+class ActionEnterVehicle : public ChessBattleAction {
+public:
+	ActionEnterVehicle(Vehicle vehicle, float walkingSpeed, DWORD maxTicks );
+
+	void start(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool checkForCompletion(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+	void teleportAttackerToVehicle(Ped ped);
+
+protected:
+	Vehicle mVehicle;
+	float mWalkingSpeed;
+	DWORD mMaxTicks;
+};

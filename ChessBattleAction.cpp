@@ -3,6 +3,7 @@
 
 ChessBattleAction::ChessBattleAction()
 {
+	mHasBeenStarted = false;
 }
 
 bool ChessBattleAction::hasBeenStarted()
@@ -10,7 +11,7 @@ bool ChessBattleAction::hasBeenStarted()
 	return mHasBeenStarted;
 }
 
-ActionGoToCoord::ActionGoToCoord(Vector3 location, float heading, float walkingSpeed)
+ActionGoToCoord::ActionGoToCoord(Vector3 location, float heading, float walkingSpeed):ChessBattleAction()
 {
 	mLocation = location;
 	mHeading = heading;
@@ -51,4 +52,40 @@ void ActionGoToCoord::setMinDistance(float minDistance)
 ActionGoToSquare::ActionGoToSquare(ChessBoardSquare * squareTo, float heading, float walkingSpeed) : ActionGoToCoord(squareTo->getLocation(),heading, walkingSpeed)
 {
 	mMinDistance = 1.5;
+}
+
+ActionEnterVehicle::ActionEnterVehicle(Vehicle vehicle, float walkingSpeed, DWORD maxTicks) : ChessBattleAction()
+{
+	mVehicle = vehicle;
+	mWalkingSpeed = walkingSpeed;
+	mMaxTicks = maxTicks;
+}
+
+void ActionEnterVehicle::start(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	mHasBeenStarted = true;
+	mTicksStarted = ticksStart;
+	AI::TASK_ENTER_VEHICLE(attacker->getPed(), mVehicle, -1, -1, mWalkingSpeed, 1, 0);
+	Logger::logDebug("ActionEnterVehicle::start");
+}
+
+bool ActionEnterVehicle::checkForCompletion(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	Logger::logDebug("ActionEnterVehicle::checkForCompletion");
+	if (PED::IS_PED_SITTING_IN_VEHICLE(attacker->getPed(), mVehicle) || PED::IS_PED_IN_ANY_VEHICLE(attacker->getPed(), 0)) {
+		mIsCompleted = true;
+		return true;
+	}
+	else if (ticksNow - mTicksStarted > mMaxTicks) {
+		Logger::logDebug("ActionEnterVehicle::checkForCompletion Teleporting to vehicle after " +std::to_string(ticksNow-mTicksStarted));
+		teleportAttackerToVehicle(attacker->getPed());
+		return false;
+	}
+	
+	return false;
+}
+
+void ActionEnterVehicle::teleportAttackerToVehicle(Ped ped)
+{
+	PED::SET_PED_INTO_VEHICLE(ped, mVehicle, -1);
 }

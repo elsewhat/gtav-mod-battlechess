@@ -10,6 +10,8 @@
 #include <vector>
 #include <sstream>
 #include "inc\types.h"
+class Animation;
+#include "Animation.h"
 
 
 class GTAModUtils {
@@ -21,7 +23,7 @@ public:
 	static void teleportEntityToLocation(Entity entityToTeleport, Vector3 location, bool trustZValue);
 	static void possessPed(Ped swapToPlayerPed);
 	static void disableControls();
-
+	static void playAnimation(Ped ped, Animation animation);
 };
 
 class WeaponUtils {

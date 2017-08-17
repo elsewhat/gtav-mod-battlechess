@@ -3,11 +3,14 @@
 #include "inc\types.h"
 class ActionGoToSquare;
 class ActionGoToCoord;
+class ActionEnterVehicle;
 #include "ChessBattleAction.h"
 #include "ChessBoard.h"
 #include "ChessPiece.h"
 class SyncedAnimation;
 #include "SyncedAnimation.h"
+class Animation;
+#include "Animation.h"
 #include <vector>
 #include <memory>
 
@@ -146,4 +149,31 @@ protected:
 	std::string mHandToHandWeaponDefender;
 	bool mDefenderIsUnarmed;
 	int mDefenderHealth;
+};
+
+class ChessBattleFiringSquad : public ChessBattle {
+public:
+	ChessBattleFiringSquad(ChessMove chessMove, ChessBoard* chessBoard, std::string weapon, bool isThrowingWeapon, Animation animation);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	std::string mWeapon;
+	bool mIsThrowingWeapon;
+	std::vector<ChessPiece*> mSquad;
+	Animation mAnimation;
+};
+
+
+class ChessBattleTank : public ChessBattle {
+public:
+	ChessBattleTank(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	Vehicle mVehicle;
+	std::shared_ptr<ActionEnterVehicle> mActionEnterTank;
 };

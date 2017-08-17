@@ -283,3 +283,23 @@ void GTAModUtils::disableControls()
 	//INPUT_LOOK_DOWN = 273,
 
 }
+
+void GTAModUtils::playAnimation(Ped ped, Animation animation)
+{
+	STREAMING::REQUEST_ANIM_DICT(animation.animLibrary);
+
+	DWORD ticksStart = GetTickCount();
+
+	while (!STREAMING::HAS_ANIM_DICT_LOADED(animation.animLibrary))
+	{
+		WAIT(0);
+		if (GetTickCount() > ticksStart + 5000) {
+			//duration will be 0 if it's not loaded
+			Logger::logError("GTAModUtils::playAnimation Animation not loaded after 5000 ticks");
+			return;
+		}
+	}
+
+	AI::TASK_PLAY_ANIM(ped, animation.animLibrary, animation.animName, 8.0f, -8.0f, animation.duration, 1, 8.0f, 0, 0, 0);
+
+}

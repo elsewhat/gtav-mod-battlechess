@@ -427,7 +427,7 @@ bool ChessBattleJerryCan::isExecutionCompleted(DWORD ticksNow, ChessPiece* attac
 			mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
 			return true;
 		}
-		else if (ticksNow - mTicksStarted > 400) {
+		else if (ticksNow - mTicksStarted > 600) {
 			FIRE::START_ENTITY_FIRE(defender->getPed());
 
 			mTicksStarted = mTicksStarted + mTicksStarted;
@@ -543,5 +543,147 @@ bool ChessBattleHandToHandWeapon::isExecutionCompleted(DWORD ticksNow, ChessPiec
 		PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
 		mTicksStarted = ticksNow;
 	}
+	return false;
+}
+
+ChessBattleFiringSquad::ChessBattleFiringSquad(ChessMove chessMove, ChessBoard * chessBoard, std::string weapon, bool isThrowingWeapon, Animation animation): ChessBattle(chessMove,chessBoard)
+{
+	mWeapon = weapon;
+	mAnimation = animation;
+	mIsThrowingWeapon = isThrowingWeapon;
+	ChessPiece* attacker = chessMove.getAttacker();
+	Ped pedAttacker = attacker->getPed();
+
+	std::array<ChessPiece*, 16> pieces = chessBoard->getChessSet(attacker->getSide())->getPieces();
+	for (auto piece : pieces) {
+		if (piece->getPed() != pedAttacker) {
+			mSquad.push_back(piece);
+			piece->setPedCanBeDamaged(false);
+		}
+	}
+	//special case
+	if (mSquad.size() == 0) {
+		mSquad.push_back(attacker);
+	}
+
+	ENTITY::SET_ENTITY_INVINCIBLE(chessMove.getDefender()->getPed(), false);
+	ENTITY::SET_ENTITY_PROOFS(chessMove.getDefender()->getPed(), false, false, false, false, false, false, false, false);
+	chessMove.getDefender()->setHealth(150);
+}
+
+void ChessBattleFiringSquad::startExecution(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+
+	for (auto piece : mSquad) {
+		piece->equipWeapon(mWeapon);
+	}
+	
+	for (auto piece : mSquad) {
+		Vector3 targetLocation = chessMove.getSquareTo()->getLocation();
+		if (mIsThrowingWeapon) {
+			AI::TASK_THROW_PROJECTILE(piece->getPed(), targetLocation.x, targetLocation.y, targetLocation.z);
+		}
+		else {
+			AI::TASK_SHOOT_AT_ENTITY(piece->getPed(), defender->getPed(), -1, GAMEPLAY::GET_HASH_KEY("FIRING_PATTERN_SINGLE_SHOT"));
+		}
+	}
+
+	if (mSquad[0]->getPed() != attacker->getPed()) {
+		GTAModUtils::playAnimation(attacker->getPed(), mAnimation);
+	}
+	mTicksStarted = ticksStart;
+
+}
+
+bool ChessBattleFiringSquad::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	if (mActionGoToEndSquare->hasBeenStarted()) {
+		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker,  defender, chessMove, chessBoard);
+	}
+	else if (defender->isPedDeadOrDying()) {
+		/*for (auto piece : mSquad) {
+			AI::CLEAR_PED_TASKS(piece->getPed());
+		}*/
+		mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
+		return false;
+	}
+	else if (ticksNow - mTicksStarted > 10000) {
+		Logger::logDebug("ChessBattleFiringSquad::More than 10000 ticks since started");
+
+		//Kill defender
+		PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
+	}
+	return false;
+}
+
+ChessBattleTank::ChessBattleTank(ChessMove chessMove, ChessBoard * chessBoard):ChessBattle(chessMove,chessBoard)
+{
+}
+
+void ChessBattleTank::startExecution(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	Logger::logDebug("ChessBattleTank::startExecution");
+	mTicksStarted = GetTickCount();
+	Hash hashTankModel = GAMEPLAY::GET_HASH_KEY("rhino");
+	STREAMING::REQUEST_MODEL(hashTankModel);
+	while (!STREAMING::HAS_MODEL_LOADED(hashTankModel))
+	{
+		WAIT(0);
+		if (GetTickCount() > mTicksStarted + 5000) {
+			//duration will be 0 if it's not loaded
+			Logger::logError("ChessBattleTank::startExecution tankModel not loaded after 5000 ticks");
+			return;
+		}
+	}
+	Vector3 tankLocation = chessBoard->getVehicleSpawnZone(attacker->getSide());
+	float heading = 270.0;
+	if (attacker->getSide() == ChessSide::BLACK) {
+		heading = 90.0;
+	}
+	mVehicle = VEHICLE::CREATE_VEHICLE(hashTankModel, tankLocation.x, tankLocation.y, tankLocation.z, heading, 1, 1);
+	VEHICLE::SET_VEHICLE_ON_GROUND_PROPERLY(mVehicle);
+
+	mActionEnterTank = std::make_shared<ActionEnterVehicle>(ActionEnterVehicle(mVehicle, 2.0f, 15000));
+	mActionEnterTank->start(ticksStart, attacker, defender, chessMove, chessBoard);
+	mTicksStarted = GetTickCount();
+}
+
+bool ChessBattleTank::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	if (mActionGoToEndSquare->hasBeenStarted()) {
+		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
+	}
+	else if (defender->isPedDeadOrDying()) {
+		Logger::logDebug("ChessBattleTank defender is dead has entered tank");
+		AI::TASK_LEAVE_VEHICLE(attacker->getPed(), mVehicle, 0);
+		mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
+		return false;
+	}
+	else if (ticksNow - mTicksStarted > 25000) {
+		Logger::logDebug("ChessBattleTank::More than 25000 ticks since started");
+
+		//Kill defender
+		PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
+	}
+	else if (mActionEnterTank->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard)) {
+		Logger::logDebug("ChessBattleTank attacker has entered tank");
+		mTicksStarted = ticksNow;
+
+		TaskSequence taskSequence = 100;
+		AI::OPEN_SEQUENCE_TASK(&taskSequence);
+
+		AI::TASK_VEHICLE_AIM_AT_PED(0, defender->getPed());
+		AI::TASK_VEHICLE_SHOOT_AT_PED(0, defender->getPed(), 1101004800);
+
+		AI::CLOSE_SEQUENCE_TASK(taskSequence);
+		AI::TASK_PERFORM_SEQUENCE(attacker->getPed(), taskSequence);
+		AI::CLEAR_SEQUENCE_TASK(&taskSequence);
+
+		//https://www.se7ensins.com/forums/threads/how-to-get-hidden-weapons-like-remote-sniper-in-sp.1174186/
+		//WEAPON::SET_CURRENT_PED_VEHICLE_WEAPON(pilot, GAMEPLAY::GET_HASH_KEY("VEHICLE_WEAPON_TANK"));
+		VEHICLE::SET_VEHICLE_SHOOT_AT_TARGET(attacker->getPed(), defender->getPed(), 0.0, 0.0, 0.0);
+
+	}
+
 	return false;
 }

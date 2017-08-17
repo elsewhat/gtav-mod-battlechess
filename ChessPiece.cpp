@@ -107,6 +107,7 @@ void ChessPiece::spawnPed(Hash relationshipGroupHash)
 	if (mPieceType == ChessPiece::KING) {
 		PED::GIVE_PED_HELMET(getPed(), false, 4096, -1);
 	}
+	setPedCanBeDamaged(false);
 }
 
 void ChessPiece::revivePed()
@@ -123,11 +124,28 @@ void ChessPiece::setPedFreezed(bool isFreezed)
 {
 	ENTITY::FREEZE_ENTITY_POSITION(getPed(), isFreezed);
 	PED::SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(getPed(), isFreezed);
+	//http://gtaforums.com/topic/852786-q-stop-freeroam-peds-from-fleeing/
+	//http://gtaforums.com/topic/793401-stop-peds-from-fleeing-method-2/
+	PED::SET_PED_COMBAT_ATTRIBUTES(getPed(), 17, isFreezed);
+	//PED::SET_PED_FLEE_ATTRIBUTES(getPed(), 0, !isFreezed);
+	if (isFreezed) {
+		PED::SET_PED_SEEING_RANGE(getPed(), 0.0f);
+		PED::SET_PED_HEARING_RANGE(getPed(), 0.0f);
+		PED::SET_PED_ALERTNESS(getPed(), 0);
+	}
+	else {
+		PED::SET_PED_SEEING_RANGE(getPed(), 50.f);
+		PED::SET_PED_HEARING_RANGE(getPed(), 20.0f);
+		PED::SET_PED_ALERTNESS(getPed(), 3);
+	}
+
 }
 
 void ChessPiece::setPedCanBeDamaged(bool canBeDamaged)
 {
 	ENTITY::SET_ENTITY_CAN_BE_DAMAGED(getPed(), canBeDamaged);
+	ENTITY::SET_ENTITY_INVINCIBLE(getPed(), !canBeDamaged);
+	//ENTITY::SET_ENTITY_PROOFS(getPed(), !canBeDamaged, !canBeDamaged, !canBeDamaged, !canBeDamaged, !canBeDamaged, !canBeDamaged, !canBeDamaged, !canBeDamaged);
 }
 
 void ChessPiece::setHealth(int health)
