@@ -80,6 +80,11 @@ Ped ChessPiece::getPed() const
 	return mChessPed.getPed();
 }
 
+void ChessPiece::setPed(Ped ped)
+{
+	mChessPed.setPed(ped);
+}
+
 ChessPed ChessPiece::getChessPed() const
 {
 	return  mChessPed;

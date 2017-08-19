@@ -79,7 +79,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForRook(ChessMove
 	case ChessPiece::PAWN:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard, "FIRING_PATTERN_FULL_AUTO"));
 	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard, "FIRING_PATTERN_FULL_AUTO"));
+		return std::make_shared <ChessBattleNeedBiggerGun>(ChessBattleNeedBiggerGun(chessMove, chessBoard, "WEAPON_MINIGUN", "FIRING_PATTERN_FULL_AUTO", "WEAPON_RPG", "FIRING_PATTERN_FULL_AUTO", 7000));
 	case ChessPiece::KNIGHT:{
 		std::shared_ptr<SyncedAnimation> syncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Guitar beatdown");
 		if (syncedAnimation != nullptr) {
@@ -128,7 +128,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForKnight(ChessMo
 	case ChessPiece::BISHOP:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::QUEEN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleSlap>(ChessBattleSlap(chessMove, chessBoard));
 	case ChessPiece::KING:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	default:
@@ -162,7 +162,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForQueen(ChessMov
 	switch (chessMove.getDefender()->getPieceType())
 	{
 	case ChessPiece::PAWN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleTurnIntoAnimal>(ChessBattleTurnIntoAnimal(chessMove, chessBoard,"a_c_hen", chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(2925),3000));
 	case ChessPiece::ROOK:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::KNIGHT:

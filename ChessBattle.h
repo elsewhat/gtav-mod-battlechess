@@ -53,6 +53,22 @@ protected:
 	void equipWeapon(ChessMove chessMove)override;
 };
 
+class ChessBattleNeedBiggerGun: public ChessBattle {
+public:
+	ChessBattleNeedBiggerGun(ChessMove chessMove, ChessBoard* chessBoard, std::string weapon1, std::string firingPattern1, std::string weapon2, std::string firingPattern2, DWORD ticksBeforeSwitch);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mFirstWeaponEquipped;
+	std::string mWeapon1;
+	std::string mFiringPattern1;
+	std::string mWeapon2; 
+	std::string mFiringPattern2;
+	DWORD mTicksBeforeSwitch;
+};
+
 class ChessBattleSyncedAnimation : public ChessBattle {
 public:
 	ChessBattleSyncedAnimation(ChessMove chessMove, ChessBoard* chessBoard,std::shared_ptr<SyncedAnimation> syncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset);
@@ -93,10 +109,18 @@ public:
 	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
+	float mSpeedBeforeImpact;
 	ChessBoardSquare* mSquareSetup;
 	bool mIsMovingIntoPosition;
 	bool mIsWaitingForTriggeringHeadbut;
 	std::shared_ptr<SyncedAnimation> mSyncedAnimation;
+};
+
+class ChessBattleSlap : public ChessBattleHeadbutt {
+public:
+	ChessBattleSlap(ChessMove chessMove, ChessBoard* chessBoard);
+
+protected:
 };
 
 class ChessBattleStealthKill : public ChessBattle {
@@ -176,4 +200,20 @@ public:
 protected:
 	Vehicle mVehicle;
 	std::shared_ptr<ActionEnterVehicle> mActionEnterTank;
+};
+
+class ChessBattleTurnIntoAnimal: public ChessBattle {
+public:
+	ChessBattleTurnIntoAnimal(ChessMove chessMove, ChessBoard* chessBoard, std::string animalModel, Animation animation, DWORD waitTimeAfterAnimation);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	Ped mAnimalPed;
+	std::string mAnimalModelName;
+	DWORD mAnimalModelHash;
+	Animation mAnimation;
+	DWORD mWaitTimeAfterAnimation;
+	bool mIsWaitingAfterAnimation;
 };

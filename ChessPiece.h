@@ -36,6 +36,7 @@ public:
 	void setHeading(float heading);
 
 	Ped getPed() const;
+	void setPed(Ped ped);
 	ChessPed getChessPed() const;
 	bool isPedDeadOrDying() const;
 

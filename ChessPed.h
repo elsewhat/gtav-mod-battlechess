@@ -9,6 +9,7 @@ public:
 	ChessPed( DWORD pedModelHash, char* movementStyle, std::array<int, 12> drawableVariations, std::array<int, 12> textureVariation, std::array<int, 12> paletteVariation, std::array<int, 3> propVariation, std::array<int, 3> propTextureVariation);
 
 	Ped getPed() const;
+	void setPed(Ped ped);
 
 	void spawnPed(Vector3 location, float heading, Hash relationshipGroupHash);
 	void revivePed(Vector3 location, float heading);

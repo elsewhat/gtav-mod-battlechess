@@ -164,6 +164,7 @@ bool ChessBattleSyncedAnimation::isExecutionCompleted(DWORD ticksNow, ChessPiece
 ChessBattleHeadbutt::ChessBattleHeadbutt(ChessMove chessMove, ChessBoard * chessBoard) : ChessBattle(chessMove, chessBoard)
 {
 	mSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("takedown_front_headbutt 2266");
+	mSpeedBeforeImpact = 2.0;
 }
 
 void ChessBattleHeadbutt::startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
@@ -197,7 +198,7 @@ bool ChessBattleHeadbutt::isExecutionCompleted(DWORD ticksNow, ChessPiece* attac
 		if (distanceToTarget < 1.5) {
 			mIsMovingIntoPosition = false;
 			Vector3 squareToLocation = chessMove.getSquareTo()->getLocation();
-			AI::TASK_GO_STRAIGHT_TO_COORD(chessMove.getAttacker()->getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, 2.0, -1, chessMove.getAttacker()->getSide(), 0.5f);
+			AI::TASK_GO_STRAIGHT_TO_COORD(chessMove.getAttacker()->getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, mSpeedBeforeImpact, -1, chessMove.getAttacker()->getSide(), 0.5f);
 			mIsWaitingForTriggeringHeadbut = true;
 			mTicksStarted = ticksNow;
 		}
@@ -684,6 +685,124 @@ bool ChessBattleTank::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker
 		VEHICLE::SET_VEHICLE_SHOOT_AT_TARGET(attacker->getPed(), defender->getPed(), 0.0, 0.0, 0.0);
 
 	}
+
+	return false;
+}
+
+ChessBattleSlap::ChessBattleSlap(ChessMove chessMove, ChessBoard * chessBoard): ChessBattleHeadbutt(chessMove, chessBoard)
+{
+	mSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("takedown_front_slap 2399");
+	mSpeedBeforeImpact = 1.0;
+}
+
+ChessBattleNeedBiggerGun::ChessBattleNeedBiggerGun(ChessMove chessMove, ChessBoard * chessBoard, std::string weapon1, std::string firingPattern1, std::string weapon2, std::string firingPattern2, DWORD ticksBeforeSwitch): ChessBattle (chessMove,chessBoard)
+{
+	mWeapon1 = weapon1;
+	mFiringPattern1 = firingPattern1;
+	mWeapon2 = weapon2;
+	mFiringPattern2 = firingPattern2;
+	mTicksBeforeSwitch = ticksBeforeSwitch;
+}
+
+void ChessBattleNeedBiggerGun::startExecution(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	Logger::logDebug("ChessBattleNeedBiggerGun::startExecution");
+	mTicksStarted = ticksStart;
+
+	attacker->equipWeapon(mWeapon1);
+	defender->equipWeapon(mWeapon1);
+
+	//defender cannot be damaged with first weapon
+	defender->setPedCanBeDamaged(false);
+
+
+	mFirstWeaponEquipped = true;
+
+	AI::TASK_SHOOT_AT_ENTITY(attacker->getPed(), defender->getPed(), -1, GAMEPLAY::GET_HASH_KEY(strdup(mFiringPattern1.c_str())));
+	AI::TASK_SHOOT_AT_ENTITY(defender->getPed(), attacker->getPed(), -1, GAMEPLAY::GET_HASH_KEY(strdup(mFiringPattern1.c_str())));
+}
+
+bool ChessBattleNeedBiggerGun::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	if (mActionGoToEndSquare->hasBeenStarted()) {
+		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
+	}
+	else if (defender->isPedDeadOrDying()) {
+		mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
+		return false;
+	}
+	else if (mFirstWeaponEquipped && ticksNow - mTicksStarted > mTicksBeforeSwitch) {
+		defender->setPedCanBeDamaged(true);
+		mFirstWeaponEquipped = false;
+		attacker->equipWeapon(mWeapon2);
+		AI::TASK_SHOOT_AT_ENTITY(attacker->getPed(), defender->getPed(), -1, GAMEPLAY::GET_HASH_KEY(strdup(mFiringPattern2.c_str())));
+		mTicksStarted = ticksNow;
+	}
+	else if (ticksNow - mTicksStarted > 20000) {
+		Logger::logDebug("ChessBattleNeedBiggerGun::More than 25000 ticks since started");
+
+		//Kill defender
+		PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
+	}
+
+
+	return false;
+}
+
+ChessBattleTurnIntoAnimal::ChessBattleTurnIntoAnimal(ChessMove chessMove, ChessBoard * chessBoard, std::string animalModel, Animation animation, DWORD waitTimeAfterAnimation): ChessBattle(chessMove,chessBoard)
+{
+	mAnimalModelName = animalModel;
+	mAnimation = animation;
+	mWaitTimeAfterAnimation = waitTimeAfterAnimation;
+}
+
+void ChessBattleTurnIntoAnimal::startExecution(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	Logger::logDebug("ChessBattleTurnIntoAnimal::startExecution");
+	mTicksStarted = ticksStart;
+	
+	mAnimalModelHash = GAMEPLAY::GET_HASH_KEY(strdup(mAnimalModelName.c_str()));
+	STREAMING::REQUEST_MODEL(mAnimalModelHash);
+	while (!STREAMING::HAS_MODEL_LOADED(mAnimalModelHash)) {
+		WAIT(0);
+		if (GetTickCount() - ticksStart > 15000) {
+			Logger::logDebug("Failed to load " + mAnimalModelName);
+			break;
+		}
+	}
+	
+	
+	GTAModUtils::playAnimation(attacker->getPed(), mAnimation);
+	mIsWaitingAfterAnimation = true;
+}
+
+bool ChessBattleTurnIntoAnimal::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	if (mActionGoToEndSquare->hasBeenStarted()) {
+		if (mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard)) {
+			return true;
+		}
+	}
+	else if (!mIsWaitingAfterAnimation) {
+		mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
+		return false;
+	}
+	else if (mIsWaitingAfterAnimation && ticksNow - mTicksStarted > mWaitTimeAfterAnimation) {
+		mIsWaitingAfterAnimation = false;
+		Vector3 location = ENTITY::GET_ENTITY_COORDS(defender->getPed(), 1);
+		float heading = ENTITY::GET_ENTITY_HEADING(defender->getPed());
+
+		
+
+		mAnimalPed = PED::CREATE_PED(28, mAnimalModelHash, location.x, location.y, location.z, heading, false, true);
+		defender->removePed();
+		defender->setPed(mAnimalPed);
+
+		Vector3 fleeLocation = chessBoard->getVehicleSpawnZone(defender->getSide());
+		AI::TASK_GO_STRAIGHT_TO_COORD(mAnimalPed, fleeLocation.x, fleeLocation.y, fleeLocation.z, 2.0, -1, heading, 0.0);
+		mTicksStarted = ticksNow;
+	}
+
 
 	return false;
 }

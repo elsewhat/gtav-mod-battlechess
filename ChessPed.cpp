@@ -27,6 +27,11 @@ Ped ChessPed::getPed() const
 	return mPed;
 }
 
+void ChessPed::setPed(Ped ped)
+{
+	mPed = ped;
+}
+
 void ChessPed::spawnPed(Vector3 location, float heading,Hash relationshipGroupHash)
 {
 	Logger::logDebug("ChessPed::spawnPed Hash" + std::to_string(mPedModelHash));
