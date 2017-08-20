@@ -43,6 +43,7 @@ public:
 	bool isPieceTaken() const;
 	void setPieceTaken(bool pieceTaken);
 
+	void forceFaceHeadingTowards(ChessPiece* pieceToFace);
 	void spawnPed(Hash relationshipGroupHash);
 	void revivePed();
 	void removePed();
@@ -50,7 +51,7 @@ public:
 	void setPedCanBeDamaged(bool canBeDamaged);
 	void setHealth(int health);
 
-	void startMovement(ChessMove chessMove, ChessBoard* chessBoard);
+	void startMovement(ChessMove chessMove, ChessBoard* chessBoard, bool ignorePieceType);
 	bool isMovementCompleted(ChessMove chessMove, int nrChecksDone);
 
 	std::shared_ptr<ChessBattle> startChessBattle(ChessMove chessMove,ChessBoard* chessBoard);

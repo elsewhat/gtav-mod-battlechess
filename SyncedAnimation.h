@@ -42,6 +42,7 @@ public:
 	void previewSyncedAnimation(std::vector<ChessPiece*> syncActors, bool useFirstActorLocation, Vector3 directLocation, bool doLoop, bool useFirstActorRotation, float rotation);
 	void updateLocationOfScene(Vector3 location);
 	bool isCompleted();
+	float getProgress();
 	void cleanupAfterExecution(bool deleteObjects, bool teleportActorsBackToStart);
 	void setLooping(bool doLooping);
 

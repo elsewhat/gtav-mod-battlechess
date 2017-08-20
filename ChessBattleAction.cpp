@@ -89,3 +89,35 @@ void ActionEnterVehicle::teleportAttackerToVehicle(Ped ped)
 {
 	PED::SET_PED_INTO_VEHICLE(ped, mVehicle, -1);
 }
+
+ActionThrowGrenade::ActionThrowGrenade(std::string weaponName, DWORD ticksBeforeComplete):ChessBattleAction()
+{
+	mWeaponName = weaponName;
+	mTicksBeforeComplete = ticksBeforeComplete;
+	mHasBeenStarted =false;
+}
+
+void ActionThrowGrenade::start(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	attacker->equipWeapon(mWeaponName);
+	Vector3 targetLocation = defender->getLocation();
+	AI::TASK_THROW_PROJECTILE(attacker->getPed(), targetLocation.x, targetLocation.y, targetLocation.z);
+
+	mTicksStarted = ticksStart;
+	mHasBeenStarted=true;
+	mIsCompleted = false;
+}
+
+bool ActionThrowGrenade::checkForCompletion(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	if (mIsCompleted) {
+		return true;
+	}
+	else if (mHasBeenStarted && ticksNow - mTicksStarted > mTicksBeforeComplete) {
+		mIsCompleted = true;
+		return true;
+	}
+	else {
+		return false;
+	}
+}

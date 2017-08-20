@@ -43,8 +43,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForPawn(ChessMove
 		}
 	}
 	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFiringSquad>(ChessBattleFiringSquad(chessMove, chessBoard, "WEAPON_MOLOTOV", true, chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(2925)));
-		//return std::make_shared <ChessBattleFireSecondaryWeapon>(ChessBattleFireSecondaryWeapon(chessMove, chessBoard ));
+		return std::make_shared <ChessBattleThrowGrenade>(ChessBattleThrowGrenade(chessMove, chessBoard, "WEAPON_GRENADE"));
 	case ChessPiece::KNIGHT: {
 		std::shared_ptr<SyncedAnimation> firstSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Knife struggle (tackle)");
 		std::shared_ptr<SyncedAnimation> secondSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Knife struggle (loop)");
@@ -111,7 +110,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForKnight(ChessMo
 	switch (chessMove.getDefender()->getPieceType())
 	{
 	case ChessPiece::PAWN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleHatchetFront>(ChessBattleHatchetFront(chessMove, chessBoard));
 	case ChessPiece::ROOK:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::KNIGHT: {
@@ -126,7 +125,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForKnight(ChessMo
 		}
 
 	case ChessPiece::BISHOP:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleShootOut>(ChessBattleShootOut(chessMove, chessBoard));
 	case ChessPiece::QUEEN:
 		return std::make_shared <ChessBattleSlap>(ChessBattleSlap(chessMove, chessBoard));
 	case ChessPiece::KING:

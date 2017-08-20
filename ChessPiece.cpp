@@ -106,6 +106,14 @@ void ChessPiece::setPieceTaken(bool pieceTaken)
 	mPieceTaken = pieceTaken;
 }
 
+void ChessPiece::forceFaceHeadingTowards(ChessPiece * pieceToFace)
+{
+	Vector3 myLocation = ENTITY::GET_ENTITY_COORDS(getPed(),1);
+	Vector3 otherLocation = ENTITY::GET_ENTITY_COORDS(pieceToFace->getPed(), 1);
+	float heading = GAMEPLAY::GET_HEADING_FROM_VECTOR_2D(otherLocation.x - myLocation.x, otherLocation.y - myLocation.y);
+	ENTITY::SET_ENTITY_HEADING(getPed(), heading);
+}
+
 void ChessPiece::spawnPed(Hash relationshipGroupHash)
 {
 	mChessPed.spawnPed(mLocation, mHeading, relationshipGroupHash);
@@ -158,14 +166,14 @@ void ChessPiece::setHealth(int health)
 	ENTITY::SET_ENTITY_HEALTH(getPed(), health);
 }
 
-void ChessPiece::startMovement(ChessMove chessMove, ChessBoard* chessBoard)
+void ChessPiece::startMovement(ChessMove chessMove, ChessBoard* chessBoard, bool ignorePieceType)
 {
 	Logger::logDebug("ChessPiece::startMovement");
 	mIsMoving = true;
 	chessMove.getAttacker()->setPedFreezed(false);
 
 	Vector3 squareToLocation = mLocation;
-	if (mPieceType == KNIGHT) {
+	if (mPieceType == KNIGHT && !ignorePieceType) {
 		//Rook first move up in rank-direction, then sideways in file-direction
 		TaskSequence task_seq = 1;
 		AI::OPEN_SEQUENCE_TASK(&task_seq);

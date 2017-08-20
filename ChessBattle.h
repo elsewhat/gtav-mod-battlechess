@@ -4,6 +4,7 @@
 class ActionGoToSquare;
 class ActionGoToCoord;
 class ActionEnterVehicle;
+class ActionThrowGrenade;
 #include "ChessBattleAction.h"
 #include "ChessBoard.h"
 #include "ChessPiece.h"
@@ -109,6 +110,8 @@ public:
 	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
+	bool mForceHeading;
+	DWORD mTicksBeforeAction;
 	float mSpeedBeforeImpact;
 	ChessBoardSquare* mSquareSetup;
 	bool mIsMovingIntoPosition;
@@ -122,6 +125,28 @@ public:
 
 protected:
 };
+
+class ChessBattleShootOut : public ChessBattleHeadbutt {
+public:
+	ChessBattleShootOut(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mHasDefenderFired;
+	bool mHasAttackerFired;
+};
+
+
+class ChessBattleHatchetFront : public ChessBattleHeadbutt {
+public:
+	ChessBattleHatchetFront(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+protected:
+};
+
 
 class ChessBattleStealthKill : public ChessBattle {
 public:
@@ -216,4 +241,16 @@ protected:
 	Animation mAnimation;
 	DWORD mWaitTimeAfterAnimation;
 	bool mIsWaitingAfterAnimation;
+};
+
+class ChessBattleThrowGrenade : public ChessBattle {
+public:
+	ChessBattleThrowGrenade(ChessMove chessMove, ChessBoard* chessBoard, std::string grenadeName);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	std::string mGrenadeName;
+	std::shared_ptr<ActionThrowGrenade> mActionThrowGrenade;
 };

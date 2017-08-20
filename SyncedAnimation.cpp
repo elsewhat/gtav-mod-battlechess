@@ -207,7 +207,20 @@ void SyncedAnimation::updateLocationOfScene(Vector3 location)
 	}
 }
 
-
+float SyncedAnimation::getProgress() {
+	if (m_isProperSynced) {
+		return PED::GET_SYNCHRONIZED_SCENE_PHASE(m_sceneId);
+	}
+	else {
+		float maxLength = 1.0;
+		for (auto &animation : m_actorAnimations) {
+			if (animation.duration > maxLength) {
+				maxLength = animation.duration + 0.0f;
+			}
+		}
+		return (GetTickCount() - m_ticksStarted) / maxLength;
+	}
+}
 
 bool SyncedAnimation::isCompleted()
 {
@@ -241,7 +254,7 @@ bool SyncedAnimation::isCompleted()
 			}
 		}
 		//subtract some overhead
-		maxLength = maxLength - 30;
+		maxLength = maxLength - 100;
 		if (GetTickCount() - m_ticksStarted >= (DWORD) maxLength) {
 			return true;
 		}

@@ -64,3 +64,16 @@ protected:
 	float mWalkingSpeed;
 	DWORD mMaxTicks;
 };
+
+class ActionThrowGrenade: public ChessBattleAction {
+public:
+	ActionThrowGrenade(std::string weaponName,DWORD ticksBeforeComplete);
+
+	void start(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool checkForCompletion(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+
+protected:
+	std::string mWeaponName;
+	DWORD mTicksBeforeComplete;
+};
