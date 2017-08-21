@@ -41,6 +41,7 @@ SyncedAnimation::SyncedAnimation(std::string title, std::string category, bool i
 
 void SyncedAnimation::executeSyncedAnimation(bool silent, std::vector<ChessPiece*> syncActors, bool useFirstActorLocation, Vector3 directLocation, bool doLoop, bool useFirstActorRotation, float rotation)
 {
+	m_hasStarted = true;
 	Logger::logDebug("SyncedAnimation->executeSyncedAnimation " + toString());
 	DWORD ticksStart = GetTickCount();
 	m_doLooping = doLoop;
@@ -208,6 +209,9 @@ void SyncedAnimation::updateLocationOfScene(Vector3 location)
 }
 
 float SyncedAnimation::getProgress() {
+	if (!m_hasStarted) {
+		return 0.0f;
+	}
 	if (m_isProperSynced) {
 		return PED::GET_SYNCHRONIZED_SCENE_PHASE(m_sceneId);
 	}
@@ -270,6 +274,7 @@ bool SyncedAnimation::isCompleted()
 void SyncedAnimation::cleanupAfterExecution(bool doDeleteObjects, bool teleportActorsBackToStart)
 {
 	Logger::logDebug("SyncedAnimation cleanupAfterExecution ");
+	m_hasStarted = false;
 	if (m_isProperSynced) {
 		int i = 0;
 		for (auto &ped : m_pedsInScene) {
@@ -305,7 +310,6 @@ void SyncedAnimation::cleanupAfterExecution(bool doDeleteObjects, bool teleportA
 	else {
 		int i = 0;
 		for (auto &ped : m_pedsInScene) {
-			//no idea what 2+3 param is
 			AI::CLEAR_PED_TASKS(ped);
 
 			if (teleportActorsBackToStart) {

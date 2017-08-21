@@ -21,6 +21,7 @@ private:
 	float m_deltaZLocation;
 	bool m_isNull = true;
 	bool m_doLooping = false;
+	bool m_hasStarted = false;
 	bool m_isProperSynced = true;
 	float m_currentRotation = 0.0f;
 	DWORD m_ticksStarted;

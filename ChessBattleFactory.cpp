@@ -52,7 +52,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForPawn(ChessMove
 			offset.x = -1.5;
 			offset.y = -0.5;
 			offset.z = 0.0;
-			return std::make_shared <ChessBattleSyncedAnimationChained>(ChessBattleSyncedAnimationChained(chessMove, chessBoard, firstSyncedAnimation, secondSyncedAnimation, false, true, offset));
+			return std::make_shared <ChessBattleSyncedAnimationChained>(ChessBattleSyncedAnimationChained(chessMove, chessBoard, firstSyncedAnimation, secondSyncedAnimation, false, true, offset, true, "WEAPON_KNIFE"));
 		}
 		else {
 			Logger::logDebug("Knife struggle (tackle) synced anim does not exist");
@@ -146,7 +146,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForBishop(ChessMo
 	case ChessPiece::KNIGHT:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::BISHOP:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleShoryuken>(ChessBattleShoryuken(chessMove, chessBoard));
 	case ChessPiece::QUEEN:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::KING:
@@ -167,7 +167,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForQueen(ChessMov
 	case ChessPiece::KNIGHT:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::BISHOP:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleAttackedByAnimals>(ChessBattleAttackedByAnimals(chessMove, chessBoard, "a_c_mtlion",2));
 	case ChessPiece::QUEEN:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::KING:

@@ -86,7 +86,7 @@ protected:
 
 class ChessBattleSyncedAnimationChained : public ChessBattle {
 public:
-	ChessBattleSyncedAnimationChained(ChessMove chessMove, ChessBoard* chessBoard,std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset);
+	ChessBattleSyncedAnimationChained(ChessMove chessMove, ChessBoard* chessBoard,std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset, bool hasDefenderWeapon, std::string defenderWeapon);
 
 	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
@@ -95,6 +95,8 @@ protected:
 	bool mKillAfterwards;
 	bool mUseDefenderLocation;
 	bool mIsFirstCompleted;
+	bool mHasDefenderWeapon;
+	std::string mDefenderWeapon;
 	Vector3 mLocationOffset;
 	Vector3 mStartLocation;
 	std::shared_ptr<SyncedAnimation> mFirstSyncedAnimation;
@@ -102,9 +104,9 @@ protected:
 };
 
 
-class ChessBattleHeadbutt : public ChessBattle {
+class ChessBattleManualPlacedSyncedAnimation : public ChessBattle {
 public:
-	ChessBattleHeadbutt(ChessMove chessMove, ChessBoard* chessBoard);
+	ChessBattleManualPlacedSyncedAnimation(ChessMove chessMove, ChessBoard* chessBoard);
 
 	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
@@ -115,18 +117,24 @@ protected:
 	float mSpeedBeforeImpact;
 	ChessBoardSquare* mSquareSetup;
 	bool mIsMovingIntoPosition;
-	bool mIsWaitingForTriggeringHeadbut;
+	bool mIsWaitingForTriggeringSynced;
 	std::shared_ptr<SyncedAnimation> mSyncedAnimation;
 };
 
-class ChessBattleSlap : public ChessBattleHeadbutt {
+class ChessBattleHeadbutt : public ChessBattleManualPlacedSyncedAnimation {
+public:
+	ChessBattleHeadbutt(ChessMove chessMove, ChessBoard* chessBoard);
+protected:
+};
+
+class ChessBattleSlap : public ChessBattleManualPlacedSyncedAnimation {
 public:
 	ChessBattleSlap(ChessMove chessMove, ChessBoard* chessBoard);
 
 protected:
 };
 
-class ChessBattleShootOut : public ChessBattleHeadbutt {
+class ChessBattleShootOut : public ChessBattleManualPlacedSyncedAnimation {
 public:
 	ChessBattleShootOut(ChessMove chessMove, ChessBoard* chessBoard);
 
@@ -138,8 +146,19 @@ protected:
 	bool mHasAttackerFired;
 };
 
+class ChessBattleShoryuken : public ChessBattleManualPlacedSyncedAnimation {
+public:
+	ChessBattleShoryuken(ChessMove chessMove, ChessBoard* chessBoard);
 
-class ChessBattleHatchetFront : public ChessBattleHeadbutt {
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mDoneMegaPunch;
+	bool mDoneRagdoll;
+};
+
+
+class ChessBattleHatchetFront : public ChessBattleManualPlacedSyncedAnimation {
 public:
 	ChessBattleHatchetFront(ChessMove chessMove, ChessBoard* chessBoard);
 
@@ -253,4 +272,19 @@ public:
 protected:
 	std::string mGrenadeName;
 	std::shared_ptr<ActionThrowGrenade> mActionThrowGrenade;
+};
+
+class ChessBattleAttackedByAnimals : public ChessBattle {
+public:
+	ChessBattleAttackedByAnimals(ChessMove chessMove, ChessBoard* chessBoard, std::string animalName, int nrOfAnimalsPrSide);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	std::vector<Ped> mAnimals;
+	int mNrOfAnimalsPrSide;
+	std::string mAnimalName;
+	bool mIsWaitingForAnimalsToAttack;
+	bool mRemovedAnimals;
 };
