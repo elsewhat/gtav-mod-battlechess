@@ -544,9 +544,23 @@ void BattleChessMain()
 	chessSetFactory = ChessSetFactory();
 
 	Vector3 baseLocation;
+	//air strip
 	baseLocation.x = 1629.0;
 	baseLocation.y = 3215.0;
 	baseLocation.z = 39.55;
+
+	//Racing track
+	//1111.885, 106.282, 80.776sd
+	//Funfair
+	baseLocation.x = -1570.098;
+	baseLocation.y = -1122.152;
+	baseLocation.z = 3.403;
+
+	//Rockford hills
+	baseLocation.x = -830.41;
+	baseLocation.y = -123.37;
+	baseLocation.z = 37.55;
+
 
 	float squareDeltaX = 2.0; 
 	float squareDeltaY = 2.0;

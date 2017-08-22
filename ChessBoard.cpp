@@ -310,6 +310,9 @@ void ChessBoard::initializeSquares()
 			location.y = mBaseLocation.y + mSquareDeltaY * (rank-1);
 			location.z = mBaseLocation.z;
 
+			
+
+			//Logger::logDebug("Square location " + std::to_string(location.x) + "," + std::to_string(location.y) + "," + std::to_string(location.z) + ",");
 			mSquares[index] = new ChessBoardSquare(file, rank, isPromotion, isWhitePawnLine, isBlackPawnLine, color, location, headingWhite, headingBlack);
 			index++;
 		}

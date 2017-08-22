@@ -66,11 +66,8 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 void BattleChessGameController::onEnterMode(ChessBoard* chessBoard)
 {
 	Logger::logInfo(" BattleChessGameController::onEnterMode()");
-	Vector3 baseLocation;
-	baseLocation.x = 1649.0;
-	baseLocation.y = 3215.0;
-	baseLocation.z = 41.0;
-	GTAModUtils::teleportEntityToLocation(PLAYER::PLAYER_PED_ID(), baseLocation, false);
+	Vector3 playerLocation = chessBoard->getVehicleSpawnZone(ChessSide::WHITE);
+	GTAModUtils::teleportEntityToLocation(PLAYER::PLAYER_PED_ID(), playerLocation, false);
 
 	sideToMove = chessBoard->sideToMove();
 

@@ -186,6 +186,7 @@ public:
 
 protected:
 	Any mIncidentId;
+	Any mIncidentId2;
 };
 
 class ChessBattleJerryCan : public ChessBattle {
@@ -287,4 +288,23 @@ protected:
 	std::string mAnimalName;
 	bool mIsWaitingForAnimalsToAttack;
 	bool mRemovedAnimals;
+};
+
+class ChessBattleAttackOfTheClones: public ChessBattle {
+public:
+	ChessBattleAttackOfTheClones(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+	void createClone(ChessPiece* chessPiece, Vector3 location, Vector3 faceLocation);
+
+protected:
+	std::vector<Ped> mClones;
+	Animation mAnimation;
+	int mNrOfClones;
+	bool mIsCloning;
+	int mCloningIndex;
+	bool mHasRemovedClones;
+	bool mWaitingForClonesToAttack;
 };

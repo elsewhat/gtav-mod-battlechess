@@ -21,6 +21,11 @@ ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, bool is
 	mLocation = location;
 	mHeadingWhite = headingWhite;
 	mHeadingBlack = headingBlack;
+
+	float actualZ = mLocation.z;
+	if (GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(mLocation.x, mLocation.y, mLocation.z, &actualZ, 0)) {
+		mLocation.z = actualZ + 0.1;
+	}
 }
 
 int ChessBoardSquare::getSquareFile() const

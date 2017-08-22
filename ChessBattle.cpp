@@ -342,6 +342,7 @@ void ChessBattleDeathByCop::startExecution(DWORD ticksStart, ChessPiece* attacke
 	*/
 	mIncidentId = 0;
 	GAMEPLAY::CREATE_INCIDENT_WITH_ENTITY(14, defender->getPed(),4, 0.0f, &mIncidentId);
+	GAMEPLAY::CREATE_INCIDENT_WITH_ENTITY(11, defender->getPed(), 4, 0.0f, &mIncidentId2);
 
 	AI::TASK_USE_MOBILE_PHONE_TIMED(attacker->getPed(), 7000);
 	AUDIO::_PLAY_AMBIENT_SPEECH_WITH_VOICE(attacker->getPed(), "PHONE_CALL_COPS", "A_M_M_GOLFER_01_WHITE_MINI_01", "SPEECH_PARAMS_STANDARD",0);
@@ -357,6 +358,7 @@ bool ChessBattleDeathByCop::isExecutionCompleted(DWORD ticksNow, ChessPiece* att
 		
 		Logger::logDebug("GAMEPLAY::DELETE_INCIDENT");
 		GAMEPLAY::DELETE_INCIDENT(&mIncidentId);
+		GAMEPLAY::DELETE_INCIDENT(&mIncidentId2);
 
 		attacker->startMovement(chessMove, chessBoard,true);
 
@@ -1141,4 +1143,105 @@ bool ChessBattleAttackedByAnimals::isExecutionCompleted(DWORD ticksNow, ChessPie
 		PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
 		return false;
 	}
+}
+
+ChessBattleAttackOfTheClones::ChessBattleAttackOfTheClones(ChessMove chessMove, ChessBoard * chessBoard):ChessBattle(chessMove, chessBoard)
+{
+	mAnimation = chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(2925);
+}
+
+void ChessBattleAttackOfTheClones::startExecution(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	Logger::logDebug("ChessBattleAttackOfTheClones::startExecution");
+
+	mTicksStarted = ticksStart;
+	mIsCloning = true;
+
+	Vector3 location = chessMove.getSquareTo()->getLocation();
+	location.x = location.x - 2.0;
+
+	defender->setHealth(135);
+
+	GTAModUtils::playAnimation(attacker->getPed(), mAnimation);
+	createClone(attacker, location, ENTITY::GET_ENTITY_COORDS(defender->getPed(), true));
+	mCloningIndex++;
+	mWaitingForClonesToAttack = false;
+	defender->equipSecondaryWeapon();
+}
+
+bool ChessBattleAttackOfTheClones::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	if (mActionGoToEndSquare->hasBeenStarted()) {
+		if (mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard) && ticksNow - mTicksStarted > 15000) {
+			if (!mHasRemovedClones) {
+				Logger::logDebug("ChessBattleAttackOfTheClones Removing clones");
+				mHasRemovedClones = true;
+				for (auto clone : mClones) {
+					if (ENTITY::DOES_ENTITY_EXIST(clone))
+					{
+						PED::DELETE_PED(&clone);
+					}
+				}
+			}
+
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else if (defender->isPedDeadOrDying()) {
+		Logger::logDebug("ChessBattleAttackOfTheClones isPedDeadOrDying");
+		mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
+		mWaitingForClonesToAttack = false;
+
+		for (auto clone : mClones) {
+			Vector3 location = chessBoard->getVehicleSpawnZone(ChessSide::WHITE);
+			AI::TASK_GO_STRAIGHT_TO_COORD(clone, location.x, location.y, location.z, 1.0, -1, 1.0, 0.0);
+		}
+		mTicksStarted = ticksNow;
+		return false;
+	}
+	else if (mWaitingForClonesToAttack && ticksNow - mTicksStarted > 1500) {
+		Logger::logDebug("ChessBattleAttackOfTheClones mWaitingForClonesToAttack");
+		//PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
+
+		for (auto clone : mClones) {
+			AI::TASK_PUT_PED_DIRECTLY_INTO_MELEE(clone, defender->getPed(), 0.0, -1.0, 0.0, 0);
+		}
+		
+		mWaitingForClonesToAttack = false;
+		return false;
+	}
+	else if (mIsCloning && ticksNow - mTicksStarted > 3000) {
+		Logger::logDebug("ChessBattleAttackOfTheClones mIsCloning " + std::to_string(mCloningIndex));
+		Vector3 location = chessMove.getSquareTo()->getLocation();
+		if (mCloningIndex == 1) {
+			location.y = location.y + 2.0;
+		}
+		else if(mCloningIndex == 2){
+			location.x = location.x + 2.0;
+		}
+		GTAModUtils::playAnimation(attacker->getPed(), mAnimation);
+		createClone(attacker, location, ENTITY::GET_ENTITY_COORDS(defender->getPed(),true));
+		mCloningIndex++;
+		if (mCloningIndex >= 3) {
+			mIsCloning = false;
+			mWaitingForClonesToAttack = true;
+		}
+
+		mTicksStarted = ticksNow;
+	}
+
+	return false;
+}
+
+void ChessBattleAttackOfTheClones::createClone(ChessPiece* chessPiece, Vector3 location, Vector3 faceLocation)
+{
+	float heading = heading = GAMEPLAY::GET_HEADING_FROM_VECTOR_2D(faceLocation.x - location.x, faceLocation.y - location.y);
+	Ped clonedPed = PED::CLONE_PED(chessPiece->getPed(), heading, false, true);
+
+	ENTITY::SET_ENTITY_COORDS_NO_OFFSET(clonedPed, location.x, location.y, location.z, 0, 0, 1);
+	ENTITY::SET_ENTITY_HEADING(clonedPed, heading);
+	mClones.push_back(clonedPed);
 }

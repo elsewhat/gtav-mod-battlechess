@@ -163,7 +163,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForQueen(ChessMov
 	case ChessPiece::PAWN:
 		return std::make_shared <ChessBattleTurnIntoAnimal>(ChessBattleTurnIntoAnimal(chessMove, chessBoard,"a_c_hen", chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(2925),3000));
 	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleAttackOfTheClones>(ChessBattleAttackOfTheClones(chessMove, chessBoard));
 	case ChessPiece::KNIGHT:
 		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
 	case ChessPiece::BISHOP:
