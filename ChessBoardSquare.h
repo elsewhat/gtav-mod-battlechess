@@ -4,6 +4,8 @@
 class ChessPiece;
 #include "ChessPiece.h"
 
+#include <vector>
+
 class ChessBoardSquare {
 public:
 	enum Color {
@@ -23,6 +25,9 @@ public:
 	void removePiece();
 	Vector3 getLocation() const;
 	void setLocation(Vector3 location);
+	std::vector<Vector3> getCornerLocations();
+
+
 	boolean isPromotion() const;
 
 	boolean isPawnLine(ChessSide::Side side) const;
@@ -55,6 +60,7 @@ protected:
 	Color mColor;
 	ChessPiece* mPiece;
 	Vector3 mLocation;
+	std::vector<Vector3> mCorners;
 	float mHeadingWhite;
 	float mHeadingBlack;
 	bool mIsPromotion=false;

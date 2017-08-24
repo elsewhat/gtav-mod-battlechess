@@ -41,15 +41,24 @@ SyncedAnimation::SyncedAnimation(std::string title, std::string category, bool i
 
 void SyncedAnimation::executeSyncedAnimation(bool silent, std::vector<ChessPiece*> syncActors, bool useFirstActorLocation, Vector3 directLocation, bool doLoop, bool useFirstActorRotation, float rotation)
 {
+	std::vector<Ped> actorPeds;
+	for (auto actor : syncActors) {
+		actorPeds.push_back(actor->getPed());
+	}
+	executeSyncedAnimation(silent, actorPeds, useFirstActorLocation, directLocation, doLoop, useFirstActorRotation, rotation);
+}
+
+void SyncedAnimation::executeSyncedAnimation(bool silent, std::vector<Ped> peds, bool useFirstActorLocation, Vector3 directLocation, bool doLoop, bool useFirstActorRotation, float rotation)
+{
 	m_hasStarted = true;
 	Logger::logDebug("SyncedAnimation->executeSyncedAnimation " + toString());
 	DWORD ticksStart = GetTickCount();
 	m_doLooping = doLoop;
 
 
-	if (syncActors.size() < m_actorAnimations.size()) {
+	if (peds.size() < m_actorAnimations.size()) {
 		if (!silent) {
-			Logger::logDebug("Missing " + std::to_string(m_actorAnimations.size()- syncActors.size()) + " actor(s) but will still execute synched animation");
+			Logger::logDebug("Missing " + std::to_string(m_actorAnimations.size()- peds.size()) + " actor(s) but will still execute synched animation");
 		}
 	}
 
@@ -114,16 +123,16 @@ void SyncedAnimation::executeSyncedAnimation(bool silent, std::vector<ChessPiece
 	Vector3 sceneLocation = directLocation;
 
 	
-	if (useFirstActorLocation && syncActors.size() >= 1) {
-		sceneLocation = ENTITY::GET_ENTITY_COORDS(syncActors.at(0)->getPed(), true);
+	if (useFirstActorLocation && peds.size() >= 1) {
+		sceneLocation = ENTITY::GET_ENTITY_COORDS(peds.at(0), true);
 	}
 	else {
 		//Vector3 actorLocation = ENTITY::GET_ENTITY_COORDS(syncActors.at(0)->getActorPed(), true);
 		//Logger::logDebug("Difference in location x:" + std::to_string(sceneLocation.x - actorLocation.x) + " y:" + std::to_string(sceneLocation.y - actorLocation.y) + " z:" + std::to_string(sceneLocation.z - actorLocation.z));
 	}
 	float m_currentRotation =  rotation;
-	if (useFirstActorRotation  && syncActors.size() >= 1) {
-		m_currentRotation = ENTITY::GET_ENTITY_ROTATION(syncActors.at(0)->getPed(), 2).z;
+	if (useFirstActorRotation  && peds.size() >= 1) {
+		m_currentRotation = ENTITY::GET_ENTITY_ROTATION(peds.at(0), 2).z;
 	}
 
 
@@ -136,13 +145,13 @@ void SyncedAnimation::executeSyncedAnimation(bool silent, std::vector<ChessPiece
 		//Add the animations to the scene
 		int actorIndex = 0;
 		for (auto &animation : m_actorAnimations) {
-			if (syncActors.size() > actorIndex) {
-				Logger::logDebug("Adding animation to " + std::to_string(syncActors.at(actorIndex)->getPed()) + " actor index:" + std::to_string(actorIndex));
-				AI::TASK_SYNCHRONIZED_SCENE(syncActors.at(actorIndex)->getPed(), m_sceneId, animation.animLibrary, animation.animName, 1000.0, -4.0, 64, 0, 0x447a0000, 0);
-				m_pedsInScene.push_back(syncActors.at(actorIndex)->getPed());
+			if (peds.size() > actorIndex) {
+				Logger::logDebug("Adding animation to " + std::to_string(peds.at(actorIndex)) + " actor index:" + std::to_string(actorIndex));
+				AI::TASK_SYNCHRONIZED_SCENE(peds.at(actorIndex), m_sceneId, animation.animLibrary, animation.animName, 1000.0, -4.0, 64, 0, 0x447a0000, 0);
+				m_pedsInScene.push_back(peds.at(actorIndex));
 
-				m_pedsInSceneStartLocation.push_back(ENTITY::GET_ENTITY_COORDS(syncActors.at(actorIndex)->getPed(), true));
-				m_pedsInSceneStartHeading.push_back(ENTITY::GET_ENTITY_HEADING(syncActors.at(actorIndex)->getPed()));
+				m_pedsInSceneStartLocation.push_back(ENTITY::GET_ENTITY_COORDS(peds.at(actorIndex), true));
+				m_pedsInSceneStartHeading.push_back(ENTITY::GET_ENTITY_HEADING(peds.at(actorIndex)));
 
 				actorIndex++;
 			}
@@ -174,16 +183,16 @@ void SyncedAnimation::executeSyncedAnimation(bool silent, std::vector<ChessPiece
 		m_ticksStarted = GetTickCount();
 		int actorIndex = 0;
 		for (auto &animation : m_actorAnimations) {
-			if (syncActors.size() > actorIndex) {
+			if (peds.size() > actorIndex) {
 				int duration = animation.duration;
 				if (doLoop) {
 					duration = -1;
 				}
-				AI::TASK_PLAY_ANIM(syncActors.at(actorIndex)->getPed(), animation.animLibrary, animation.animName, 8.0f, -8.0f, duration, 1, 8.0f, 0, 0, 0);
+				AI::TASK_PLAY_ANIM(peds.at(actorIndex), animation.animLibrary, animation.animName, 8.0f, -8.0f, duration, 1, 8.0f, 0, 0, 0);
 
-				m_pedsInScene.push_back(syncActors.at(actorIndex)->getPed());
-				m_pedsInSceneStartLocation.push_back(ENTITY::GET_ENTITY_COORDS(syncActors.at(actorIndex)->getPed(), true));
-				m_pedsInSceneStartHeading.push_back(ENTITY::GET_ENTITY_HEADING(syncActors.at(actorIndex)->getPed()));
+				m_pedsInScene.push_back(peds.at(actorIndex));
+				m_pedsInSceneStartLocation.push_back(ENTITY::GET_ENTITY_COORDS(peds.at(actorIndex), true));
+				m_pedsInSceneStartHeading.push_back(ENTITY::GET_ENTITY_HEADING(peds.at(actorIndex)));
 
 				actorIndex++;
 			}

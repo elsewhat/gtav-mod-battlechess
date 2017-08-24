@@ -165,7 +165,7 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForQueen(ChessMov
 	case ChessPiece::ROOK:
 		return std::make_shared <ChessBattleAttackOfTheClones>(ChessBattleAttackOfTheClones(chessMove, chessBoard));
 	case ChessPiece::KNIGHT:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleSharkAttack>(ChessBattleSharkAttack(chessMove, chessBoard));
 	case ChessPiece::BISHOP:
 		return std::make_shared <ChessBattleAttackedByAnimals>(ChessBattleAttackedByAnimals(chessMove, chessBoard, "a_c_mtlion",2));
 	case ChessPiece::QUEEN:

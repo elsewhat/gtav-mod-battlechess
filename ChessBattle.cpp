@@ -1245,3 +1245,67 @@ void ChessBattleAttackOfTheClones::createClone(ChessPiece* chessPiece, Vector3 l
 	ENTITY::SET_ENTITY_HEADING(clonedPed, heading);
 	mClones.push_back(clonedPed);
 }
+
+ChessBattleSharkAttack::ChessBattleSharkAttack(ChessMove chessMove, ChessBoard * chessBoard): ChessBattle(chessMove,chessBoard)
+{
+	chessBoard->getSyncedAnimationFactory()->getByTitle("Shark attack");
+	mAnimation = chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(2925);
+}
+
+void ChessBattleSharkAttack::startExecution(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	Logger::logDebug("ChessBattleSharkAttack::startExecution " + mSyncedAnimation->getTitle());
+	
+	mAnimalHash = GAMEPLAY::GET_HASH_KEY("a_c_sharktiger");
+	STREAMING::REQUEST_MODEL(mAnimalHash);
+	while (!STREAMING::HAS_MODEL_LOADED(mAnimalHash)) {
+		if (GetTickCount() - ticksStart > 5000) {
+			Logger::logDebug("Failed to load a_c_sharktiger");
+			return;
+		}
+		WAIT(0);
+	}
+
+	GTAModUtils::playAnimation(attacker->getPed(), mAnimation);
+	mTicksStarted = ticksStart;
+}
+
+bool ChessBattleSharkAttack::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	if (mActionGoToEndSquare->hasBeenStarted()) {
+		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
+	}
+	else if (mSyncedAnimation->isActive() && mSyncedAnimation->isCompleted()) {
+		Logger::logDebug("ChessBattleAttackOfTheClones mSyncedAnimation is complete");
+
+		mSyncedAnimation->cleanupAfterExecution(true, false);
+
+		defender->removePed();
+		if (ENTITY::DOES_ENTITY_EXIST(mSharkPed))
+		{
+			PED::DELETE_PED(&mSharkPed);
+		}
+		mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
+	}
+	else if (ticksNow - mTicksStarted > 4000) {
+		Logger::logDebug("ChessBattleAttackOfTheClones creating shark");
+		Vector3 startLocation = ENTITY::GET_ENTITY_COORDS(defender->getPed(), true);
+
+		mSharkPed = PED::CREATE_PED(4, mAnimalHash, startLocation.x, startLocation.y, startLocation.z+20.0, 0.0f, false, true);
+		//never flee
+		PED::SET_PED_COMBAT_ATTRIBUTES(mSharkPed, 46, true);
+		//fight with melee weapons
+		PED::SET_PED_COMBAT_ATTRIBUTES(mSharkPed, 5, true);
+		ENTITY::SET_ENTITY_CAN_BE_DAMAGED(mSharkPed, false);
+		ENTITY::SET_ENTITY_INVINCIBLE(mSharkPed, true);
+
+		std::vector<Ped> peds = { mSharkPed, defender->getPed() };
+
+		mSyncedAnimation->executeSyncedAnimation(true, peds, false, startLocation, false, true, false);
+	}
+
+	return false;
+
+
+
+}

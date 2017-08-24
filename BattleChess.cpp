@@ -544,6 +544,7 @@ void BattleChessMain()
 	chessSetFactory = ChessSetFactory();
 
 	Vector3 baseLocation;
+	float baseHeading = 0.0f;
 	//air strip
 	baseLocation.x = 1629.0;
 	baseLocation.y = 3215.0;
@@ -556,15 +557,17 @@ void BattleChessMain()
 	baseLocation.y = -1122.152;
 	baseLocation.z = 3.403;
 
+
 	//Rockford hills
 	baseLocation.x = -830.41;
 	baseLocation.y = -123.37;
 	baseLocation.z = 37.55;
+	baseHeading = 25.0f;
 
 
 	float squareDeltaX = 2.0; 
 	float squareDeltaY = 2.0;
-	chessBoard = new ChessBoard(baseLocation, squareDeltaX, squareDeltaY);
+	chessBoard = new ChessBoard(baseLocation, baseHeading, squareDeltaX, squareDeltaY);
 
 	chessBoard->setWhiteChessSet(chessSetFactory.getDefaultWhiteChessSet());
 	chessBoard->setBlackChessSet(chessSetFactory.getDefaultBlackChessSet());

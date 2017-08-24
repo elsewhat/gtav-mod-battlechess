@@ -24,7 +24,7 @@ class AnimationFactory;
 
 class ChessBoard {
 public:
-	ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDeltaY);
+	ChessBoard(Vector3 baseLocation, float baseHeading, float squareDeltaX, float squareDeltaY);
 
 	ChessSide::Side sideToMove();
 	void makeMove(ChessMove chessMove);
@@ -68,6 +68,7 @@ protected:
 	AnimationFactory* mAnimationFactory;
 
 	Vector3 mBaseLocation;
+	float mBaseHeading;
 	float mSquareDeltaX;
 	float mSquareDeltaY;
 

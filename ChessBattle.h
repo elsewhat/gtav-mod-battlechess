@@ -308,3 +308,19 @@ protected:
 	bool mHasRemovedClones;
 	bool mWaitingForClonesToAttack;
 };
+
+class ChessBattleSharkAttack : public ChessBattle {
+public:
+	ChessBattleSharkAttack(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	std::shared_ptr<SyncedAnimation> mSyncedAnimation;
+	Hash mAnimalHash;
+	Ped mSharkPed;
+	bool mIsWaitingForAttack;
+	Animation mAnimation;
+};
+

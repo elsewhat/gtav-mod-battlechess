@@ -40,6 +40,7 @@ public:
 	SyncedAnimation(std::string title, std::string category, bool isProperSynced, std::vector<Animation>  actorAnimations, std::vector<Animation>  objectAnimations, std::vector<GTAObject>  syncObjects, float deltaZLocation);
 
 	void executeSyncedAnimation(bool silent, std::vector<ChessPiece*> syncActors, bool useFirstActorLocation, Vector3 directLocation, bool doLoop, bool useFirstActorRotation, float rotation);
+	void executeSyncedAnimation(bool silent, std::vector<Ped> peds, bool useFirstActorLocation, Vector3 directLocation, bool doLoop, bool useFirstActorRotation, float rotation);
 	void previewSyncedAnimation(std::vector<ChessPiece*> syncActors, bool useFirstActorLocation, Vector3 directLocation, bool doLoop, bool useFirstActorRotation, float rotation);
 	void updateLocationOfScene(Vector3 location);
 	bool isCompleted();

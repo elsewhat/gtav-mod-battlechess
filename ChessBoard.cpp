@@ -4,10 +4,11 @@
 #include "Utils.h"
 
 
-ChessBoard::ChessBoard(Vector3 baseLocation, float squareDeltaX, float squareDeltaY)
+ChessBoard::ChessBoard(Vector3 baseLocation, float baseHeading, float squareDeltaX, float squareDeltaY)
 {
 	Logger::logDebug("ChessBoard::ChessBoard");
 	mBaseLocation = baseLocation;
+	mBaseHeading = baseHeading;
 	mSquareDeltaX = squareDeltaX;
 	mSquareDeltaY = squareDeltaY;
 	initializeSquares();
@@ -280,8 +281,19 @@ void ChessBoard::initializeSquares()
 {
 	Logger::logDebug("ChessBoard::initializeSquares");
 	int index = 0;
-	float headingWhite = 0.0;
-	float headingBlack = 180.0;
+
+	float headingWhite =  mBaseHeading;
+	float headingBlack = (mBaseHeading + 180.0f)  ;
+	if (headingBlack > 360) {
+		headingBlack = headingBlack - 360.0f;
+	}
+
+	float deltaXHeadingModifier = cos(mBaseHeading*PI / 180);
+	float deltaYHeadingModifier = sin(mBaseHeading*PI / 180);
+
+	Logger::logDebug("baseHeading " + std::to_string(mBaseHeading));
+	Logger::logDebug("deltaXHeadingModifier " + std::to_string(deltaXHeadingModifier) + " deltaYHeadingModifier " + std::to_string(deltaYHeadingModifier));
+
 
 
 	for (int rank = 1; rank <= 8; rank++) {
@@ -298,6 +310,7 @@ void ChessBoard::initializeSquares()
 			isBlackPawnLine = true;
 		}
 
+
 		for (int file = 1; file <= 8; file++) {
 			//A1 is Dark. Alternating afterwards
 			ChessBoardSquare::Color color = ChessBoardSquare::DARK;
@@ -306,8 +319,14 @@ void ChessBoard::initializeSquares()
 			}
 
 			Vector3 location;
-			location.x = mBaseLocation.x + mSquareDeltaX * (file-1) ;
-			location.y = mBaseLocation.y + mSquareDeltaY * (rank-1);
+
+			//ignore heading first
+			location.x = mBaseLocation.x + mSquareDeltaX * (file - 1);
+			location.y = mBaseLocation.y + mSquareDeltaY * (rank - 1);
+			//rotate around base location
+			location.x = cos(mBaseHeading*PI / 180) * (location.x - mBaseLocation.x) - sin(mBaseHeading*PI / 180) * (location.y - mBaseLocation.y) + mBaseLocation.x;
+			location.y = sin(mBaseHeading*PI / 180) * (location.x - mBaseLocation.x) + cos(mBaseHeading*PI / 180) * (location.y - mBaseLocation.y) + mBaseLocation.y;
+
 			location.z = mBaseLocation.z;
 
 			

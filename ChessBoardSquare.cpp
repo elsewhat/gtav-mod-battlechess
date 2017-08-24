@@ -26,6 +26,37 @@ ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, bool is
 	if (GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(mLocation.x, mLocation.y, mLocation.z, &actualZ, 0)) {
 		mLocation.z = actualZ + 0.1;
 	}
+
+	//rotate corners by mHeadingWhite 
+	for (int i = 0; i < 4; i++) {
+		Vector3 cornerLocation;
+
+		if (i == 0 || i==1) {
+			cornerLocation.x = mLocation.x - 1.0;
+		}
+		else {
+			cornerLocation.x = mLocation.x + 1.0;
+		}
+		if (i == 0 || i == 3) {
+			cornerLocation.y = mLocation.y - 1.0;
+		}
+		else {
+			cornerLocation.y = mLocation.y + 1.0;
+		}
+
+		cornerLocation.x = cos(mHeadingWhite*PI / 180) * (cornerLocation.x - mLocation.x) - sin(mHeadingWhite*PI / 180) * (cornerLocation.y - mLocation.y) + mLocation.x;
+		cornerLocation.y = sin(mHeadingWhite*PI / 180) * (cornerLocation.x - mLocation.x) + cos(mHeadingWhite*PI / 180) * (cornerLocation.y - mLocation.y) + mLocation.y;
+		
+		cornerLocation.z = mLocation.z;
+		float actualZ = mLocation.z;
+		//calculate if possible
+		if (GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(cornerLocation.x, cornerLocation.y, cornerLocation.z, &actualZ, 0)) {
+			cornerLocation.z = actualZ + 0.02;
+		}
+		
+		mCorners.push_back(cornerLocation);
+	}
+
 }
 
 int ChessBoardSquare::getSquareFile() const
@@ -88,6 +119,11 @@ Vector3 ChessBoardSquare::getLocation() const
 void ChessBoardSquare::setLocation(Vector3 location)
 {
 	mLocation = location;
+}
+
+std::vector<Vector3> ChessBoardSquare::getCornerLocations()
+{
+	return mCorners;
 }
 
 boolean ChessBoardSquare::isPromotion() const
@@ -208,11 +244,10 @@ void ChessBoardSquare::drawOnTick()
 	int colorR = 0;
 	int colorG = 0;
 	int colorB = 0;
-
-	GRAPHICS::DRAW_LINE(mLocation.x - 1.0, mLocation.y - 1.0, mLocation.z, mLocation.x - 1.0, mLocation.y + 1.0, mLocation.z, colorR, colorG, colorB, 255);
-	GRAPHICS::DRAW_LINE(mLocation.x - 1.0, mLocation.y + 1.0, mLocation.z, mLocation.x + 1.0, mLocation.y + 1.0, mLocation.z, colorR, colorG, colorB, 255);
-	GRAPHICS::DRAW_LINE(mLocation.x + 1.0, mLocation.y + 1.0, mLocation.z, mLocation.x + 1.0, mLocation.y - 1.0, mLocation.z, colorR, colorG, colorB, 255);
-	GRAPHICS::DRAW_LINE(mLocation.x + 1.0, mLocation.y - 1.0, mLocation.z, mLocation.x - 1.0, mLocation.y - 1.0, mLocation.z, colorR, colorG, colorB, 255);
+	//draw lines between corners. Last corner draws to first corner
+	for (int i = 0; i < mCorners.size(); i++) {
+		GRAPHICS::DRAW_LINE(mCorners[i].x, mCorners[i].y, mCorners[i].z, mCorners[(i+1)% mCorners.size()].x, mCorners[(i + 1) % mCorners.size()].y , mCorners[(i + 1) % mCorners.size()].z, colorR, colorG, colorB, 255);
+	}
 
 
 	if (mHighlightAsSelected) {
