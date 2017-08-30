@@ -10,7 +10,7 @@ ChessBoardSquare::ChessBoardSquare()
 }
 
 
-ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, bool isWhitePawnLine, bool isBlackPawnLine, Color color, Vector3 location, float headingWhite, float headingBlack)
+ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, bool isWhitePawnLine, bool isBlackPawnLine, Color color, Vector3 location, float headingWhite, float headingBlack, Vector3 delta1File, Vector3 delta1Rank)
 {
 	mSquareFile = file;
 	mSquareRank = rank;
@@ -27,33 +27,38 @@ ChessBoardSquare::ChessBoardSquare(int file, int rank, bool isPromotion, bool is
 		mLocation.z = actualZ + 0.1;
 	}
 
-	//rotate corners by mHeadingWhite 
 	for (int i = 0; i < 4; i++) {
 		Vector3 cornerLocation;
+		float xModifier = -1.0f;
+		float yModifier = -1.0f;
 
-		if (i == 0 || i==1) {
-			cornerLocation.x = mLocation.x - 1.0;
+		if (i == 0 || i == 1) {
+			xModifier = -1.0f;
 		}
 		else {
-			cornerLocation.x = mLocation.x + 1.0;
+			xModifier = 1.0f;
 		}
 		if (i == 0 || i == 3) {
-			cornerLocation.y = mLocation.y - 1.0;
+			yModifier = -1.0f;
 		}
 		else {
-			cornerLocation.y = mLocation.y + 1.0;
+			yModifier = 1.0f;
 		}
 
-		cornerLocation.x = cos(mHeadingWhite*PI / 180) * (cornerLocation.x - mLocation.x) - sin(mHeadingWhite*PI / 180) * (cornerLocation.y - mLocation.y) + mLocation.x;
-		cornerLocation.y = sin(mHeadingWhite*PI / 180) * (cornerLocation.x - mLocation.x) + cos(mHeadingWhite*PI / 180) * (cornerLocation.y - mLocation.y) + mLocation.y;
-		
+
+		cornerLocation.x = mLocation.x + (delta1File.x/2)  * xModifier + (delta1Rank.x/2)  * yModifier;
+		cornerLocation.y = mLocation.y + (delta1File.y/2)  * xModifier + (delta1Rank.y/2)  * yModifier;
+		//Initial approach of rotating all points didn't work as expected. Now just reusing delta values from ChessBoard
+		//cornerLocation.x = cos(mHeadingWhite*PI / 180) * (cornerLocation.x - mLocation.x) - sin(mHeadingWhite*PI / 180) * (cornerLocation.y - mLocation.y) + mLocation.x;
+		//cornerLocation.y = sin(mHeadingWhite*PI / 180) * (cornerLocation.x - mLocation.x) + cos(mHeadingWhite*PI / 180) * (cornerLocation.y - mLocation.y) + mLocation.y;
+
 		cornerLocation.z = mLocation.z;
 		float actualZ = mLocation.z;
 		//calculate if possible
 		if (GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(cornerLocation.x, cornerLocation.y, cornerLocation.z, &actualZ, 0)) {
 			cornerLocation.z = actualZ + 0.02;
 		}
-		
+
 		mCorners.push_back(cornerLocation);
 	}
 
@@ -223,6 +228,25 @@ bool ChessBoardSquare::equals(ChessBoardSquare* square) const
 	}
 	else {
 		return false;
+	}
+}
+
+Vector3 ChessBoardSquare::getScreenCoords()
+{
+	return mScreenCoords;
+}
+
+void ChessBoardSquare::updateScreenCoords()
+{
+	float xCoord = 0.0f;
+	float yCoord = 0.0f;
+	if (GRAPHICS::_WORLD3D_TO_SCREEN2D(mLocation.x, mLocation.y, mLocation.z, &xCoord, &yCoord)) {
+		mScreenCoords.x = xCoord;
+		mScreenCoords.y = yCoord;
+	}
+	else {
+		mScreenCoords.x = 0.0f;
+		mScreenCoords.y = 0.0f;
 	}
 }
 

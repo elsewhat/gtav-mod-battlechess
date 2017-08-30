@@ -13,7 +13,7 @@ public:
 		DARK
 	};
 	ChessBoardSquare();
-	ChessBoardSquare(int file, int rank, bool isPromotion, bool isWhitePawnLine, bool isBlackPawnLine, Color color, Vector3 location, float headingWhite, float headingBlack);
+	ChessBoardSquare(int file, int rank, bool isPromotion, bool isWhitePawnLine, bool isBlackPawnLine, Color color, Vector3 location, float headingWhite, float headingBlack,Vector3 delta1File, Vector3 delta1Rank);
 
 	int getSquareFile() const;
 	int getSquareRank() const;
@@ -51,6 +51,9 @@ public:
 
 	bool equals(ChessBoardSquare* square) const;
 
+	Vector3 getScreenCoords();
+	void updateScreenCoords();
+
 	void drawOnTick();
 	std::string toString();
 protected:
@@ -60,6 +63,7 @@ protected:
 	Color mColor;
 	ChessPiece* mPiece;
 	Vector3 mLocation;
+	Vector3 mScreenCoords;
 	std::vector<Vector3> mCorners;
 	float mHeadingWhite;
 	float mHeadingBlack;

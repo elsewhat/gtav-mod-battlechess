@@ -55,6 +55,8 @@ public:
 	void setAnimationFactory(AnimationFactory* animationFactory);
 	AnimationFactory* getAnimationFactory();
 
+	void updateScreenCoords();
+	ChessBoardSquare* getSquareClosest(float xScreenCoord, float yScreenCoord, bool onlyOccupied, bool onlyOccupiedByWhite, bool onlyOccupiedByBlack);
 
 	void drawOnTick();
 protected:

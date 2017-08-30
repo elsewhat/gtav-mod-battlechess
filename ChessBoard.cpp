@@ -234,6 +234,44 @@ AnimationFactory * ChessBoard::getAnimationFactory()
 	return mAnimationFactory;
 }
 
+void ChessBoard::updateScreenCoords()
+{
+	for (auto* square : mSquares) {
+		square->updateScreenCoords();
+	}
+}
+
+ChessBoardSquare * ChessBoard::getSquareClosest(float xScreenCoord, float yScreenCoord, bool onlyOccupied, bool onlyOccupiedByWhite, bool onlyOccupiedByBlack)
+{
+	ChessBoardSquare* closestSquare = mSquares[0];
+	float minDelta = FLT_MAX;
+	for (int i = 0; i < mSquares.size(); i++) {
+		if (onlyOccupied) {
+			if (mSquares[i]->isEmpty()) {
+				continue;
+			}
+			if (onlyOccupiedByWhite) {
+				if (mSquares[i]->getPiece()->getSide()==ChessSide::BLACK) {
+					continue;
+				}
+			}
+			if (onlyOccupiedByBlack) {
+				if (mSquares[i]->getPiece()->getSide() == ChessSide::WHITE) {
+					continue;
+				}
+			}
+		}
+
+		Vector3 squareScreenCoords = mSquares[i]->getScreenCoords();
+		float delta = abs(xScreenCoord - squareScreenCoords.x) + abs(yScreenCoord - squareScreenCoords.y);
+		if (delta < minDelta) {
+			minDelta = delta;
+			closestSquare = mSquares[i];
+		}
+	}
+	return closestSquare;
+}
+
 void ChessBoard::drawOnTick()
 {
 	for (auto* square : mSquares) {
@@ -294,6 +332,22 @@ void ChessBoard::initializeSquares()
 	Logger::logDebug("baseHeading " + std::to_string(mBaseHeading));
 	Logger::logDebug("deltaXHeadingModifier " + std::to_string(deltaXHeadingModifier) + " deltaYHeadingModifier " + std::to_string(deltaYHeadingModifier));
 
+	Vector3 location1File;
+	Vector3 delta1File;
+	location1File.x = mBaseLocation.x + mSquareDeltaX;
+	location1File.y = mBaseLocation.y;
+	delta1File.x = cos(mBaseHeading*PI / 180) * (location1File.x - mBaseLocation.x) - sin(mBaseHeading*PI / 180) * (location1File.y - mBaseLocation.y);
+	delta1File.y = sin(mBaseHeading*PI / 180) * (location1File.x - mBaseLocation.x) + cos(mBaseHeading*PI / 180) * (location1File.y - mBaseLocation.y);
+
+	Vector3 location1Rank;
+	Vector3 delta1Rank;
+	location1Rank.x = mBaseLocation.x;
+	location1Rank.y = mBaseLocation.y + mSquareDeltaY;
+	delta1Rank.x = cos(mBaseHeading*PI / 180) * (location1Rank.x - mBaseLocation.x) - sin(mBaseHeading*PI / 180) * (location1Rank.y - mBaseLocation.y);
+	delta1Rank.y = sin(mBaseHeading*PI / 180) * (location1Rank.x - mBaseLocation.x) + cos(mBaseHeading*PI / 180) * (location1Rank.y - mBaseLocation.y);
+
+	Logger::logDebug("delta1File  " + std::to_string(delta1File.x) + "," + std::to_string(delta1File.y));
+	Logger::logDebug("delta1Rank  " + std::to_string(delta1Rank.x) + "," + std::to_string(delta1Rank.y));
 
 
 	for (int rank = 1; rank <= 8; rank++) {
@@ -311,6 +365,7 @@ void ChessBoard::initializeSquares()
 		}
 
 
+
 		for (int file = 1; file <= 8; file++) {
 			//A1 is Dark. Alternating afterwards
 			ChessBoardSquare::Color color = ChessBoardSquare::DARK;
@@ -320,19 +375,22 @@ void ChessBoard::initializeSquares()
 
 			Vector3 location;
 
-			//ignore heading first
-			location.x = mBaseLocation.x + mSquareDeltaX * (file - 1);
-			location.y = mBaseLocation.y + mSquareDeltaY * (rank - 1);
+			//Initial approach to rotate each point fails for some reason. Now just calculating delta values first
+			//location.x = mBaseLocation.x + mSquareDeltaX * (file - 1);
+			//location.y = mBaseLocation.y + mSquareDeltaY * (rank - 1);
 			//rotate around base location
-			location.x = cos(mBaseHeading*PI / 180) * (location.x - mBaseLocation.x) - sin(mBaseHeading*PI / 180) * (location.y - mBaseLocation.y) + mBaseLocation.x;
-			location.y = sin(mBaseHeading*PI / 180) * (location.x - mBaseLocation.x) + cos(mBaseHeading*PI / 180) * (location.y - mBaseLocation.y) + mBaseLocation.y;
+			//location.x = cos(mBaseHeading*PI / 180) * (location.x - mBaseLocation.x) - sin(mBaseHeading*PI / 180) * (location.y - mBaseLocation.y) + mBaseLocation.x;
+			//location.y = sin(mBaseHeading*PI / 180) * (location.x - mBaseLocation.x) + cos(mBaseHeading*PI / 180) * (location.y - mBaseLocation.y) + mBaseLocation.y;
+
+			location.x = mBaseLocation.x + delta1File.x  * (file - 1) + delta1Rank.x  * (rank - 1);
+			location.y = mBaseLocation.y + delta1File.y  * (file - 1) + delta1Rank.y  * (rank - 1);
 
 			location.z = mBaseLocation.z;
 
 			
 
 			//Logger::logDebug("Square location " + std::to_string(location.x) + "," + std::to_string(location.y) + "," + std::to_string(location.z) + ",");
-			mSquares[index] = new ChessBoardSquare(file, rank, isPromotion, isWhitePawnLine, isBlackPawnLine, color, location, headingWhite, headingBlack);
+			mSquares[index] = new ChessBoardSquare(file, rank, isPromotion, isWhitePawnLine, isBlackPawnLine, color, location, headingWhite, headingBlack, delta1File, delta1Rank);
 			index++;
 		}
 	}

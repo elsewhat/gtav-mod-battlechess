@@ -562,7 +562,7 @@ void BattleChessMain()
 	baseLocation.x = -830.41;
 	baseLocation.y = -123.37;
 	baseLocation.z = 37.55;
-	baseHeading = 25.0f;
+	baseHeading = 27.5f;
 
 
 	float squareDeltaX = 2.0; 

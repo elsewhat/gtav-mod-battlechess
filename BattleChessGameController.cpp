@@ -51,7 +51,11 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 	}
 
 	//Camera control by player
-	updateCameraMovement();
+	if (updateCameraMovement()) {
+		chessBoard->updateScreenCoords();
+		ChessBoardSquare* closestSquare = chessBoard->getSquareClosest(500.0f, 500.0f, false, false, false);
+		Logger::logDebug("Closest square"+ closestSquare->toString());
+	}
 	updateCameraRotation();
 
 	//Draw board related artificats (ie. ChessBoardSquares)

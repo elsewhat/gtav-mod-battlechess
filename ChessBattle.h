@@ -324,3 +324,64 @@ protected:
 	Animation mAnimation;
 };
 
+class ChessBattleDeathByMusician : public ChessBattle {
+public:
+	ChessBattleDeathByMusician(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mIsWaitingForSuicide;
+	Animation mAnimationSuicide;
+};
+
+class ChessBattleDeathByYoga : public ChessBattle {
+public:
+	ChessBattleDeathByYoga(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mIsWaitingForYoga;
+	bool mIsWaitingForDeath;
+};
+
+class ChessBattleScaredByFlex : public ChessBattle {
+public:
+	ChessBattleScaredByFlex(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mIsWaitingForFlee;
+};
+
+class ChessBattleMagicTouch : public ChessBattle {
+public:
+	ChessBattleMagicTouch(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mIsWaiting;
+	Animation mAnimationMagicTouch;
+};
+
+class ChessBattleMagicUndress : public ChessBattle {
+public:
+	ChessBattleMagicUndress(ChessMove chessMove, ChessBoard* chessBoard);
+
+	void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
+	bool mIsWaiting;
+	bool mIsChanging;
+	Animation mAnimationMagicTouch;
+	int mChanges;
+	DWORD mChangesDelta;
+};

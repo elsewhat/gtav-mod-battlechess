@@ -110,9 +110,9 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForKnight(ChessMo
 	switch (chessMove.getDefender()->getPieceType())
 	{
 	case ChessPiece::PAWN:
-		return std::make_shared <ChessBattleHatchetFront>(ChessBattleHatchetFront(chessMove, chessBoard));
+		return std::make_shared <ChessBattleScaredByFlex>(ChessBattleScaredByFlex(chessMove, chessBoard));
 	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleDeathByMusician>(ChessBattleDeathByMusician(chessMove, chessBoard));
 	case ChessPiece::KNIGHT: {
 			std::shared_ptr<SyncedAnimation> syncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Drunken fist fight");
 			if (syncedAnimation != nullptr) {
@@ -140,11 +140,11 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForBishop(ChessMo
 	switch (chessMove.getDefender()->getPieceType())
 	{
 	case ChessPiece::PAWN:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleMagicTouch>(ChessBattleMagicTouch(chessMove, chessBoard));
 	case ChessPiece::ROOK:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleDeathByYoga>(ChessBattleDeathByYoga(chessMove, chessBoard));
 	case ChessPiece::KNIGHT:
-		return std::make_shared <ChessBattleFirePrimaryWeapon>(ChessBattleFirePrimaryWeapon(chessMove, chessBoard));
+		return std::make_shared <ChessBattleMagicUndress>(ChessBattleMagicUndress(chessMove, chessBoard));
 	case ChessPiece::BISHOP:
 		return std::make_shared <ChessBattleShoryuken>(ChessBattleShoryuken(chessMove, chessBoard));
 	case ChessPiece::QUEEN:
