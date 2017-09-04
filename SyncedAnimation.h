@@ -24,6 +24,9 @@ private:
 	bool m_hasStarted = false;
 	bool m_isProperSynced = true;
 	float m_currentRotation = 0.0f;
+	float m_pitch = 0.0f;
+	float m_roll = 0.0f;
+	float m_speed = 1000.0f;
 	DWORD m_ticksStarted;
 	std::vector<Animation>  m_actorAnimations;
 	std::vector<Animation>  m_objectAnimations;
@@ -67,6 +70,11 @@ public:
 
 	float getDeltaZ();
 	void setDeltaZ(float deltaZLocation);
+
+	void setPitch(float pitch);
+	void setRoll(float roll);
+	void setSpeed(float speed);
+
 
 };
 

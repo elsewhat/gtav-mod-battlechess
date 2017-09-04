@@ -24,7 +24,7 @@ class AnimationFactory;
 
 class ChessBoard {
 public:
-	ChessBoard(Vector3 baseLocation, float baseHeading, float squareDeltaX, float squareDeltaY);
+	ChessBoard(Vector3 baseLocation, Vector3 spawnZoneWhite, Vector3 spawnZoneBlack, float baseHeading, float squareDeltaX, float squareDeltaY);
 
 	ChessSide::Side sideToMove();
 	void makeMove(ChessMove chessMove);
@@ -45,6 +45,7 @@ public:
 	void spawnChessPieces();
 
 	Vector3 getVehicleSpawnZone(ChessSide::Side side);
+	Vector3 setVehicleSpawnZone(ChessSide::Side side, Vector3 spawn);
 
 	void freezeAllExcept(std::vector<ChessPiece*> chessPieces);
 	ChessBattleFactory* getChessBattleFactory();
@@ -57,6 +58,8 @@ public:
 
 	void updateScreenCoords();
 	ChessBoardSquare* getSquareClosest(float xScreenCoord, float yScreenCoord, bool onlyOccupied, bool onlyOccupiedByWhite, bool onlyOccupiedByBlack);
+
+	void drawBigMessage(char* msg);
 
 	void drawOnTick();
 protected:
@@ -74,9 +77,13 @@ protected:
 	float mSquareDeltaX;
 	float mSquareDeltaY;
 
+	Vector3 mSpawnZoneWhite;
+	Vector3 mSpawnZoneBlack;
+
 	Hash mWhiteRelationshipGroupHash;
 	Hash mBlackRelationshipGroupHash;
 
+	int mScaleformBigMessage;
 
 	void initializeSquares();
 

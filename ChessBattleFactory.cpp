@@ -46,13 +46,13 @@ std::shared_ptr<ChessBattle> ChessBattleFactory::getChessBattleForPawn(ChessMove
 		return std::make_shared <ChessBattleThrowGrenade>(ChessBattleThrowGrenade(chessMove, chessBoard, "WEAPON_GRENADE"));
 	case ChessPiece::KNIGHT: {
 		std::shared_ptr<SyncedAnimation> firstSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Knife struggle (tackle)");
-		std::shared_ptr<SyncedAnimation> secondSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Knife struggle (loop)");
+		std::shared_ptr<SyncedAnimation> secondSyncedAnimation = chessBoard->getSyncedAnimationFactory()->getByTitle("Knife struggle (top wins)");
 		if (firstSyncedAnimation != nullptr && secondSyncedAnimation != nullptr) {
 			Vector3 offset;
-			offset.x = -1.5;
-			offset.y = -0.5;
+			offset.x = 0.0;
+			offset.y = 0.0;
 			offset.z = 0.0;
-			return std::make_shared <ChessBattleSyncedAnimationChained>(ChessBattleSyncedAnimationChained(chessMove, chessBoard, firstSyncedAnimation, secondSyncedAnimation, false, true, offset, true, "WEAPON_KNIFE"));
+			return std::make_shared <ChessBattleKnifeStruggle>(ChessBattleKnifeStruggle(chessMove, chessBoard, firstSyncedAnimation, secondSyncedAnimation, false, true, offset, true, "WEAPON_KNIFE"));
 		}
 		else {
 			Logger::logDebug("Knife struggle (tackle) synced anim does not exist");

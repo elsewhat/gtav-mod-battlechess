@@ -23,6 +23,7 @@ public:
 		QUEEN,
 		KING
 	};
+
 	ChessPiece();
 	ChessPiece(ChessSide::Side side, Type pieceType, ChessPed chessPed, Vector3 location, float heading);
 	ChessPiece(ChessSide::Side side, Type pieceType, ChessPed chessPed, Vector3 location, float heading, std::string primaryWeapon, std::string secondaryWeapon, std::string meleeWeapon);
@@ -30,6 +31,7 @@ public:
 	ChessSide::Side getSide();
 	void setSide(ChessSide::Side side);
 	Type getPieceType() const;
+	std::string getPieceTypeString() const;
 	Vector3 getLocation() const;
 	void setLocation(Vector3 location); 
 	float getHeading() const;

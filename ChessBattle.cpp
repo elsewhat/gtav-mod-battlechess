@@ -8,6 +8,20 @@ ChessBattle::ChessBattle(ChessMove chessMove, ChessBoard* chessBoard)
 {
 	ChessBoardSquare* squareTo = chessMove.getSquareTo();
 	mActionGoToEndSquare = std::make_shared<ActionGoToSquare>(ActionGoToSquare(squareTo, squareTo->getHeading(chessMove.getAttacker()->getSide()), 1.0));
+
+
+}
+
+void ChessBattle::setMessage(std::string msg, DWORD length) {
+	mMsgBattle = msg;
+	mMsgTicksLength = length;
+	mMsgTicksStarted = GetTickCount();
+}
+
+void ChessBattle::drawMessage(ChessBoard* chessBoard) {
+	if (mMsgTicksLength > 0 && GetTickCount() - mMsgTicksStarted < mMsgTicksLength) {
+		chessBoard->drawBigMessage(strdup(mMsgBattle.c_str()));
+	}
 }
 
 void ChessBattle::initializeBattle(ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
@@ -18,6 +32,8 @@ void ChessBattle::initializeBattle(ChessPiece* attacker, ChessPiece* defender, C
 	defender->setPedCanBeDamaged(true);
 	mIsMovingToSquare = false;
 	mNrMovementChecks = 0;
+
+	setMessage(attacker->getPieceTypeString() + " vs. " + defender->getPieceTypeString(), 3000);
 }
 
 ChessBattleFirePrimaryWeapon::ChessBattleFirePrimaryWeapon(ChessMove chessMove, ChessBoard* chessBoard) : ChessBattle(chessMove, chessBoard)
@@ -47,6 +63,7 @@ void ChessBattleFirePrimaryWeapon::startExecution(DWORD ticksStart, ChessPiece* 
 
 bool ChessBattleFirePrimaryWeapon::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -118,6 +135,7 @@ void ChessBattleSyncedAnimation::startExecution(DWORD ticksStart, ChessPiece* at
 
 bool ChessBattleSyncedAnimation::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -178,6 +196,7 @@ void ChessBattleManualPlacedSyncedAnimation::startExecution(DWORD ticksStart, Ch
 
 bool ChessBattleManualPlacedSyncedAnimation::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
@@ -259,6 +278,7 @@ void ChessBattleSyncedAnimationChained::startExecution(DWORD ticksStart, ChessPi
 
 bool ChessBattleSyncedAnimationChained::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -291,6 +311,47 @@ bool ChessBattleSyncedAnimationChained::isExecutionCompleted(DWORD ticksNow, Che
 	}
 }
 
+
+
+ChessBattleKnifeStruggle::ChessBattleKnifeStruggle(ChessMove chessMove, ChessBoard * chessBoard, std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset, bool hasDefenderWeapon, std::string defenderWeapon) : ChessBattleSyncedAnimationChained(chessMove, chessBoard, firstSyncedAnimation, secondSyncedAnimation, killAfterwards, useDefenderLocation, locationOffset, hasDefenderWeapon, defenderWeapon)
+{
+}
+
+bool ChessBattleKnifeStruggle::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
+{
+	drawMessage(chessBoard);
+	if (mIsMovingToSquare) {
+		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
+	}
+	else if (mIsFirstCompleted && mSecondSyncedAnimation->isCompleted()) {
+		Logger::logDebug("ChessBattleSyncedAnimationChained:: Second sync animation complete");
+		mSecondSyncedAnimation->cleanupAfterExecution(true, false);
+		if (!defender->isPedDeadOrDying()) {
+			Logger::logDebug("Defender is not dead. Exploding head death");
+			if (mKillAfterwards) {
+				PED::EXPLODE_PED_HEAD(defender->getPed(), 0x5FC3C11);
+			}
+			else {
+				defender->removePed();
+			}
+		}
+		mIsMovingToSquare = true;
+		attacker->startMovement(chessMove, chessBoard, true);
+		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
+	}
+	else if (!mIsFirstCompleted && mFirstSyncedAnimation->isCompleted()) {
+		Logger::logDebug("ChessBattleSyncedAnimationChained:: First sync animation complete");
+		mFirstSyncedAnimation->cleanupAfterExecution(true, false);
+		std::vector<ChessPiece*> actors = { chessMove.getAttacker(), chessMove.getDefender() };
+		mSecondSyncedAnimation->executeSyncedAnimation(true, actors, false, mStartLocation, false, true, false);
+		mIsFirstCompleted = true;
+		return false;
+	}
+	else {
+		return false;
+	}
+}
+
 ChessBattleStealthKill::ChessBattleStealthKill(ChessMove chessMove, ChessBoard * chessBoard) : ChessBattle(chessMove, chessBoard)
 {
 }
@@ -306,6 +367,7 @@ void ChessBattleStealthKill::startExecution(DWORD ticksStart, ChessPiece* attack
 
 bool ChessBattleStealthKill::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -346,10 +408,13 @@ void ChessBattleDeathByCop::startExecution(DWORD ticksStart, ChessPiece* attacke
 
 	AI::TASK_USE_MOBILE_PHONE_TIMED(attacker->getPed(), 7000);
 	AUDIO::_PLAY_AMBIENT_SPEECH_WITH_VOICE(attacker->getPed(), "PHONE_CALL_COPS", "A_M_M_GOLFER_01_WHITE_MINI_01", "SPEECH_PARAMS_STANDARD",0);
+
+	setMessage("Death by cops", 3000);
 }
 
 bool ChessBattleDeathByCop::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -420,6 +485,7 @@ void ChessBattleJerryCan::startExecution(DWORD ticksStart, ChessPiece* attacker,
 
 bool ChessBattleJerryCan::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mIsShooting) {
 		if (AI::GET_SEQUENCE_PROGRESS(attacker->getPed()) == -1) {
 			if (!defender->isPedDeadOrDying()) {
@@ -530,6 +596,7 @@ void ChessBattleHandToHandWeapon::startExecution(DWORD ticksStart, ChessPiece* a
 
 bool ChessBattleHandToHandWeapon::isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mIsMovingToSquare) {
 		return attacker->isMovementCompleted(chessMove, mNrMovementChecks++);
 	}
@@ -599,6 +666,7 @@ void ChessBattleFiringSquad::startExecution(DWORD ticksStart, ChessPiece * attac
 
 bool ChessBattleFiringSquad::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker,  defender, chessMove, chessBoard);
 	}
@@ -657,6 +725,7 @@ void ChessBattleTank::startExecution(DWORD ticksStart, ChessPiece * attacker, Ch
 
 bool ChessBattleTank::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
@@ -730,6 +799,7 @@ void ChessBattleNeedBiggerGun::startExecution(DWORD ticksStart, ChessPiece * att
 
 bool ChessBattleNeedBiggerGun::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
@@ -784,6 +854,7 @@ void ChessBattleTurnIntoAnimal::startExecution(DWORD ticksStart, ChessPiece * at
 
 bool ChessBattleTurnIntoAnimal::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		if (mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard)) {
 			return true;
@@ -838,7 +909,7 @@ void ChessBattleShootOut::startExecution(DWORD ticksStart, ChessPiece* attacker,
 	//mSquareSetup = chessBoard->getSquareInFrontOf(mSquareSetup, attacker->getSide());
 	//Vector3 squareToLocation = mSquareSetup->getLocation();
 	//AI::TASK_GO_STRAIGHT_TO_COORD(attacker->getPed(), squareToLocation.x, squareToLocation.y, squareToLocation.z, 1.0, -1, attacker->getSide(), 0.5f);
-	std::vector<ChessPiece*> actors = { attacker, defender };
+	std::vector<ChessPiece*> actors = {defender,attacker };
 	Vector3 startLocation = ENTITY::GET_ENTITY_COORDS(attacker->getPed(), true);
 	mSyncedAnimation->executeSyncedAnimation(true, actors, false, startLocation, false, true, false);
 	mHasDefenderFired = false;
@@ -847,6 +918,7 @@ void ChessBattleShootOut::startExecution(DWORD ticksStart, ChessPiece* attacker,
 
 bool ChessBattleShootOut::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
@@ -862,15 +934,15 @@ bool ChessBattleShootOut::isExecutionCompleted(DWORD ticksNow, ChessPiece * atta
 
 	if (!mHasAttackerFired && mSyncedAnimation->getProgress() >= 0.6 &&mSyncedAnimation->getProgress() <= 0.7) {
 		Logger::logDebug("ChessBattleShootOut attacker firing: " );
-		Vector3 weaponImpact = ENTITY::GET_ENTITY_COORDS(defender->getPed(), 1);
-		PED::SET_PED_SHOOTS_AT_COORD(attacker->getPed(), weaponImpact.x, weaponImpact.y, weaponImpact.z, 1);
+		Vector3 weaponImpact = ENTITY::GET_ENTITY_COORDS(attacker->getPed(), 1);
+		PED::SET_PED_SHOOTS_AT_COORD(defender->getPed(), weaponImpact.x, weaponImpact.y, weaponImpact.z, 1);
 		mHasAttackerFired = true;
 	}
 
 	if (!mHasDefenderFired && mSyncedAnimation->getProgress() >= 0.4 &&mSyncedAnimation->getProgress() <= 0.5) {
 		Logger::logDebug("ChessBattleShootOut defender firing");
-		Vector3 weaponImpact = ENTITY::GET_ENTITY_COORDS(attacker->getPed(), 1);
-		PED::SET_PED_SHOOTS_AT_COORD(defender->getPed(), weaponImpact.x, weaponImpact.y, weaponImpact.z, 1);
+		Vector3 weaponImpact = ENTITY::GET_ENTITY_COORDS(defender->getPed(), 1);
+		PED::SET_PED_SHOOTS_AT_COORD(attacker->getPed(), weaponImpact.x, weaponImpact.y, weaponImpact.z, 1);
 		mHasDefenderFired = true;
 	}
 
@@ -919,7 +991,7 @@ void ChessBattleThrowGrenade::startExecution(DWORD ticksStart, ChessPiece * atta
 
 bool ChessBattleThrowGrenade::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
-
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		if (mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard)) {
 			return true;
@@ -959,6 +1031,7 @@ ChessBattleShoryuken::ChessBattleShoryuken(ChessMove chessMove, ChessBoard * che
 
 bool ChessBattleShoryuken::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (!mDoneMegaPunch & mSyncedAnimation->getProgress() >= 0.23) {
 		Logger::logDebug("ChessBattleShoryuken mega punch");
 
@@ -1036,7 +1109,7 @@ bool ChessBattleShoryuken::isExecutionCompleted(DWORD ticksNow, ChessPiece * att
 		}
 		return false;
 	}
-	else if (mSyncedAnimation->isCompleted() && ticksNow - mTicksStarted > 65005) {
+	else if (mSyncedAnimation->isCompleted() && ticksNow - mTicksStarted > 20000) {
 		mSyncedAnimation->cleanupAfterExecution(true, false);
 		mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
 		return false;
@@ -1108,6 +1181,7 @@ void ChessBattleAttackedByAnimals::startExecution(DWORD ticksStart, ChessPiece *
 
 bool ChessBattleAttackedByAnimals::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		if (mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard) &&  ticksNow - mTicksStarted > 15000) {
 			if (!mRemovedAnimals) {
@@ -1171,6 +1245,7 @@ void ChessBattleAttackOfTheClones::startExecution(DWORD ticksStart, ChessPiece *
 
 bool ChessBattleAttackOfTheClones::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		if (mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard) && ticksNow - mTicksStarted > 15000) {
 			if (!mHasRemovedClones) {
@@ -1273,6 +1348,7 @@ void ChessBattleSharkAttack::startExecution(DWORD ticksStart, ChessPiece * attac
 
 bool ChessBattleSharkAttack::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
@@ -1291,7 +1367,7 @@ bool ChessBattleSharkAttack::isExecutionCompleted(DWORD ticksNow, ChessPiece * a
 	else if (!mSyncedAnimation->isActive() && ticksNow - mTicksStarted > 4000) {
 		Logger::logDebug("ChessBattleAttackOfTheClones creating shark");
 		Vector3 startLocation = ENTITY::GET_ENTITY_COORDS(defender->getPed(), true);
-		startLocation.z = startLocation.z + 3.0;
+		startLocation.z = startLocation.z+1.2f;
 		mSharkPed = PED::CREATE_PED(4, mAnimalHash, startLocation.x, startLocation.y, startLocation.z+20.0, 0.0f, false, true);
 		//never flee
 		PED::SET_PED_COMBAT_ATTRIBUTES(mSharkPed, 46, true);
@@ -1299,6 +1375,10 @@ bool ChessBattleSharkAttack::isExecutionCompleted(DWORD ticksNow, ChessPiece * a
 		PED::SET_PED_COMBAT_ATTRIBUTES(mSharkPed, 5, true);
 		ENTITY::SET_ENTITY_CAN_BE_DAMAGED(mSharkPed, false);
 		ENTITY::SET_ENTITY_INVINCIBLE(mSharkPed, true);
+
+		mSyncedAnimation->setPitch(270.0f);
+		mSyncedAnimation->setSpeed(250.0f);
+		//ENTITY::SET_ENTITY_ROTATION(mSharkPed, 90.0, 0.0, 0.0, 0, true);
 
 		std::vector<Ped> peds = { defender->getPed(), mSharkPed  };
 
@@ -1328,6 +1408,7 @@ void ChessBattleDeathByMusician::startExecution(DWORD ticksStart, ChessPiece * a
 
 bool ChessBattleDeathByMusician::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
@@ -1351,6 +1432,14 @@ bool ChessBattleDeathByMusician::isExecutionCompleted(DWORD ticksNow, ChessPiece
 ChessBattleDeathByYoga::ChessBattleDeathByYoga(ChessMove chessMove, ChessBoard * chessBoard) : ChessBattle(chessMove, chessBoard)
 {
 	Logger::logDebug("ChessBattleDeathByYoga::constructor");
+	//03878 creatures@cow@getup getup_l 4266
+	//03879 creatures@cow@getup getup_r 4266
+	//04146 creatures@fish@move turn_l_medium 10666
+	//04147 creatures@fish@move turn_l_small 2400
+	//04148 creatures@fish@move turn_r_medium 12266
+	//04149 creatures@fish@move turn_r_small 2399
+	//04695 creatures@shark@move attack 7500
+	mAnimationDeath= chessBoard->getAnimationFactory()->getAnimationForShortcutIndex(4148);
 }
 
 void ChessBattleDeathByYoga::startExecution(DWORD ticksStart, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
@@ -1358,22 +1447,27 @@ void ChessBattleDeathByYoga::startExecution(DWORD ticksStart, ChessPiece * attac
 	mTicksStarted = ticksStart;
 	AI::TASK_START_SCENARIO_IN_PLACE(attacker->getPed(), "WORLD_HUMAN_YOGA", 0, 0);
 	mIsWaitingForYoga = true;
+
+	setMessage("Yoga face-off", 3000);
 }
 
 bool ChessBattleDeathByYoga::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
-	else if (!mIsWaitingForDeath && !mIsWaitingForYoga && ticksNow - mTicksStarted > 7000) {
+	else if (!mIsWaitingForDeath && !mIsWaitingForYoga && ticksNow - mTicksStarted > 8000) {
 		Logger::logDebug("ChessBattleDeathByYoga mActionGoToEndSquare");
 		defender->removePed();
 
 		mActionGoToEndSquare->start(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
-	else if (mIsWaitingForDeath && ticksNow - mTicksStarted > 7000) {
+	else if (mIsWaitingForDeath && ticksNow - mTicksStarted > 10000) {
 		Logger::logDebug("ChessBattleDeathByYoga mIsWaitingForDeath");
-		AI::TASK_START_SCENARIO_IN_PLACE(defender->getPed(), "WORLD_HEN_FLEE", 0, 0);
+		//PedType probably needs to be animal
+		//AI::TASK_START_SCENARIO_IN_PLACE(defender->getPed(), "WORLD_HEN_FLEE", 0, 0);
+		GTAModUtils::playAnimation(defender->getPed(), mAnimationDeath);
 		mIsWaitingForDeath = false;
 		mTicksStarted = ticksNow;
 	}
@@ -1402,6 +1496,7 @@ void ChessBattleScaredByFlex::startExecution(DWORD ticksStart, ChessPiece * atta
 
 bool ChessBattleScaredByFlex::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
@@ -1437,10 +1532,11 @@ void ChessBattleMagicTouch::startExecution(DWORD ticksStart, ChessPiece * attack
 
 bool ChessBattleMagicTouch::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
-	else if (!mIsWaiting && ticksNow - mTicksStarted > 4000) {
+	else if (!mIsWaiting && ticksNow - mTicksStarted > 3500) {
 		Logger::logDebug("ChessBattleMagicTouch mActionGoToEndSquare");
 
 		defender->removePed();
@@ -1451,6 +1547,7 @@ bool ChessBattleMagicTouch::isExecutionCompleted(DWORD ticksNow, ChessPiece * at
 		Logger::logDebug("ChessBattleMagicTouch mIsWaiting");
 		mIsWaiting = false;
 		PED::SET_PED_TO_RAGDOLL(defender->getPed(), 10000, 10000, 1, true, true, false);
+		mTicksStarted = ticksNow;
 	}
 
 	return false;
@@ -1472,6 +1569,7 @@ void ChessBattleMagicUndress::startExecution(DWORD ticksStart, ChessPiece * atta
 
 bool ChessBattleMagicUndress::isExecutionCompleted(DWORD ticksNow, ChessPiece * attacker, ChessPiece * defender, ChessMove chessMove, ChessBoard * chessBoard)
 {
+	drawMessage(chessBoard);
 	if (mActionGoToEndSquare->hasBeenStarted()) {
 		return mActionGoToEndSquare->checkForCompletion(ticksNow, attacker, defender, chessMove, chessBoard);
 	}
@@ -1488,22 +1586,26 @@ bool ChessBattleMagicUndress::isExecutionCompleted(DWORD ticksNow, ChessPiece * 
 		PED::SET_PED_RANDOM_COMPONENT_VARIATION(defender->getPed(), false);
 		PED::SET_PED_RANDOM_PROPS(defender->getPed());
 		mChanges++;
-		mChangesDelta = mChangesDelta - 100;
-		if (mChanges > 12) {
+		mChangesDelta = mChangesDelta - 200;
+		if (mChanges > 7) {
 			AI::TASK_REACT_AND_FLEE_PED(defender->getPed(), attacker->getPed());
 			mIsChanging = false;
 		}
+		if (mChanges == 4) {//play again
+			GTAModUtils::playAnimation(attacker->getPed(), mAnimationMagicTouch);
+		}
 		mTicksStarted = ticksNow;
 	}
-	else if (mIsWaiting && ticksNow - mTicksStarted > 1500) {
+	else if (mIsWaiting && ticksNow - mTicksStarted > 300) {
 		Logger::logDebug("ChessBattleMagicTouch mIsWaiting");
 		mTicksStarted = ticksNow;
 		mIsWaiting = false;
 		mIsChanging = true;
 		mChanges = 0;
-		mChangesDelta = 2000;
-		PED::SET_PED_TO_RAGDOLL(defender->getPed(), 10000, 10000, 1, true, true, false);
+		mChangesDelta = 1500;
 	}
 
 	return false;
 }
+
+

@@ -23,11 +23,18 @@ public:
 	virtual void startExecution(DWORD ticksStart, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)=0;
 	virtual bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove,ChessBoard* chessBoard)=0;
 
+	void setMessage(std::string msg, DWORD ticks);
+	void drawMessage(ChessBoard* chessBoard);
+
 protected:
 	std::shared_ptr<ActionGoToSquare> mActionGoToEndSquare;
 	DWORD mTicksStarted;
 	bool mIsMovingToSquare;
 	int mNrMovementChecks;
+	int mScaleformBigMessage;
+	std::string mMsgBattle;
+	DWORD mMsgTicksStarted;
+	DWORD mMsgTicksLength;
 };
 
 
@@ -84,6 +91,8 @@ protected:
 	std::shared_ptr<SyncedAnimation> mSyncedAnimation;
 };
 
+
+
 class ChessBattleSyncedAnimationChained : public ChessBattle {
 public:
 	ChessBattleSyncedAnimationChained(ChessMove chessMove, ChessBoard* chessBoard,std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset, bool hasDefenderWeapon, std::string defenderWeapon);
@@ -101,6 +110,15 @@ protected:
 	Vector3 mStartLocation;
 	std::shared_ptr<SyncedAnimation> mFirstSyncedAnimation;
 	std::shared_ptr<SyncedAnimation> mSecondSyncedAnimation;
+};
+
+class ChessBattleKnifeStruggle : public ChessBattleSyncedAnimationChained {
+public:
+	ChessBattleKnifeStruggle(ChessMove chessMove, ChessBoard* chessBoard, std::shared_ptr<SyncedAnimation> firstSyncedAnimation, std::shared_ptr<SyncedAnimation> secondSyncedAnimation, bool killAfterwards, bool useDefenderLocation, Vector3 locationOffset, bool hasDefenderWeapon, std::string defenderWeapon);
+
+	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
+
+protected:
 };
 
 
@@ -344,6 +362,7 @@ public:
 	bool isExecutionCompleted(DWORD ticksNow, ChessPiece* attacker, ChessPiece* defender, ChessMove chessMove, ChessBoard* chessBoard)override;
 
 protected:
+	Animation mAnimationDeath;
 	bool mIsWaitingForYoga;
 	bool mIsWaitingForDeath;
 };

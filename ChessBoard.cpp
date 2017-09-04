@@ -4,13 +4,15 @@
 #include "Utils.h"
 
 
-ChessBoard::ChessBoard(Vector3 baseLocation, float baseHeading, float squareDeltaX, float squareDeltaY)
+ChessBoard::ChessBoard(Vector3 baseLocation, Vector3 spawnZoneWhite, Vector3 spawnZoneBlack, float baseHeading, float squareDeltaX, float squareDeltaY)
 {
 	Logger::logDebug("ChessBoard::ChessBoard");
 	mBaseLocation = baseLocation;
 	mBaseHeading = baseHeading;
 	mSquareDeltaX = squareDeltaX;
 	mSquareDeltaY = squareDeltaY;
+	mSpawnZoneBlack = spawnZoneBlack;
+	mSpawnZoneWhite = spawnZoneWhite;
 	initializeSquares();
 	mSideToMove = ChessSide::WHITE;
 
@@ -27,6 +29,14 @@ ChessBoard::ChessBoard(Vector3 baseLocation, float baseHeading, float squareDelt
 
 	PED::SET_RELATIONSHIP_BETWEEN_GROUPS(3, mWhiteRelationshipGroupHash, mBlackRelationshipGroupHash);
 	PED::SET_RELATIONSHIP_BETWEEN_GROUPS(3, mBlackRelationshipGroupHash, mWhiteRelationshipGroupHash);
+
+	mScaleformBigMessage = GRAPHICS::REQUEST_SCALEFORM_MOVIE_INSTANCE("MP_BIG_MESSAGE_FREEMODE");
+
+	Logger::logInfo("Waiting for MP_BIG_MESSAGE_FREEMODE to load");
+	while (!GRAPHICS::HAS_SCALEFORM_MOVIE_LOADED(mScaleformBigMessage)) {
+		WAIT(0);
+	}
+
 }
 
 ChessSide::Side ChessBoard::sideToMove()
@@ -184,16 +194,23 @@ void ChessBoard::spawnChessPieces()
 
 Vector3 ChessBoard::getVehicleSpawnZone(ChessSide::Side side)
 {
-	Vector3 spawnZone;
 	if (side == ChessSide::WHITE) {
-		spawnZone = getSquareAt(1, 1)->getLocation();
-		spawnZone.x = spawnZone.x - 20.0;
+		return mSpawnZoneWhite;
 	}
 	else {
-		spawnZone = getSquareAt(8, 8)->getLocation();
-		spawnZone.x = spawnZone.x + 20.0;
+		return mSpawnZoneBlack;
 	}
-	return spawnZone;
+}
+
+Vector3 ChessBoard::setVehicleSpawnZone(ChessSide::Side side, Vector3 spawnZone)
+{
+	if (side == ChessSide::WHITE) {
+		mSpawnZoneWhite = spawnZone;
+	}
+	else {
+		mSpawnZoneBlack = spawnZone;
+	}
+
 }
 
 void ChessBoard::freezeAllExcept(std::vector<ChessPiece*> chessPieces)
@@ -270,6 +287,20 @@ ChessBoardSquare * ChessBoard::getSquareClosest(float xScreenCoord, float yScree
 		}
 	}
 	return closestSquare;
+}
+
+void ChessBoard::drawBigMessage(char* msg)
+{
+	GRAPHICS::_PUSH_SCALEFORM_MOVIE_FUNCTION(mScaleformBigMessage, "SHOW_MISSION_PASSED_MESSAGE");
+	//            _sc.CallFunction("SHOW_MISSION_PASSED_MESSAGE", msg, "", 100, true, 0, true);
+	GRAPHICS::_BEGIN_TEXT_COMPONENT("STRING");
+	UI::_ADD_TEXT_COMPONENT_STRING(msg);
+	GRAPHICS::_END_TEXT_COMPONENT();
+	GRAPHICS::_POP_SCALEFORM_MOVIE_FUNCTION_VOID();
+
+
+	GRAPHICS::DRAW_SCALEFORM_MOVIE_FULLSCREEN(mScaleformBigMessage, 255, 255, 255, 255, 0);
+
 }
 
 void ChessBoard::drawOnTick()

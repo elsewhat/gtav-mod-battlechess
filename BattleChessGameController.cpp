@@ -22,6 +22,14 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 	//Disable keys. Only camera and numpad left
 	GTAModUtils::disableControls();
 
+	if (currentChessBattle != nullptr) {
+		if (currentChessBattle->isExecutionCompleted(GetTickCount(), currentChessMove.getAttacker(), currentChessMove.getDefender(), currentChessMove, chessBoard)) {
+			Logger::logInfo("Chessbattle completed");
+			currentChessBattle = nullptr;
+			currentChessMove = ChessMove();
+		}
+	}
+
 	/* ACTIONS WHICH MAY REQUIRE A WAIT PERIODE IN TICKS AFTERWAREDS */
 	if (nextWaitTicks == 0 || GetTickCount() - mainTickLast >= nextWaitTicks) {
 		nextWaitTicks = 0;
@@ -39,15 +47,6 @@ bool BattleChessGameController::actionOnTick(DWORD tick, ChessBoard* chessBoard)
 		if (updateBoardSelect(chessBoard)) {
 			nextWaitTicks = 150;
 		}
-
-		if (currentChessBattle != nullptr) {
-			if (currentChessBattle->isExecutionCompleted(GetTickCount(), currentChessMove.getAttacker(),currentChessMove.getDefender(), currentChessMove,chessBoard)) {
-				Logger::logInfo("Chessbattle completed");
-				currentChessBattle = nullptr;
-				currentChessMove = ChessMove();
-			}
-		}
-	
 	}
 
 	//Camera control by player

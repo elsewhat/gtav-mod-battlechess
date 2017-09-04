@@ -545,6 +545,8 @@ void BattleChessMain()
 
 	Vector3 baseLocation;
 	float baseHeading = 0.0f;
+	Vector3 spawnZoneWhite;
+	Vector3 spawnZoneBlack;
 	//air strip
 	baseLocation.x = 1629.0;
 	baseLocation.y = 3215.0;
@@ -563,11 +565,18 @@ void BattleChessMain()
 	baseLocation.y = -123.37;
 	baseLocation.z = 37.55;
 	baseHeading = 27.5f;
+	spawnZoneWhite.x = -839.40;
+	spawnZoneWhite.y = -131.38;
+	spawnZoneWhite.z = baseLocation.z;
+
+	spawnZoneBlack.x = -813.67;
+	spawnZoneBlack.y = -96.25;
+	spawnZoneBlack.z = 37.66;
 
 
 	float squareDeltaX = 2.0; 
 	float squareDeltaY = 2.0;
-	chessBoard = new ChessBoard(baseLocation, baseHeading, squareDeltaX, squareDeltaY);
+	chessBoard = new ChessBoard(baseLocation, spawnZoneWhite, spawnZoneBlack, baseHeading, squareDeltaX, squareDeltaY);
 
 	chessBoard->setWhiteChessSet(chessSetFactory.getDefaultWhiteChessSet());
 	chessBoard->setBlackChessSet(chessSetFactory.getDefaultBlackChessSet());

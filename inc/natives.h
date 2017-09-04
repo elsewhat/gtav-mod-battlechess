@@ -1481,14 +1481,6 @@ namespace VEHICLE
 	static void _0xC361AA040D6637A8(Any p0, BOOL p1) { invoke<Void>(0xC361AA040D6637A8, p0, p1); } // 0xC361AA040D6637A8
 	static void _0x99C82F8A139F3E4E(Any p0, BOOL p1) { invoke<Void>(0x99C82F8A139F3E4E, p0, p1); } // 0x99C82F8A139F3E4E
 	static void _0xE16142B94664DEFD(Any p0, BOOL p1) { invoke<Void>(0xE16142B94664DEFD, p0, p1); } // 0xE16142B94664DEFD
-	static BOOL _HAS_VEHICLE_ROCKET_BOOST(Vehicle vehicle) { return invoke<BOOL>(0x36D782F68B309BDA, vehicle); }
-	static BOOL _IS_VEHICLE_ROCKET_BOOST_ACTIVE(Vehicle vehicle) { return invoke<BOOL>(0x3D34E80EED4AE3BE, vehicle); }
-	static void _SET_VEHICLE_ROCKET_BOOST_ACTIVE(Vehicle vehicle, BOOL active) { invoke<Void>(0x81E1552E35DC3839, vehicle, active); }
-	static void _SET_VEHICLE_ROCKET_BOOST_REFILL_TIME(Vehicle vehicle, float time) { invoke<Void>(0xE00F2AB100B76E89, vehicle, time); }
-	static BOOL _HAS_VEHICLE_JUMPING_ABILITY(Vehicle vehicle) { return invoke<BOOL>(0x9078C0C5EF8C19E9, vehicle); }
-	static BOOL _HAS_VEHICLE_PARACHUTE(Vehicle vehicle) { return invoke<BOOL>(0xBC9CFF381338CB4F, vehicle); }
-	static BOOL _CAN_VEHICLE_PARACHUTE_BE_ACTIVATED(Vehicle vehicle) { return invoke<BOOL>(0xA916396DF4154EE3, vehicle); }
-	static void _SET_VEHICLE_PARACHUTE_ACTIVE(Vehicle vehicle, BOOL active) { invoke<Void>(0x0BFFB028B3DD0A97, vehicle, active); }
 }
 
 namespace OBJECT

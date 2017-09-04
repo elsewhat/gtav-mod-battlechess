@@ -47,6 +47,33 @@ ChessPiece::Type ChessPiece::getPieceType() const
 	return mPieceType;
 }
 
+std::string ChessPiece::getPieceTypeString() const
+{
+	switch (mPieceType)
+	{
+	case ChessPiece::PAWN:
+		return "Pawn";
+		break;
+	case ChessPiece::KNIGHT:
+		return "Knight";
+		break;
+	case ChessPiece::BISHOP:
+		return "Bishop";
+		break;
+	case ChessPiece::ROOK:
+		return "Rook";
+		break;
+	case ChessPiece::QUEEN:
+		return "Queen";
+		break;
+	case ChessPiece::KING:
+		return "King";
+		break;
+	default:
+		break;
+	}
+}
+
 Vector3 ChessPiece::getLocation() const
 {
 	return mLocation;

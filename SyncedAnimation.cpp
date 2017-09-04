@@ -138,7 +138,7 @@ void SyncedAnimation::executeSyncedAnimation(bool silent, std::vector<Ped> peds,
 
 	if (m_isProperSynced) {
 		Logger::logDebug("About to create scene startHeading=" + std::to_string(m_currentRotation));
-		m_sceneId = PED::CREATE_SYNCHRONIZED_SCENE(sceneLocation.x, sceneLocation.y, sceneLocation.z + m_deltaZLocation, 0.0, 0.0, m_currentRotation, 2);
+		m_sceneId = PED::CREATE_SYNCHRONIZED_SCENE(sceneLocation.x, sceneLocation.y, sceneLocation.z + m_deltaZLocation, m_pitch, m_roll, m_currentRotation, 2);
 		PED::SET_SYNCHRONIZED_SCENE_LOOPED(m_sceneId, doLoop);
 
 		Logger::logDebug("About to add animations for actors");
@@ -147,7 +147,7 @@ void SyncedAnimation::executeSyncedAnimation(bool silent, std::vector<Ped> peds,
 		for (auto &animation : m_actorAnimations) {
 			if (peds.size() > actorIndex) {
 				Logger::logDebug("Adding animation to " + std::to_string(peds.at(actorIndex)) + " actor index:" + std::to_string(actorIndex));
-				AI::TASK_SYNCHRONIZED_SCENE(peds.at(actorIndex), m_sceneId, animation.animLibrary, animation.animName, 1000.0, -4.0, 64, 0, 0x447a0000, 0);
+				AI::TASK_SYNCHRONIZED_SCENE(peds.at(actorIndex), m_sceneId, animation.animLibrary, animation.animName, m_speed, -4.0, 64, 0, 0x447a0000, 0);
 				m_pedsInScene.push_back(peds.at(actorIndex));
 
 				m_pedsInSceneStartLocation.push_back(ENTITY::GET_ENTITY_COORDS(peds.at(actorIndex), true));
@@ -501,6 +501,23 @@ void SyncedAnimation::setDeltaZ(float deltaZLocation)
 {
 	m_deltaZLocation = deltaZLocation;
 }
+
+void SyncedAnimation::setPitch(float pitch)
+{
+	m_pitch = pitch;
+}
+
+void SyncedAnimation::setRoll(float roll)
+{
+	m_roll = roll;
+}
+
+void SyncedAnimation::setSpeed(float speed)
+{
+	m_speed = speed;
+}
+
+
 
 
 
