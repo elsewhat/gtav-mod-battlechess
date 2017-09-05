@@ -303,3 +303,32 @@ void GTAModUtils::playAnimation(Ped ped, Animation animation)
 	AI::TASK_PLAY_ANIM(ped, animation.animLibrary, animation.animName, 8.0f, -8.0f, animation.duration, 1, 8.0f, 0, 0, 0);
 
 }
+
+void GTAModUtils::enableRadio(bool activate)
+{
+	if (activate) {
+		AUDIO::SET_FRONTEND_RADIO_ACTIVE(true);
+		AUDIO::SET_MOBILE_RADIO_ENABLED_DURING_GAMEPLAY(true);
+		AUDIO::SET_MOBILE_PHONE_RADIO_STATE(true);
+		PLAYER::_0x2F7CEB6520288061(1);
+		AUDIO::SET_AUDIO_FLAG("AllowRadioDuringSwitch", 1);
+		AUDIO::SET_AUDIO_FLAG("MobileRadioInGame", 1);
+	}
+	else {
+		AUDIO::SET_FRONTEND_RADIO_ACTIVE(false);
+		AUDIO::SET_MOBILE_RADIO_ENABLED_DURING_GAMEPLAY(false);
+		AUDIO::SET_MOBILE_PHONE_RADIO_STATE(false);
+	}
+}
+
+void GTAModUtils::setRadioStation(std::string radioStation)
+{
+	char * currentStation;
+	currentStation = AUDIO::GET_PLAYER_RADIO_STATION_NAME();
+
+	enableRadio(true);
+
+	AUDIO::SET_USER_RADIO_CONTROL_ENABLED(true);
+	AUDIO::UNFREEZE_RADIO_STATION(currentStation);
+	AUDIO::SET_RADIO_TO_STATION_NAME(strdup(radioStation.c_str()));
+}

@@ -17,11 +17,15 @@ private:
 	float cameraSpeedFactor = 0.1;
 	bool shouldExitMode = false;
 	bool invertedControls = true;
+	bool moveCameraMode = false;
+	bool hasCameraMoveSinceSquarePos = false;
 
 	DWORD nextWaitTicks = 0;
 	DWORD mainTickLast = 0;
 	Vector3 camLastPos;
 	Vector3 camNewPos;
+
+	Vector3 mousePos;
 
 	ChessSide::Side sideToMove;
 
@@ -37,6 +41,9 @@ private:
 	bool updateCameraRotation();
 	bool updateCameraMovement();
 
+	bool updateMouseMovement(ChessBoard* chessBoard);
+	bool updateMouseSelect(ChessBoard* chessBoard);
+
 	bool keyPressedCameraForward();
 	bool keyPressedCameraBackward();
 	bool keyPressedCameraLeft();
@@ -44,6 +51,7 @@ private:
 	bool keyPressedForFastCameraMovement();
 	bool keyPressedForSlowCameraMovement();
 	bool keyPressedForInvertedCamera();
+	bool keyPressedForToggleCameraMode();
 
 	bool updateBoardCursorMovement(ChessBoard* chessBoard);
 	bool updateBoardSelect(ChessBoard* chessBoard);

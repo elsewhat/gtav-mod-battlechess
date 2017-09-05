@@ -24,6 +24,8 @@ public:
 	static void possessPed(Ped swapToPlayerPed);
 	static void disableControls();
 	static void playAnimation(Ped ped, Animation animation);
+	static void enableRadio(bool activate);
+	static void setRadioStation(std::string radioStation);
 };
 
 class WeaponUtils {
